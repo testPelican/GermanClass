@@ -4605,7 +4605,8 @@ body.is-dragging * {
       if (!C) return null;
       ctx = new C();
     }
-    if (ctx.state === 'suspended') ctx.resume();
+    // iOS also uses "interrupted" (after a call, locking the phone or switching apps)
+    if (ctx.state !== 'running') ctx.resume();
     return ctx;
   }
 
@@ -4675,7 +4676,8 @@ body.is-dragging * {
   function speak(text) {
     if (!canSpeak || !text) return;
     const clean = String(text).replace(/_/g, ' ').replace(/\//g, ', ').replace(/\s*…\s*/g, ' ');
-    window.speechSynthesis.cancel();
+    // Safari can drop an utterance queued straight after cancel(), so only cancel when needed
+    if (window.speechSynthesis.speaking || window.speechSynthesis.pending) window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(clean);
     u.lang = 'de-DE';
     if (voice) u.voice = voice;
