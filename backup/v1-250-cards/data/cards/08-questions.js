@@ -1,0 +1,102 @@
+/* Questions (W-words, formal Sie) and negation (nicht / kein). */
+Brezel.deck.addCards('questions', [
+  {
+    id: 'qu-01', type: 'match',
+    prompt: 'Match the question words',
+    pairs: [['Wo?', 'where?'], ['Woher?', 'where from?'], ['Wer?', 'who?'], ['Wann?', 'when?'], ['Wie?', 'how?'], ['Was?', 'what?']],
+    explain: 'Careful: **Wo** = where, **Wer** = who, **Woher** = where from.',
+  },
+  {
+    id: 'qu-02', type: 'match',
+    prompt: 'Match each question with its answer',
+    pairs: [['Woher kommen Sie?', 'Aus Spanien.'], ['Wo wohnen Sie?', 'In Wien.'], ['Was sind Sie von Beruf?', 'Ich bin Informatikerin.'], ['Wie alt ist Pedro?', '33 Jahre.'], ['Wann sind Sie umgezogen?', '2016.']],
+    explain: 'Woher → aus …, Wo → in …, Was … von Beruf → a job, Wie alt → age, Wann → a time.',
+  },
+  {
+    id: 'qu-03', type: 'gap',
+    q: '{Woher} kommen Sie? – Aus Polen.',
+    options: ['Wo', 'Wer', 'Wann'],
+    explain: 'The answer *aus Polen* tells where **from** → **Woher**.',
+  },
+  {
+    id: 'qu-04', type: 'gap',
+    q: '{Wo} wohnt Pedro? – In Spanien.',
+    options: ['Woher', 'Wie', 'Was'],
+    explain: 'A place (in Spanien) → **Wo**.',
+  },
+  {
+    id: 'qu-05', type: 'gap',
+    q: '{Wann} hat er das Studium abgeschlossen? – 2025.',
+    options: ['Wo', 'Wer', 'Wie'],
+    explain: 'A time (2025) → **Wann**.',
+  },
+  {
+    id: 'qu-06', type: 'gap',
+    q: '{Wie} alt ist Martina? – 24 Jahre.',
+    options: ['Was', 'Wo', 'Wann'],
+    explain: 'Age: **Wie alt** …?',
+  },
+  {
+    id: 'qu-07', type: 'gap',
+    q: '{Wer} ist das? – Das ist Martina.',
+    options: ['Was', 'Wie', 'Wo'],
+    explain: 'A person → **Wer** (who). *Wo* = where!',
+  },
+  {
+    id: 'qu-08', type: 'type',
+    prompt: 'Ask formally: *Where do you live?*',
+    answer: 'Wo wohnen Sie?',
+    explain: 'W-word + verb + **Sie**: *Wo wohnen Sie?* Formal Sie takes the -en form.',
+  },
+  {
+    id: 'qu-09', type: 'type',
+    prompt: 'Ask formally: *What is your job?*',
+    answer: 'Was sind Sie von Beruf?',
+    explain: 'Fixed question: *Was sind Sie von Beruf?*',
+  },
+  {
+    id: 'qu-10', type: 'gap',
+    q: 'Ich bin {nicht} verheiratet. Ich habe {keine} Kinder.',
+    options: ['kein', 'keinen', 'nichts'],
+    explain: '**nicht** negates adjectives and verbs (*nicht verheiratet*); **kein/keine** negates nouns (*keine Kinder*).',
+  },
+  {
+    id: 'qu-11', type: 'mc',
+    prompt: 'Choose the negation',
+    q: 'Martina ist ___ verheiratet.',
+    correct: 'nicht', wrong: ['kein', 'keine', 'nichts'],
+    explain: '*verheiratet* is an adjective → **nicht**.',
+  },
+  {
+    id: 'qu-12', type: 'mc',
+    prompt: 'Choose the negation',
+    q: 'Ich habe ___ Auto.',
+    correct: 'kein', wrong: ['nicht', 'keine', 'keinen'],
+    explain: 'A noun → **kein**. das Auto → **kein** Auto.',
+  },
+  {
+    id: 'qu-13', type: 'tf',
+    q: 'Ich habe nicht Auto.',
+    answer: false, labels: ['Correct', 'Wrong'],
+    fix: 'Ich habe kein Auto.',
+    explain: 'Nouns are negated with **kein**, not *nicht*.',
+  },
+  {
+    id: 'qu-14', type: 'spot',
+    q: 'Pedro ist kein verheiratet.',
+    wrong: 'kein', correct: 'nicht',
+    explain: '*verheiratet* is not a noun → **nicht**.',
+  },
+  {
+    id: 'qu-15', type: 'mc',
+    prompt: '*Ist Martina verheiratet?* — choose the correct answer',
+    correct: 'Nein, sie ist noch ledig.', wrong: ['Nein, sie ist kein ledig.', 'Nein, sie ist noch verheiratet.', 'Nein, sie hat ledig.'],
+    explain: '**ledig** = single. *Nein, sie ist noch ledig.* (noch = still)',
+  },
+  {
+    id: 'qu-16', type: 'order',
+    en: 'Are you married? (formal)',
+    answer: 'Sind Sie verheiratet?',
+    explain: 'Yes/no question → the verb comes **first**: *Sind Sie …?*',
+  },
+]);

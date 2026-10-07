@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>Brezel — German grammar flashcards</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥨</text></svg>">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <div id="app" class="app"></div>
+  <div id="toast-layer" class="toast-layer" aria-live="polite"></div>
+  <noscript><p class="noscript">Please enable JavaScript to use the flashcards.</p></noscript>
+
+  <!-- core -->
+  <script src="js/core/util.js"></script>
+  <script src="js/core/deck.js"></script>
+  <script src="js/core/check.js"></script>
+  <script src="js/core/store.js"></script>
+  <script src="js/core/stats.js"></script>
+  <script src="js/core/audio.js"></script>
+  <script src="js/core/drag.js"></script>
+
+  <!-- exercise types (plugins) -->
+  <script src="js/exercises/base.js"></script>
+  <script src="js/exercises/mc.js"></script>
+  <script src="js/exercises/tf.js"></script>
+  <script src="js/exercises/type.js"></script>
+  <script src="js/exercises/table.js"></script>
+  <script src="js/exercises/order.js"></script>
+  <script src="js/exercises/match.js"></script>
+  <script src="js/exercises/gap.js"></script>
+  <script src="js/exercises/sort.js"></script>
+  <script src="js/exercises/spot.js"></script>
+
+  <!-- content: add new card files here -->
+  <script src="data/topics.js"></script>
+  <script src="data/lexicon.js"></script>
+  <script src="data/cards/01-word-order.js"></script>
+  <script src="data/cards/02-present.js"></script>
+  <script src="data/cards/03-past.js"></script>
+  <script src="data/cards/04-cases.js"></script>
+  <script src="data/cards/05-prepositions.js"></script>
+  <script src="data/cards/06-gender.js"></script>
+  <script src="data/cards/07-possessive.js"></script>
+  <script src="data/cards/08-questions.js"></script>
+  <script src="data/cards/09-verbs.js"></script>
+  <script src="data/cards/10-vocabulary.js"></script>
+
+  <!-- screens -->
+  <script src="js/ui/charts.js"></script>
+  <script src="js/ui/home.js"></script>
+  <script src="js/ui/session.js"></script>
+  <script src="js/ui/summary.js"></script>
+  <script src="js/ui/review.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

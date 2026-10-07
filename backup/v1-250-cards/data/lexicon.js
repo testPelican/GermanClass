@@ -1,0 +1,90 @@
+/*
+ * Word knowledge used by the exercises and the answer checker.
+ *
+ * verbs:    present-tense forms [ich, du, er/sie/es, wir, ihr, sie/Sie], participle, auxiliary.
+ *           Used by conjugation tables ({type:'table', verb:'lesen'}) and by the typo rule:
+ *           "wohne" for "wohnt" is one letter off, but it is another real form → wrong.
+ * families: groups of words where one letter changes the grammar or meaning.
+ * proper nouns keep their capital letter on sentence-builder tiles.
+ */
+Brezel.deck.addVerbs({
+  sein: { en: 'to be', forms: ['bin', 'bist', 'ist', 'sind', 'seid', 'sind'], pp: 'gewesen', aux: 'sein' },
+  haben: { en: 'to have', forms: ['habe', 'hast', 'hat', 'haben', 'habt', 'haben'], pp: 'gehabt', aux: 'haben' },
+  wohnen: { en: 'to live', forms: ['wohne', 'wohnst', 'wohnt', 'wohnen', 'wohnt', 'wohnen'], pp: 'gewohnt', aux: 'haben' },
+  kommen: { en: 'to come', forms: ['komme', 'kommst', 'kommt', 'kommen', 'kommt', 'kommen'], pp: 'gekommen', aux: 'sein' },
+  lesen: { en: 'to read', forms: ['lese', 'liest', 'liest', 'lesen', 'lest', 'lesen'], pp: 'gelesen', aux: 'haben' },
+  heißen: { en: 'to be called', forms: ['heiße', 'heißt', 'heißt', 'heißen', 'heißt', 'heißen'], pp: 'geheißen', aux: 'haben' },
+  arbeiten: { en: 'to work', forms: ['arbeite', 'arbeitest', 'arbeitet', 'arbeiten', 'arbeitet', 'arbeiten'], pp: 'gearbeitet', aux: 'haben' },
+  spielen: { en: 'to play', forms: ['spiele', 'spielst', 'spielt', 'spielen', 'spielt', 'spielen'], pp: 'gespielt', aux: 'haben' },
+  gehen: { en: 'to go', forms: ['gehe', 'gehst', 'geht', 'gehen', 'geht', 'gehen'], pp: 'gegangen', aux: 'sein' },
+  machen: { en: 'to do / make', forms: ['mache', 'machst', 'macht', 'machen', 'macht', 'machen'], pp: 'gemacht', aux: 'haben' },
+  studieren: { en: 'to study', forms: ['studiere', 'studierst', 'studiert', 'studieren', 'studiert', 'studieren'], pp: 'studiert', aux: 'haben' },
+  fahren: { en: 'to drive / travel', forms: ['fahre', 'fährst', 'fährt', 'fahren', 'fahrt', 'fahren'], pp: 'gefahren', aux: 'sein' },
+  sprechen: { en: 'to speak', forms: ['spreche', 'sprichst', 'spricht', 'sprechen', 'sprecht', 'sprechen'], pp: 'gesprochen', aux: 'haben' },
+  schreiben: { en: 'to write', forms: ['schreibe', 'schreibst', 'schreibt', 'schreiben', 'schreibt', 'schreiben'], pp: 'geschrieben', aux: 'haben' },
+  lernen: { en: 'to learn', forms: ['lerne', 'lernst', 'lernt', 'lernen', 'lernt', 'lernen'], pp: 'gelernt', aux: 'haben' },
+  müssen: { en: 'must / to have to', forms: ['muss', 'musst', 'muss', 'müssen', 'müsst', 'müssen'], pp: 'gemusst', aux: 'haben' },
+  können: { en: 'can', forms: ['kann', 'kannst', 'kann', 'können', 'könnt', 'können'], pp: 'gekonnt', aux: 'haben' },
+  möchten: { en: 'would like', forms: ['möchte', 'möchtest', 'möchte', 'möchten', 'möchtet', 'möchten'], pp: null, aux: 'haben' },
+  mögen: { en: 'to like', forms: ['mag', 'magst', 'mag', 'mögen', 'mögt', 'mögen'], pp: 'gemocht', aux: 'haben' },
+  unterrichten: { en: 'to teach', forms: ['unterrichte', 'unterrichtest', 'unterrichtet', 'unterrichten', 'unterrichtet', 'unterrichten'], pp: 'unterrichtet', aux: 'haben' },
+  bedienen: { en: 'to serve', forms: ['bediene', 'bedienst', 'bedient', 'bedienen', 'bedient', 'bedienen'], pp: 'bedient', aux: 'haben' },
+  schießen: { en: 'to shoot', forms: ['schieße', 'schießt', 'schießt', 'schießen', 'schießt', 'schießen'], pp: 'geschossen', aux: 'haben' },
+  lösen: { en: 'to solve', forms: ['löse', 'löst', 'löst', 'lösen', 'löst', 'lösen'], pp: 'gelöst', aux: 'haben' },
+  führen: { en: 'to lead / hold (a conversation)', forms: ['führe', 'führst', 'führt', 'führen', 'führt', 'führen'], pp: 'geführt', aux: 'haben' },
+  entwickeln: { en: 'to develop', forms: ['entwickle', 'entwickelst', 'entwickelt', 'entwickeln', 'entwickelt', 'entwickeln'], pp: 'entwickelt', aux: 'haben' },
+  vereinbaren: { en: 'to arrange', forms: ['vereinbare', 'vereinbarst', 'vereinbart', 'vereinbaren', 'vereinbart', 'vereinbaren'], pp: 'vereinbart', aux: 'haben' },
+  telefonieren: { en: 'to phone', forms: ['telefoniere', 'telefonierst', 'telefoniert', 'telefonieren', 'telefoniert', 'telefonieren'], pp: 'telefoniert', aux: 'haben' },
+  helfen: { en: 'to help', forms: ['helfe', 'hilfst', 'hilft', 'helfen', 'helft', 'helfen'], pp: 'geholfen', aux: 'haben' },
+  kennen: { en: 'to know (a person / place)', forms: ['kenne', 'kennst', 'kennt', 'kennen', 'kennt', 'kennen'], pp: 'gekannt', aux: 'haben' },
+  bekommen: { en: 'to get / receive', forms: ['bekomme', 'bekommst', 'bekommt', 'bekommen', 'bekommt', 'bekommen'], pp: 'bekommen', aux: 'haben' },
+  abschließen: { en: 'to finish / complete', forms: ['schließe ab', 'schließt ab', 'schließt ab', 'schließen ab', 'schließt ab', 'schließen ab'], pp: 'abgeschlossen', aux: 'haben' },
+  umziehen: { en: 'to move (house)', forms: ['ziehe um', 'ziehst um', 'zieht um', 'ziehen um', 'zieht um', 'ziehen um'], pp: 'umgezogen', aux: 'sein' },
+  einkaufen: { en: 'to go shopping', forms: ['kaufe ein', 'kaufst ein', 'kauft ein', 'kaufen ein', 'kauft ein', 'kaufen ein'], pp: 'eingekauft', aux: 'haben' },
+  fernsehen: { en: 'to watch TV', forms: ['sehe fern', 'siehst fern', 'sieht fern', 'sehen fern', 'seht fern', 'sehen fern'], pp: 'ferngesehen', aux: 'haben' },
+  halten: { en: 'to hold / give (a talk)', forms: ['halte', 'hältst', 'hält', 'halten', 'haltet', 'halten'], pp: 'gehalten', aux: 'haben' },
+  aufpassen: { en: 'to pay attention / look after', forms: ['passe auf', 'passt auf', 'passt auf', 'passen auf', 'passt auf', 'passen auf'], pp: 'aufgepasst', aux: 'haben' },
+  ausgeben: { en: 'to spend (money)', forms: ['gebe aus', 'gibst aus', 'gibt aus', 'geben aus', 'gebt aus', 'geben aus'], pp: 'ausgegeben', aux: 'haben' },
+  präsentieren: { en: 'to present', forms: ['präsentiere', 'präsentierst', 'präsentiert', 'präsentieren', 'präsentiert', 'präsentieren'], pp: 'präsentiert', aux: 'haben' },
+  organisieren: { en: 'to organise', forms: ['organisiere', 'organisierst', 'organisiert', 'organisieren', 'organisiert', 'organisieren'], pp: 'organisiert', aux: 'haben' },
+  beantworten: { en: 'to answer', forms: ['beantworte', 'beantwortest', 'beantwortet', 'beantworten', 'beantwortet', 'beantworten'], pp: 'beantwortet', aux: 'haben' },
+  kochen: { en: 'to cook', forms: ['koche', 'kochst', 'kocht', 'kochen', 'kocht', 'kochen'], pp: 'gekocht', aux: 'haben' },
+});
+
+Brezel.deck.addFamilies([
+  ['der', 'die', 'das', 'dem', 'den', 'des'],
+  ['ein', 'eine', 'einen', 'einem', 'einer', 'eines'],
+  ['kein', 'keine', 'keinen', 'keinem', 'keiner', 'keines'],
+  ['mein', 'meine', 'meinen', 'meinem', 'meiner', 'meines'],
+  ['dein', 'deine', 'deinen', 'deinem', 'deiner', 'deines'],
+  ['sein', 'seine', 'seinen', 'seinem', 'seiner', 'seines'],
+  ['ihr', 'ihre', 'ihren', 'ihrem', 'ihrer', 'ihres'],
+  ['in', 'im', 'ins', 'an', 'am', 'ans'],
+  ['zu', 'zum', 'zur'],
+  ['bei', 'beim'],
+  ['ich', 'du', 'er', 'sie', 'es', 'wir', 'ihr'],
+  ['wo', 'wer', 'wie', 'was', 'wann', 'woher', 'wohin', 'welche', 'welcher', 'welches', 'welchen'],
+  ['nicht', 'nichts'],
+  ['alle', 'alles', 'allen'],
+  ['Freund', 'Freunde', 'Freunden', 'Freundin', 'Freude', 'Freuden'],
+  ['Kunde', 'Kunden', 'Kundin'],
+  ['Kollege', 'Kollegen', 'Kollegin', 'Kolleginnen'],
+  ['Termin', 'Termine', 'Terminen'],
+  ['Fachzeitschrift', 'Fachzeitschriften'],
+  ['Besprechung', 'Besprechungen'],
+  ['Bedienung', 'Bedingung'],
+  ['ganz', 'ganze', 'ganzen', 'ganzer'],
+  ['klein', 'kleine', 'kleinen', 'kleiner', 'kleinem'],
+  ['verschieden', 'verschiedene', 'verschiedenen'],
+  ['Student', 'Studenten', 'Studentin'],
+  ['Woche', 'Wochen'],
+  ['Monat', 'Monate'],
+]);
+
+Brezel.deck.addProperNouns([
+  'Pedro', 'Martina', 'Julia', 'Petra', 'Anna', 'Max',
+  'Salzburg', 'Innsbruck', 'Berlin', 'München', 'Wien', 'Madrid', 'Barcelona', 'Leipzig',
+  'St._Pölten', 'St. Pölten',
+  'Spanien', 'Polen', 'Österreich', 'Deutschland',
+  'KAKO', 'Santos', 'Uniqa',
+]);

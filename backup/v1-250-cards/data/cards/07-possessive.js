@@ -1,0 +1,85 @@
+/* Possessives: mein / meine / meiner / meinen, sein / ihr / Ihr. */
+Brezel.deck.addCards('possessive', [
+  {
+    id: 'po-01', type: 'mc',
+    prompt: 'Choose the correct form',
+    q: '___ Nachbarin heißt Anna.',
+    correct: 'Meine', wrong: ['Mein', 'Meinen', 'Meiner'],
+    explain: 'die Nachbarin → **meine**.',
+  },
+  {
+    id: 'po-02', type: 'mc',
+    prompt: 'Choose the correct form',
+    q: '___ Nachbar heißt Max.',
+    correct: 'Mein', wrong: ['Meine', 'Meinen', 'Meiner'],
+    explain: 'der Nachbar → **mein**.',
+  },
+  {
+    id: 'po-03', type: 'gap',
+    q: 'In {meiner} Freizeit spiele ich PlayStation.',
+    options: ['meine', 'mein', 'meinen'],
+    explain: 'in + Dativ, die Freizeit → in **meiner** Freizeit. (Not *in meine Freizeit*.)',
+  },
+  {
+    id: 'po-04', type: 'type',
+    prompt: 'Type the correct form of **mein**',
+    q: 'Ich wohne mit ___ Frau in Wien.', hint: 'mein',
+    answer: 'meiner',
+    explain: 'mit + Dativ, die Frau → mit **meiner** Frau.',
+  },
+  {
+    id: 'po-05', type: 'type',
+    prompt: 'Type the correct form of **mein**',
+    q: 'Ich gehe mit ___ Freunden ins Kino.', hint: 'mein',
+    answer: 'meinen',
+    explain: 'mit + Dativ plural → **meinen** Freunden.',
+  },
+  {
+    id: 'po-06', type: 'mc',
+    prompt: 'Choose the correct form',
+    q: 'Was macht Pedro in ___ Freizeit?',
+    correct: 'seiner', wrong: ['ihrer', 'seine', 'sein'],
+    explain: 'Pedro = he → **sein**; die Freizeit after *in* → sein**er**.',
+  },
+  {
+    id: 'po-07', type: 'mc',
+    prompt: 'Choose the correct form',
+    q: 'Was macht Martina in ___ Freizeit?',
+    correct: 'ihrer', wrong: ['seiner', 'ihre', 'ihr'],
+    explain: 'Martina = she → **ihr**; die Freizeit after *in* → ihr**er**.',
+  },
+  {
+    id: 'po-08', type: 'type',
+    prompt: 'Type the correct form of **mein**',
+    q: 'Ich habe ___ Studium 2021 abgeschlossen.', hint: 'mein',
+    answer: 'mein',
+    explain: 'das Studium → **mein** Studium.',
+  },
+  {
+    id: 'po-09', type: 'tf',
+    statement: '**mein** is used for *der* and *das* words; **meine** for *die* words and plurals.',
+    answer: true,
+    explain: 'mein Nachbar, mein Studium · meine Nachbarin, meine Freunde.',
+  },
+  {
+    id: 'po-10', type: 'spot',
+    q: 'In meine Freizeit lese ich gern.',
+    wrong: 'meine', correct: 'meiner',
+    explain: 'After *in* (Dativ), die Freizeit → in **meiner** Freizeit.',
+  },
+  {
+    id: 'po-11', type: 'sort',
+    prompt: '**mein** or **meine**?',
+    buckets: [
+      { label: 'mein', sub: 'der / das', items: ['Nachbar', 'Studium', 'Name', 'Beruf'] },
+      { label: 'meine', sub: 'die / plural', items: ['Nachbarin', 'Frau', 'Ausbildung', 'Freunde'] },
+    ],
+    explain: 'der Nachbar, das Studium, der Name, der Beruf → **mein** · die Nachbarin, die Frau, die Ausbildung, die Freunde → **meine**.',
+  },
+  {
+    id: 'po-12', type: 'mc',
+    prompt: 'Ask formally: *What is your name?*',
+    correct: 'Wie ist Ihr Name?', wrong: ['Wie ist ihr Name?', 'Wie ist Ihre Name?', 'Wie ist Sie Name?'],
+    explain: 'Formal *your* = **Ihr** with a capital I (der Name → Ihr Name). Lower-case *ihr* means *her*.',
+  },
+]);
