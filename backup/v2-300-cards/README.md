@@ -1,7 +1,7 @@
 # 🥨 Brezel — German grammar flashcards
 
-A Duolingo-style flashcard app built from your class notes: 450 cards across
-15 topics, 9 exercise types. It runs offline in any modern browser; nothing to
+A Duolingo-style flashcard app built from your class notes: 300 cards across
+11 topics, 9 exercise types. It runs offline in any modern browser; nothing to
 install.
 
 ## Open it
@@ -23,14 +23,14 @@ keeps its own progress.
 
 ## How a session works
 
-- The start screen shows how far you are, e.g. **23/450**. A card only counts
+- The start screen shows how far you are, e.g. **23/300**. A card only counts
   once you answer it correctly.
 - Cards and answer options are shuffled every session.
 - If you get a card wrong, the correct answer and the reason are shown, and the
   card goes back into the pile at a random later spot in the same session.
 - **Practise mistakes** replays every card you have ever got wrong. It is extra
   training only and doesn't change your progress.
-- When all 450 are done, **Review** shows your strong and weak topics, mastery
+- When all 300 are done, **Review** shows your strong and weak topics, mastery
   per topic, first-try accuracy per exercise type and accuracy per session.
   Every chart can be switched to a table.
 
@@ -97,9 +97,7 @@ Each file in `js/exercises/` starts with a comment documenting its fields.
 - **A new topic:** add it to `data/topics.js`, then create a card file and add
   its `<script>` tag to `index.html` next to the others.
 - **New verbs** go in `data/lexicon.js`. That powers conjugation tables and
-  tells the typo rule which forms are "other real forms". Add `prt` (the six
-  Präteritum forms) when a card asks for them, so *freut* isn't accepted as a
-  typo for *freute*.
+  tells the typo rule which forms are "other real forms".
 - **A new exercise type:** add a file to `js/exercises/` that calls
   `Brezel.ex.register(name, { label, validate, describe, render })`, and add
   its script tag. The contract is documented at the top of
@@ -143,5 +141,5 @@ data/lexicon.js       verb forms, word families, proper nouns
 data/cards/           the cards, one file per topic
 tools/validate.js     deck checker
 tools/build.js        builds Brezel.html
-backup/               earlier versions, complete and working (see backup/README.md)
+backup/               earlier versions, complete and working (v1-250-cards = before the Kapitel 1 update)
 ```

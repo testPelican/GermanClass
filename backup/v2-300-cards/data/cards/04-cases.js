@@ -1,0 +1,123 @@
+/* Articles & cases: der/die/das, mit + Dativ, Akkusativ einen/keinen. */
+Brezel.deck.addCards('cases', [
+  {
+    id: 'ca-01', type: 'sort',
+    prompt: '**der**, **das** or **die**?',
+    buckets: [
+      { label: 'der', sub: 'masculine', items: ['Zug', 'Bus', 'Roman', 'Vortrag'] },
+      { label: 'das', sub: 'neuter', items: ['Auto', 'Studium', 'Kino'] },
+      { label: 'die', sub: 'feminine', items: ['Bahn', 'Fähre', 'Ausbildung'] },
+    ],
+    explain: 'der Zug, der Bus, der Roman, der Vortrag · das Auto, das Studium (-um), das Kino · die Bahn, die Fähre, die Ausbildung (-ung).',
+  },
+  {
+    id: 'ca-02', type: 'gap',
+    q: 'Ich fahre mit {dem} Zug.',
+    options: ['der', 'den', 'das'],
+    explain: 'mit + **Dativ**: der Zug → mit **dem** Zug.',
+  },
+  {
+    id: 'ca-04', type: 'gap',
+    q: 'Ich bin mit {dem} Auto gefahren.',
+    options: ['das', 'der', 'den'],
+    explain: 'mit + Dativ: das Auto → mit **dem** Auto.',
+  },
+  {
+    id: 'ca-05', type: 'gap',
+    q: 'Martina fährt mit {der} Fähre.',
+    options: ['die', 'dem', 'das'],
+    explain: 'mit + Dativ: die Fähre → mit **der** Fähre.',
+  },
+  {
+    id: 'ca-06', type: 'table',
+    prompt: '**mit** + Dativ: complete the table',
+    head: ['Nominativ', 'mit + Dativ'],
+    rows: [['der Zug', 'mit dem Zug'], ['der Bus', 'mit dem Bus'], ['das Auto', 'mit dem Auto'], ['die Bahn', 'mit der Bahn'], ['die Fähre', 'mit der Fähre']],
+    blanks: 3,
+    explain: 'M/N → **dem**, F → **der**. (The **D** in your notes = Dativ.)',
+  },
+  {
+    id: 'ca-07', type: 'mc',
+    prompt: 'Choose the correct article',
+    q: 'Petra liest ___ Roman.',
+    correct: 'einen', wrong: ['ein', 'einem', 'eine'],
+    explain: '*der Roman* is the object (Akkusativ). Masculine **ein → einen**.',
+  },
+  {
+    id: 'ca-08', type: 'mc',
+    prompt: 'Choose the correct article',
+    q: 'Ich halte heute ___ Vortrag.',
+    correct: 'einen', wrong: ['ein', 'eine', 'einem'],
+    explain: '*einen Vortrag halten* = to give a talk. der Vortrag → Akkusativ **einen**.',
+  },
+  {
+    id: 'ca-09', type: 'mc',
+    prompt: 'Choose the correct word',
+    q: 'Martina hat ___ Mann. Sie ist ledig.',
+    correct: 'keinen', wrong: ['kein', 'keine', 'keinem'],
+    explain: 'der Mann is the object → Akkusativ: **keinen** Mann (like *einen*).',
+  },
+  {
+    id: 'ca-10', type: 'mc',
+    prompt: 'Which article? — *___ Ausbildung*',
+    correct: 'die', wrong: ['der', 'das'],
+    explain: 'Nouns ending in **-ung** are always **die**: die Ausbildung, die Wohnung, die Besprechung, die Unterstützung.',
+  },
+  {
+    id: 'ca-11', type: 'mc',
+    prompt: 'Which article? — *___ Studium*',
+    correct: 'das', wrong: ['der', 'die'],
+    explain: 'Nouns ending in **-um** are **das**: das Studium, das Zentrum.',
+  },
+  {
+    id: 'ca-13', type: 'spot',
+    q: 'Wir fahren mit das Auto.',
+    wrong: 'das', correct: 'dem',
+    explain: 'After **mit**, *das* becomes **dem**: mit dem Auto.',
+  },
+  {
+    id: 'ca-16', type: 'sort',
+    prompt: '**mit dem** or **mit der**?',
+    buckets: [
+      { label: 'mit dem', sub: 'der / das', items: ['Zug', 'Bus', 'Auto', 'Studium'] },
+      { label: 'mit der', sub: 'die', items: ['Bahn', 'Fähre', 'Frau', 'Ausbildung'] },
+    ],
+    explain: 'Masculine and neuter → **dem**; feminine → **der**.',
+  },
+  {
+    id: 'ca-17', type: 'gap',
+    q: 'Manchmal gehe ich mit {meinen} {Freunden} ins Kino.',
+    options: ['meine', 'Freude', 'Freunde'],
+    explain: 'Dativ plural: mit mein**en** Freunde**n** — the noun gets an extra **-n**. *Freunde* = friends, *Freude* = joy.',
+  },
+  {
+    id: 'ca-18', type: 'type',
+    prompt: 'Type the article',
+    q: 'Ich habe das Studium mit ___ Masterdiplom abgeschlossen.', hint: 'das Masterdiplom',
+    answer: 'dem',
+    explain: 'mit + Dativ: das Masterdiplom → mit **dem** Masterdiplom.',
+  },
+  {
+    id: 'ca-20', type: 'match',
+    prompt: 'Match each noun with its **mit** form',
+    pairs: [['der Zug', 'mit dem Zug'], ['das Auto', 'mit dem Auto'], ['die Bahn', 'mit der Bahn'], ['die Freunde (plural)', 'mit den Freunden']],
+    explain: 'der/das → dem, die → der, plural → den + **n**.',
+  },
+  {
+    id: 'ca-25', type: 'mc',
+    prompt: 'Choose the correct article',
+    q: 'Es gibt ___ Supermarkt in der Nähe.',
+    correct: 'einen', wrong: ['ein', 'einem', 'eine'],
+    explain: '**es gibt** is always followed by the Akkusativ: der Supermarkt → es gibt **einen** Supermarkt.',
+  },
+  {
+    id: 'ca-26', type: 'sort',
+    prompt: '**der**, **das** or **die**? (new words from Kapitel 1)',
+    buckets: [
+      { label: 'der', sub: 'masculine', items: ['Schreibtisch', 'Fernseher', 'Drucker', 'Pullover'] },
+      { label: 'das', sub: 'neuter', items: ['Flugzeug', 'Bett', 'Restaurant', 'Zimmer'] },
+      { label: 'die', sub: 'feminine', items: ['Brille', 'Sonne', 'Wohnung', 'Bluse'] },
+    ],
+    explain: 'der Schreibtisch, der Fernseher, der Drucker, der Pullover · das Flugzeug, das Bett, das Restaurant, das Zimmer · die Brille (singular = glasses!), die Sonne, die Wohnung (-ung), die Bluse.',
+  },
+]);

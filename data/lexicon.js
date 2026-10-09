@@ -1,25 +1,27 @@
 /*
  * Word knowledge used by the exercises and the answer checker.
  *
- * verbs:    present-tense forms [ich, du, er/sie/es, wir, ihr, sie/Sie], participle, auxiliary.
+ * verbs:    present-tense forms [ich, du, er/sie/es, wir, ihr, sie/Sie], prt (Präteritum, same
+ *           order, optional), participle, auxiliary. Reflexive verbs are listed without "sich".
  *           Used by conjugation tables ({type:'table', verb:'lesen'}) and by the typo rule:
- *           "wohne" for "wohnt" is one letter off, but it is another real form → wrong.
+ *           "wohne" for "wohnt" or "freut" for "freute" is one letter off, but it is another
+ *           real form → wrong.
  * families: groups of words where one letter changes the grammar or meaning.
  * proper nouns keep their capital letter on sentence-builder tiles.
  */
 Brezel.deck.addVerbs({
-  sein: { en: 'to be', forms: ['bin', 'bist', 'ist', 'sind', 'seid', 'sind'], pp: 'gewesen', aux: 'sein' },
-  haben: { en: 'to have', forms: ['habe', 'hast', 'hat', 'haben', 'habt', 'haben'], pp: 'gehabt', aux: 'haben' },
+  sein: { en: 'to be', forms: ['bin', 'bist', 'ist', 'sind', 'seid', 'sind'], prt: ['war', 'warst', 'war', 'waren', 'wart', 'waren'], pp: 'gewesen', aux: 'sein' },
+  haben: { en: 'to have', forms: ['habe', 'hast', 'hat', 'haben', 'habt', 'haben'], prt: ['hatte', 'hattest', 'hatte', 'hatten', 'hattet', 'hatten'], pp: 'gehabt', aux: 'haben' },
   wohnen: { en: 'to live', forms: ['wohne', 'wohnst', 'wohnt', 'wohnen', 'wohnt', 'wohnen'], pp: 'gewohnt', aux: 'haben' },
-  kommen: { en: 'to come', forms: ['komme', 'kommst', 'kommt', 'kommen', 'kommt', 'kommen'], pp: 'gekommen', aux: 'sein' },
+  kommen: { en: 'to come', forms: ['komme', 'kommst', 'kommt', 'kommen', 'kommt', 'kommen'], prt: ['kam', 'kamst', 'kam', 'kamen', 'kamt', 'kamen'], pp: 'gekommen', aux: 'sein' },
   lesen: { en: 'to read', forms: ['lese', 'liest', 'liest', 'lesen', 'lest', 'lesen'], pp: 'gelesen', aux: 'haben' },
   heißen: { en: 'to be called', forms: ['heiße', 'heißt', 'heißt', 'heißen', 'heißt', 'heißen'], pp: 'geheißen', aux: 'haben' },
   arbeiten: { en: 'to work', forms: ['arbeite', 'arbeitest', 'arbeitet', 'arbeiten', 'arbeitet', 'arbeiten'], pp: 'gearbeitet', aux: 'haben' },
   spielen: { en: 'to play', forms: ['spiele', 'spielst', 'spielt', 'spielen', 'spielt', 'spielen'], pp: 'gespielt', aux: 'haben' },
-  gehen: { en: 'to go', forms: ['gehe', 'gehst', 'geht', 'gehen', 'geht', 'gehen'], pp: 'gegangen', aux: 'sein' },
+  gehen: { en: 'to go', forms: ['gehe', 'gehst', 'geht', 'gehen', 'geht', 'gehen'], prt: ['ging', 'gingst', 'ging', 'gingen', 'gingt', 'gingen'], pp: 'gegangen', aux: 'sein' },
   machen: { en: 'to do / make', forms: ['mache', 'machst', 'macht', 'machen', 'macht', 'machen'], pp: 'gemacht', aux: 'haben' },
   studieren: { en: 'to study', forms: ['studiere', 'studierst', 'studiert', 'studieren', 'studiert', 'studieren'], pp: 'studiert', aux: 'haben' },
-  fahren: { en: 'to drive / travel', forms: ['fahre', 'fährst', 'fährt', 'fahren', 'fahrt', 'fahren'], pp: 'gefahren', aux: 'sein' },
+  fahren: { en: 'to drive / travel', forms: ['fahre', 'fährst', 'fährt', 'fahren', 'fahrt', 'fahren'], prt: ['fuhr', 'fuhrst', 'fuhr', 'fuhren', 'fuhrt', 'fuhren'], pp: 'gefahren', aux: 'sein' },
   sprechen: { en: 'to speak', forms: ['spreche', 'sprichst', 'spricht', 'sprechen', 'sprecht', 'sprechen'], pp: 'gesprochen', aux: 'haben' },
   schreiben: { en: 'to write', forms: ['schreibe', 'schreibst', 'schreibt', 'schreiben', 'schreibt', 'schreiben'], pp: 'geschrieben', aux: 'haben' },
   lernen: { en: 'to learn', forms: ['lerne', 'lernst', 'lernt', 'lernen', 'lernt', 'lernen'], pp: 'gelernt', aux: 'haben' },
@@ -37,9 +39,9 @@ Brezel.deck.addVerbs({
   telefonieren: { en: 'to phone', forms: ['telefoniere', 'telefonierst', 'telefoniert', 'telefonieren', 'telefoniert', 'telefonieren'], pp: 'telefoniert', aux: 'haben' },
   helfen: { en: 'to help', forms: ['helfe', 'hilfst', 'hilft', 'helfen', 'helft', 'helfen'], pp: 'geholfen', aux: 'haben' },
   kennen: { en: 'to know (a person / place)', forms: ['kenne', 'kennst', 'kennt', 'kennen', 'kennt', 'kennen'], pp: 'gekannt', aux: 'haben' },
-  bekommen: { en: 'to get / receive', forms: ['bekomme', 'bekommst', 'bekommt', 'bekommen', 'bekommt', 'bekommen'], pp: 'bekommen', aux: 'haben' },
-  abschließen: { en: 'to finish / complete', forms: ['schließe ab', 'schließt ab', 'schließt ab', 'schließen ab', 'schließt ab', 'schließen ab'], pp: 'abgeschlossen', aux: 'haben' },
-  umziehen: { en: 'to move (house)', forms: ['ziehe um', 'ziehst um', 'zieht um', 'ziehen um', 'zieht um', 'ziehen um'], pp: 'umgezogen', aux: 'sein' },
+  bekommen: { en: 'to get / receive', forms: ['bekomme', 'bekommst', 'bekommt', 'bekommen', 'bekommt', 'bekommen'], prt: ['bekam', 'bekamst', 'bekam', 'bekamen', 'bekamt', 'bekamen'], pp: 'bekommen', aux: 'haben' },
+  abschließen: { en: 'to finish / complete', forms: ['schließe ab', 'schließt ab', 'schließt ab', 'schließen ab', 'schließt ab', 'schließen ab'], prt: ['schloss ab', 'schlossest ab', 'schloss ab', 'schlossen ab', 'schlosst ab', 'schlossen ab'], pp: 'abgeschlossen', aux: 'haben' },
+  umziehen: { en: 'to move (house)', forms: ['ziehe um', 'ziehst um', 'zieht um', 'ziehen um', 'zieht um', 'ziehen um'], prt: ['zog um', 'zogst um', 'zog um', 'zogen um', 'zogt um', 'zogen um'], pp: 'umgezogen', aux: 'sein' },
   einkaufen: { en: 'to go shopping', forms: ['kaufe ein', 'kaufst ein', 'kauft ein', 'kaufen ein', 'kauft ein', 'kaufen ein'], pp: 'eingekauft', aux: 'haben' },
   fernsehen: { en: 'to watch TV', forms: ['sehe fern', 'siehst fern', 'sieht fern', 'sehen fern', 'seht fern', 'sehen fern'], pp: 'ferngesehen', aux: 'haben' },
   halten: { en: 'to hold / give (a talk)', forms: ['halte', 'hältst', 'hält', 'halten', 'haltet', 'halten'], pp: 'gehalten', aux: 'haben' },
@@ -51,12 +53,12 @@ Brezel.deck.addVerbs({
   kochen: { en: 'to cook', forms: ['koche', 'kochst', 'kocht', 'kochen', 'kocht', 'kochen'], pp: 'gekocht', aux: 'haben' },
   // Kapitel 1, C1 / C2 (Begegnungen A2+ p. 24–25)
   liegen: { en: 'to lie (down)', forms: ['liege', 'liegst', 'liegt', 'liegen', 'liegt', 'liegen'], pp: 'gelegen', aux: 'haben' },
-  essen: { en: 'to eat', forms: ['esse', 'isst', 'isst', 'essen', 'esst', 'essen'], pp: 'gegessen', aux: 'haben' },
+  essen: { en: 'to eat', forms: ['esse', 'isst', 'isst', 'essen', 'esst', 'essen'], prt: ['aß', 'aßest', 'aß', 'aßen', 'aßt', 'aßen'], pp: 'gegessen', aux: 'haben' },
   geben: { en: 'to give', forms: ['gebe', 'gibst', 'gibt', 'geben', 'gebt', 'geben'], pp: 'gegeben', aux: 'haben' },
   fliegen: { en: 'to fly', forms: ['fliege', 'fliegst', 'fliegt', 'fliegen', 'fliegt', 'fliegen'], pp: 'geflogen', aux: 'sein' },
-  bleiben: { en: 'to stay', forms: ['bleibe', 'bleibst', 'bleibt', 'bleiben', 'bleibt', 'bleiben'], pp: 'geblieben', aux: 'sein' },
-  stehen: { en: 'to stand', forms: ['stehe', 'stehst', 'steht', 'stehen', 'steht', 'stehen'], pp: 'gestanden', aux: 'haben' },
-  trinken: { en: 'to drink', forms: ['trinke', 'trinkst', 'trinkt', 'trinken', 'trinkt', 'trinken'], pp: 'getrunken', aux: 'haben' },
+  bleiben: { en: 'to stay', forms: ['bleibe', 'bleibst', 'bleibt', 'bleiben', 'bleibt', 'bleiben'], prt: ['blieb', 'bliebst', 'blieb', 'blieben', 'bliebt', 'blieben'], pp: 'geblieben', aux: 'sein' },
+  stehen: { en: 'to stand', forms: ['stehe', 'stehst', 'steht', 'stehen', 'steht', 'stehen'], prt: ['stand', 'standest', 'stand', 'standen', 'standet', 'standen'], pp: 'gestanden', aux: 'haben' },
+  trinken: { en: 'to drink', forms: ['trinke', 'trinkst', 'trinkt', 'trinken', 'trinkt', 'trinken'], prt: ['trank', 'trankst', 'trank', 'tranken', 'trankt', 'tranken'], pp: 'getrunken', aux: 'haben' },
   hören: { en: 'to hear / listen to', forms: ['höre', 'hörst', 'hört', 'hören', 'hört', 'hören'], pp: 'gehört', aux: 'haben' },
   scheinen: { en: 'to shine', forms: ['scheine', 'scheinst', 'scheint', 'scheinen', 'scheint', 'scheinen'], pp: 'geschienen', aux: 'haben' },
   kosten: { en: 'to cost', forms: ['koste', 'kostest', 'kostet', 'kosten', 'kostet', 'kosten'], pp: 'gekostet', aux: 'haben' },
@@ -66,15 +68,55 @@ Brezel.deck.addVerbs({
   fotografieren: { en: 'to take photos', forms: ['fotografiere', 'fotografierst', 'fotografiert', 'fotografieren', 'fotografiert', 'fotografieren'], pp: 'fotografiert', aux: 'haben' },
   sehen: { en: 'to see', forms: ['sehe', 'siehst', 'sieht', 'sehen', 'seht', 'sehen'], pp: 'gesehen', aux: 'haben' },
   // verbs with a prefix: separable (an-, auf-, aus-) and inseparable (be-, er-, ge-, über-)
-  anfangen: { en: 'to begin / start', forms: ['fange an', 'fängst an', 'fängt an', 'fangen an', 'fangt an', 'fangen an'], pp: 'angefangen', aux: 'haben' },
-  aufstehen: { en: 'to get up', forms: ['stehe auf', 'stehst auf', 'steht auf', 'stehen auf', 'steht auf', 'stehen auf'], pp: 'aufgestanden', aux: 'sein' },
+  anfangen: { en: 'to begin / start', forms: ['fange an', 'fängst an', 'fängt an', 'fangen an', 'fangt an', 'fangen an'], prt: ['fing an', 'fingst an', 'fing an', 'fingen an', 'fingt an', 'fingen an'], pp: 'angefangen', aux: 'haben' },
+  aufstehen: { en: 'to get up', forms: ['stehe auf', 'stehst auf', 'steht auf', 'stehen auf', 'steht auf', 'stehen auf'], prt: ['stand auf', 'standest auf', 'stand auf', 'standen auf', 'standet auf', 'standen auf'], pp: 'aufgestanden', aux: 'sein' },
   ausschalten: { en: 'to switch off', forms: ['schalte aus', 'schaltest aus', 'schaltet aus', 'schalten aus', 'schaltet aus', 'schalten aus'], pp: 'ausgeschaltet', aux: 'haben' },
   anrufen: { en: 'to call (on the phone)', forms: ['rufe an', 'rufst an', 'ruft an', 'rufen an', 'ruft an', 'rufen an'], pp: 'angerufen', aux: 'haben' },
-  beginnen: { en: 'to begin', forms: ['beginne', 'beginnst', 'beginnt', 'beginnen', 'beginnt', 'beginnen'], pp: 'begonnen', aux: 'haben' },
+  beginnen: { en: 'to begin', forms: ['beginne', 'beginnst', 'beginnt', 'beginnen', 'beginnt', 'beginnen'], prt: ['begann', 'begannst', 'begann', 'begannen', 'begannt', 'begannen'], pp: 'begonnen', aux: 'haben' },
   erwarten: { en: 'to expect', forms: ['erwarte', 'erwartest', 'erwartet', 'erwarten', 'erwartet', 'erwarten'], pp: 'erwartet', aux: 'haben' },
   übersetzen: { en: 'to translate', forms: ['übersetze', 'übersetzt', 'übersetzt', 'übersetzen', 'übersetzt', 'übersetzen'], pp: 'übersetzt', aux: 'haben' },
   gefallen: { en: 'to please (… gefällt mir = I like …)', forms: ['gefalle', 'gefällst', 'gefällt', 'gefallen', 'gefallt', 'gefallen'], pp: 'gefallen', aux: 'haben' },
   berichten: { en: 'to report', forms: ['berichte', 'berichtest', 'berichtet', 'berichten', 'berichtet', 'berichten'], pp: 'berichtet', aux: 'haben' },
+  // Kapitel 1, A8–A10 + the "Heute → Gestern" worksheet (Begegnungen A2+ p. 11–13)
+  fragen: { en: 'to ask', forms: ['frage', 'fragst', 'fragt', 'fragen', 'fragt', 'fragen'], prt: ['fragte', 'fragtest', 'fragte', 'fragten', 'fragtet', 'fragten'], pp: 'gefragt', aux: 'haben' },
+  kaufen: { en: 'to buy', forms: ['kaufe', 'kaufst', 'kauft', 'kaufen', 'kauft', 'kaufen'], prt: ['kaufte', 'kauftest', 'kaufte', 'kauften', 'kauftet', 'kauften'], pp: 'gekauft', aux: 'haben' },
+  kopieren: { en: 'to copy', forms: ['kopiere', 'kopierst', 'kopiert', 'kopieren', 'kopiert', 'kopieren'], prt: ['kopierte', 'kopiertest', 'kopierte', 'kopierten', 'kopiertet', 'kopierten'], pp: 'kopiert', aux: 'haben' },
+  besuchen: { en: 'to visit / attend', forms: ['besuche', 'besuchst', 'besucht', 'besuchen', 'besucht', 'besuchen'], prt: ['besuchte', 'besuchtest', 'besuchte', 'besuchten', 'besuchtet', 'besuchten'], pp: 'besucht', aux: 'haben' },
+  backen: { en: 'to bake', forms: ['backe', 'backst', 'backt', 'backen', 'backt', 'backen'], prt: ['backte', 'backtest', 'backte', 'backten', 'backtet', 'backten'], pp: 'gebacken', aux: 'haben' },
+  bieten: { en: 'to offer', forms: ['biete', 'bietest', 'bietet', 'bieten', 'bietet', 'bieten'], prt: ['bot', 'botest', 'bot', 'boten', 'botet', 'boten'], pp: 'geboten', aux: 'haben' },
+  nehmen: { en: 'to take', forms: ['nehme', 'nimmst', 'nimmt', 'nehmen', 'nehmt', 'nehmen'], prt: ['nahm', 'nahmst', 'nahm', 'nahmen', 'nahmt', 'nahmen'], pp: 'genommen', aux: 'haben' },
+  treffen: { en: 'to meet', forms: ['treffe', 'triffst', 'trifft', 'treffen', 'trefft', 'treffen'], prt: ['traf', 'trafst', 'traf', 'trafen', 'traft', 'trafen'], pp: 'getroffen', aux: 'haben' },
+  öffnen: { en: 'to open', forms: ['öffne', 'öffnest', 'öffnet', 'öffnen', 'öffnet', 'öffnen'], prt: ['öffnete', 'öffnetest', 'öffnete', 'öffneten', 'öffnetet', 'öffneten'], pp: 'geöffnet', aux: 'haben' },
+  schenken: { en: 'to give (as a present)', forms: ['schenke', 'schenkst', 'schenkt', 'schenken', 'schenkt', 'schenken'], prt: ['schenkte', 'schenktest', 'schenkte', 'schenkten', 'schenktet', 'schenkten'], pp: 'geschenkt', aux: 'haben' },
+  senden: { en: 'to send', forms: ['sende', 'sendest', 'sendet', 'senden', 'sendet', 'senden'], prt: ['sendete', 'sendetest', 'sendete', 'sendeten', 'sendetet', 'sendeten'], pp: 'gesendet', aux: 'haben' },
+  gewinnen: { en: 'to win', forms: ['gewinne', 'gewinnst', 'gewinnt', 'gewinnen', 'gewinnt', 'gewinnen'], prt: ['gewann', 'gewannst', 'gewann', 'gewannen', 'gewannt', 'gewannen'], pp: 'gewonnen', aux: 'haben' },
+  unterschreiben: { en: 'to sign', forms: ['unterschreibe', 'unterschreibst', 'unterschreibt', 'unterschreiben', 'unterschreibt', 'unterschreiben'], pp: 'unterschrieben', aux: 'haben' },
+  abholen: { en: 'to pick up', forms: ['hole ab', 'holst ab', 'holt ab', 'holen ab', 'holt ab', 'holen ab'], pp: 'abgeholt', aux: 'haben' },
+  anschauen: { en: 'to look at / watch', forms: ['schaue an', 'schaust an', 'schaut an', 'schauen an', 'schaut an', 'schauen an'], pp: 'angeschaut', aux: 'haben' },
+  einladen: { en: 'to invite', forms: ['lade ein', 'lädst ein', 'lädt ein', 'laden ein', 'ladet ein', 'laden ein'], pp: 'eingeladen', aux: 'haben' },
+  vorlesen: { en: 'to read aloud', forms: ['lese vor', 'liest vor', 'liest vor', 'lesen vor', 'lest vor', 'lesen vor'], pp: 'vorgelesen', aux: 'haben' },
+  hereinkommen: { en: 'to come in', forms: ['komme herein', 'kommst herein', 'kommt herein', 'kommen herein', 'kommt herein', 'kommen herein'], pp: 'hereingekommen', aux: 'sein' },
+  wehtun: { en: 'to hurt', forms: ['tue weh', 'tust weh', 'tut weh', 'tun weh', 'tut weh', 'tun weh'], pp: 'wehgetan', aux: 'haben' },
+  aufhören: { en: 'to stop / finish', forms: ['höre auf', 'hörst auf', 'hört auf', 'hören auf', 'hört auf', 'hören auf'], prt: ['hörte auf', 'hörtest auf', 'hörte auf', 'hörten auf', 'hörtet auf', 'hörten auf'], pp: 'aufgehört', aux: 'haben' },
+  // reflexive verbs, D2 verb list (p. 33) — listed without "sich"
+  anziehen: { en: 'sich anziehen = to get dressed', forms: ['ziehe an', 'ziehst an', 'zieht an', 'ziehen an', 'zieht an', 'ziehen an'], prt: ['zog an', 'zogst an', 'zog an', 'zogen an', 'zogt an', 'zogen an'], pp: 'angezogen', aux: 'haben' },
+  ärgern: { en: 'sich ärgern = to be annoyed', forms: ['ärgere', 'ärgerst', 'ärgert', 'ärgern', 'ärgert', 'ärgern'], prt: ['ärgerte', 'ärgertest', 'ärgerte', 'ärgerten', 'ärgertet', 'ärgerten'], pp: 'geärgert', aux: 'haben' },
+  bedanken: { en: 'sich bedanken = to say thank you', forms: ['bedanke', 'bedankst', 'bedankt', 'bedanken', 'bedankt', 'bedanken'], prt: ['bedankte', 'bedanktest', 'bedankte', 'bedankten', 'bedanktet', 'bedankten'], pp: 'bedankt', aux: 'haben' },
+  befinden: { en: 'sich befinden = to be located', forms: ['befinde', 'befindest', 'befindet', 'befinden', 'befindet', 'befinden'], prt: ['befand', 'befandest', 'befand', 'befanden', 'befandet', 'befanden'], pp: 'befunden', aux: 'haben' },
+  beschweren: { en: 'sich beschweren = to complain', forms: ['beschwere', 'beschwerst', 'beschwert', 'beschweren', 'beschwert', 'beschweren'], prt: ['beschwerte', 'beschwertest', 'beschwerte', 'beschwerten', 'beschwertet', 'beschwerten'], pp: 'beschwert', aux: 'haben' },
+  beeilen: { en: 'sich beeilen = to hurry', forms: ['beeile', 'beeilst', 'beeilt', 'beeilen', 'beeilt', 'beeilen'], prt: ['beeilte', 'beeiltest', 'beeilte', 'beeilten', 'beeiltet', 'beeilten'], pp: 'beeilt', aux: 'haben' },
+  duschen: { en: 'sich duschen = to have a shower', forms: ['dusche', 'duschst', 'duscht', 'duschen', 'duscht', 'duschen'], prt: ['duschte', 'duschtest', 'duschte', 'duschten', 'duschtet', 'duschten'], pp: 'geduscht', aux: 'haben' },
+  erinnern: { en: 'sich erinnern = to remember', forms: ['erinnere', 'erinnerst', 'erinnert', 'erinnern', 'erinnert', 'erinnern'], prt: ['erinnerte', 'erinnertest', 'erinnerte', 'erinnerten', 'erinnertet', 'erinnerten'], pp: 'erinnert', aux: 'haben' },
+  erkälten: { en: 'sich erkälten = to catch a cold', forms: ['erkälte', 'erkältest', 'erkältet', 'erkälten', 'erkältet', 'erkälten'], prt: ['erkältete', 'erkältetest', 'erkältete', 'erkälteten', 'erkältetet', 'erkälteten'], pp: 'erkältet', aux: 'haben' },
+  freuen: { en: 'sich freuen = to be glad', forms: ['freue', 'freust', 'freut', 'freuen', 'freut', 'freuen'], prt: ['freute', 'freutest', 'freute', 'freuten', 'freutet', 'freuten'], pp: 'gefreut', aux: 'haben' },
+  föhnen: { en: 'sich föhnen = to blow-dry your hair', forms: ['föhne', 'föhnst', 'föhnt', 'föhnen', 'föhnt', 'föhnen'], prt: ['föhnte', 'föhntest', 'föhnte', 'föhnten', 'föhntet', 'föhnten'], pp: 'geföhnt', aux: 'haben' },
+  interessieren: { en: 'sich interessieren für = to be interested in', forms: ['interessiere', 'interessierst', 'interessiert', 'interessieren', 'interessiert', 'interessieren'], prt: ['interessierte', 'interessiertest', 'interessierte', 'interessierten', 'interessiertet', 'interessierten'], pp: 'interessiert', aux: 'haben' },
+  kämmen: { en: 'sich kämmen = to comb your hair', forms: ['kämme', 'kämmst', 'kämmt', 'kämmen', 'kämmt', 'kämmen'], prt: ['kämmte', 'kämmtest', 'kämmte', 'kämmten', 'kämmtet', 'kämmten'], pp: 'gekämmt', aux: 'haben' },
+  schminken: { en: 'sich schminken = to put on make-up', forms: ['schminke', 'schminkst', 'schminkt', 'schminken', 'schminkt', 'schminken'], prt: ['schminkte', 'schminktest', 'schminkte', 'schminkten', 'schminktet', 'schminkten'], pp: 'geschminkt', aux: 'haben' },
+  streiten: { en: 'sich streiten = to argue', forms: ['streite', 'streitest', 'streitet', 'streiten', 'streitet', 'streiten'], prt: ['stritt', 'strittest', 'stritt', 'stritten', 'strittet', 'stritten'], pp: 'gestritten', aux: 'haben' },
+  unterhalten: { en: 'sich unterhalten = to have a chat', forms: ['unterhalte', 'unterhältst', 'unterhält', 'unterhalten', 'unterhaltet', 'unterhalten'], prt: ['unterhielt', 'unterhieltest', 'unterhielt', 'unterhielten', 'unterhieltet', 'unterhielten'], pp: 'unterhalten', aux: 'haben' },
+  verlieben: { en: 'sich verlieben in = to fall in love with', forms: ['verliebe', 'verliebst', 'verliebt', 'verlieben', 'verliebt', 'verlieben'], prt: ['verliebte', 'verliebtest', 'verliebte', 'verliebten', 'verliebtet', 'verliebten'], pp: 'verliebt', aux: 'haben' },
+  vorstellen: { en: 'sich vorstellen = to introduce yourself', forms: ['stelle vor', 'stellst vor', 'stellt vor', 'stellen vor', 'stellt vor', 'stellen vor'], prt: ['stellte vor', 'stelltest vor', 'stellte vor', 'stellten vor', 'stelltet vor', 'stellten vor'], pp: 'vorgestellt', aux: 'haben' },
 });
 
 Brezel.deck.addFamilies([
@@ -107,6 +149,12 @@ Brezel.deck.addFamilies([
   ['Student', 'Studenten', 'Studentin'],
   ['Woche', 'Wochen'],
   ['Monat', 'Monate'],
+  // reflexive pronouns: Polish says "się" for everyone, German changes per person
+  ['mich', 'dich', 'sich', 'mir', 'dir', 'uns', 'euch'],
+  ['waren', 'wären'],
+  ['hatte', 'hätte', 'hatten', 'hätten'],
+  ['schon', 'schön'],
+  ['Fach', 'Fächer', 'Fächern'],
 ]);
 
 Brezel.deck.addProperNouns([

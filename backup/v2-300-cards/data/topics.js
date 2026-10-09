@@ -26,7 +26,7 @@ Brezel.deck.addTopics([
     de: 'Perfekt',
     icon: '⏪',
     tip:
-      'Perfekt = **Hilfsverb** (*haben/sein*) in position 2 + **Partizip II at the end**. Use **sein** for a change of place or state — *Wechsel von Ort oder Zustand* (*gegangen, gefahren, aufgestanden, umgezogen*) — and for *sein, bleiben, geboren*. **haben** for all other verbs. Regular: **ge…t** (*gefragt*); irregular: **ge…en**, often with a new vowel (*getrunken*). Verbs in **-ieren** and verbs starting with **be-/ver-/ent-** take no ge- (*studiert, besucht, vereinbart*). Separable verbs put ge in the middle (*ab**ge**schlossen*).',
+      'Perfekt = **haben/sein** in position 2 + **participle at the end**. Use **sein** for movement or change of place (*gegangen, gefahren, umgezogen*) and for *geboren*. Verbs in **-ieren** and verbs starting with **be-/ver-/ent-** take no ge- (*studiert, bekommen, vereinbart*). Separable verbs put ge in the middle (*ab**ge**schlossen*).',
   },
   {
     id: 'cases',
@@ -83,38 +83,6 @@ Brezel.deck.addTopics([
     icon: '✂️',
     tip:
       '**Separable**: the prefix is a real word (*an, auf, aus, ein, fern, um*). In the present it goes to the **end**: *Helga **steht** jeden Tag um sieben Uhr **auf**.* Perfekt: **ge** in the middle (*an**ge**rufen, auf**ge**standen*). **Inseparable**: the prefix can’t stand alone (*be-, er-, ver-, ge-*), so the verb stays one word (*Die Bluse **gefällt** mir*) and the participle has **no ge-** (*beantwortet*). **unter- / über-** are usually inseparable: *ich unterrichte, ich übersetze*.',
-  },
-  {
-    id: 'tenses',
-    name: 'Tenses & grammar terms',
-    de: 'Präsens, Perfekt, Präteritum',
-    icon: '🧠',
-    tip:
-      '**Präsens** = now, habits and plans (*Morgen fahre ich nach Wien*). With **seit** it means *have been … since*, exactly like Polish *od*: *Ich wohne seit 2016 hier* = *Mieszkam tu od 2016*. **Perfekt** = the past, mostly **spoken**: **Hilfsverb** (*haben/sein*) + **Partizip II**. **Präteritum** = the same past, mostly **written**, one word: *ich trank, ich ging*. German has no *-ing* form: *ich trinke* = I drink / I am drinking (Polish *piję*).',
-  },
-  {
-    id: 'praet',
-    name: 'Simple past',
-    de: 'Präteritum',
-    icon: '📜',
-    tip:
-      'The **written** past (stories, reports, news). When speaking, use the Perfekt — except **war** and **hatte**, which are normal in speech too. Regular verbs add **-te** (*kaufte, ärgerte sich*; after -t/-d: *arbeit**ete**, erkält**ete***). Irregular verbs change the vowel and add nothing: *stand, fing, aß, bot, blieb*. **ich = er/sie/es**: *ich war, er war*. Endings: –, -st, –, -en, -t, -en. A separable prefix goes to the end: *Der Unterricht **fing** um acht **an**.*',
-  },
-  {
-    id: 'reflexive',
-    name: 'Reflexive verbs',
-    de: 'sich freuen, sich anziehen',
-    icon: '🪞',
-    tip:
-      'The action goes back to the subject, like Polish **się**. But Polish says *się* for everyone; German changes it: ich **mich**, du **dich**, er/sie/es **sich**, wir **uns**, ihr **euch**, sie/Sie **sich**. It comes right after the conjugated verb (*Ich **ziehe mich** an*); after inversion it follows the pronoun (*Morgens dusche **ich mich***). Perfekt always with **haben**: *Ich **habe mich** umgezogen* (changed clothes) ≠ *Ich **bin** umgezogen* (moved house).',
-  },
-  {
-    id: 'pastq',
-    name: 'Talking about the past',
-    de: 'Haben Sie schon einmal …?',
-    icon: '💬',
-    tip:
-      'Yes/no question: **Hilfsverb first**, participle at the end: *Hast du schon einmal Brot gebacken?* W-question: W-word + Hilfsverb + subject … participle: *Wann **sind** Sie **aufgestanden**?* Answer with the same Hilfsverb: *Ja, ich habe schon einmal / oft …* · *Nein, ich habe **noch nie** …* Present → past: *Heute trinke ich Tee.* → *Was **hast** du gestern **getrunken**?* → *Gestern **habe** ich Kaffee **getrunken**.*',
   },
   {
     id: 'vocab',

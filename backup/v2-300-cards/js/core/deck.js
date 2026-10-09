@@ -36,7 +36,7 @@
       for (const c of list) this.rawCards.push(Object.assign({ topic: topicId }, c));
     },
 
-    /** verbs: { wohnen: { en, forms: [6 present forms], prt?: [6 Präteritum forms], pp, aux } } */
+    /** verbs: { wohnen: { en, forms: [6 present forms], pp, aux } } */
     addVerbs(obj) {
       for (const [inf, v] of Object.entries(obj)) this.verbs[inf] = Object.assign({ inf }, v);
     },
@@ -79,8 +79,8 @@
       };
       this.families.forEach((f, i) => add(f, 'f' + i));
       for (const v of Object.values(this.verbs)) {
-        const forms = (v.forms || []).concat(v.prt || []);
-        // separable forms ("kaufe ein", "fing an"): the conjugated part alone is a member too
+        const forms = v.forms || [];
+        // separable forms ("kaufe ein"): the conjugated part alone is a member too
         add([v.inf, v.pp, ...forms, ...forms.map((f) => f.split(' ')[0])], 'v:' + v.inf);
       }
       this._familyIndex = idx;
