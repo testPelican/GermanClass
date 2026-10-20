@@ -14,17 +14,20 @@
  *   lock(res)  -> void                       // freeze + colour the answer after checking
  *   key?(e)    -> true if the key was handled
  *   focus?()   -> focus the main input
+ *   glossTexts?() -> question text for the Glossary, if more than questionTexts(card) is shown
  * }
  * api = { changed(ready), submit(), sfx(name), speak(text), card }
  *
  * Common card fields: id, type, prompt (instruction), q (German text shown in the
  * speech bubble, "___" marks a blank), say (text for the speaker button),
- * en (English meaning, shown small), explain (the "why", shown after answering).
+ * en (English meaning, shown small), explain (the "why", shown after answering),
+ * rule (id from data/rules.js, shown in the Glossary), asksRule (the rule gives the answer away),
+ * gloss (word translations: see js/core/gloss.js).
  */
 (function () {
   'use strict';
   const B = window.Brezel;
-  const { h, md, show } = B.util;
+  const { h, md, show, norm } = B.util;
 
   const types = Object.create(null);
   const BLANK = /_{3,}/;
@@ -70,7 +73,11 @@
   function header(card, fallback, opts = {}) {
     const wrap = h('div', { class: 'ex-head' });
     wrap.append(h('h2', { class: 'ex-title', html: md(card.prompt || fallback) }));
-    if (card.q && !opts.noBubble) wrap.append(bubble(card.q, { say: card.say, big: opts.big }));
+    if (card.q && !opts.noBubble) {
+      const b = bubble(card.q, { say: card.say, big: opts.big });
+      B.gloss.decorate(b.querySelector('.bubble-text'), card);
+      wrap.append(b);
+    }
     if (card.en && !opts.noEn) wrap.append(h('p', { class: 'ex-en' }, '“' + card.en + '”'));
     if (card.hint) wrap.append(h('p', { class: 'ex-hint' }, h('span', { 'aria-hidden': 'true' }, '💡 '), show(card.hint)));
     return wrap;
@@ -133,6 +140,39 @@
 
   const asList = (x) => (Array.isArray(x) ? x : x == null ? [] : [x]);
 
+  /** Every answer option and accepted answer of a card. */
+  function choices(c) {
+    const gaps = c.type === 'gap' && c.q ? [...c.q.matchAll(/\{([^}]+)\}/g)].flatMap((m) => m[1].split('|')) : [];
+    return [
+      c.correct, ...asList(c.wrong), ...asList(c.options), ...asList(c.extra), c.fix,
+      ...(typeof c.answer === 'string' || Array.isArray(c.answer) ? asList(c.answer) : []), ...asList(c.answers),
+      ...(c.pairs || []).flat(), ...(c.buckets || []).flatMap((b) => b.items || []), ...gaps,
+    ].filter((x) => typeof x === 'string');
+  }
+
+  /**
+   * The German the learner sees before answering — the only text the Glossary translates:
+   * emphasised words in the instruction (unless they are answer options), the bubble with
+   * its blanks and gaps left empty, the hint and a fixed sentence start.
+   */
+  function questionTexts(card) {
+    // a blank stays as "_", so the word after it doesn't count as the start of a sentence
+    const plain = (s) => String(s).split(BLANK).map(show).join(' _ ');
+    const out = [];
+    // short options ("ist", "hat gelesen") must not be translated; a full answer sentence may repeat prompt words
+    const opts = choices(card).map(norm).filter((o) => o.split(' ').length <= 3).map((o) => ` ${o} `);
+    for (const m of String(card.prompt || '').matchAll(/\*\*(.+?)\*\*|\*(.+?)\*/g)) {
+      const seg = m[1] || m[2];
+      const n = norm(seg.replace(BLANK, ' '));
+      if (n && !opts.some((o) => o.includes(` ${n} `))) out.push({ text: plain(seg), loose: true });
+    }
+    if (card.q) out.push({ text: plain(card.q.replace(/\{[^}]+\}/g, '___')) });
+    // a hint may be English ("as") or carry a translation: "aufhören (to stop / finish)"
+    if (card.hint) out.push({ text: plain(String(card.hint).replace(/\s*\([^)]*\)/g, '')), loose: true });
+    if (card.start) out.push({ text: plain(card.start) });
+    return out;
+  }
+
   /** Validation helper: collect messages when conditions fail. */
   function need(errs, cond, msg) {
     if (!cond) errs.push(msg);
@@ -154,6 +194,8 @@
     umlautBar,
     typedNote,
     asList,
+    choices,
+    questionTexts,
     need,
   };
 })();

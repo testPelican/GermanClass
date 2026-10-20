@@ -81,6 +81,9 @@
       let results = [];
       return {
         focus: () => inputs[0] && inputs[0].el.focus({ preventScroll: true }),
+        glossTexts: () => B.ex.questionTexts(card).concat(
+          card.verb ? [{ text: card.verb }] : [],
+          rows.flatMap((r, i) => [{ text: show(r[0]) }].concat(blanks.has(i) ? [] : [{ text: show(r[1]) }]))),
         check() {
           results = inputs.map((x) => {
             const given = x.el.value.trim();

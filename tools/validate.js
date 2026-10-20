@@ -77,6 +77,57 @@ for (const t of deck.topics) console.log(`  ${t.icon}  ${t.name.padEnd(28)} ${by
 console.log('\nBy exercise type:');
 for (const [k, v] of Object.entries(byType).sort((a, b) => b[1] - a[1])) console.log(`  ${B.ex.label(k).padEnd(30)} ${v}`);
 
+// --- Glossary: rules and word translations ------------------------------------------
+console.log('\nGlossary:');
+const { norm, show } = B.util;
+const words = (s) => ` ${norm(String(s || '').replace(/\*+/g, ''))} `;
+let glossErrors = 0;
+const gfail = (msg) => {
+  glossErrors++;
+  fail(msg);
+};
+for (const c of deck.cards) {
+  const ids = [].concat(c.rule || []);
+  if (!ids.length) gfail(`${c.id}: no "rule" (see data/rules.js)`);
+  for (const id of ids) if (!deck.ruleMap[id]) gfail(`${c.id}: unknown rule "${id}"`);
+
+  // Every word of the question needs a translation. A table shows a random set of cells, so check them all.
+  const texts = B.ex.questionTexts(c);
+  if (c.type === 'table') {
+    if (c.verb) texts.push({ text: c.verb });
+    for (const r of c.verb ? deck.verbRows(c.verb) : c.rows) texts.push({ text: show(r[0]) }, { text: show(r[1]) });
+  }
+  const missing = [...new Set(B.gloss.missing(c, texts))];
+  if (missing.length) gfail(`${c.id}: no translation for ${missing.join(', ')} (add to data/glossary.js)`);
+
+  // A translation must not say what an English answer option says (cards that ask for a meaning need gloss: false).
+  if (c.type === 'mc') {
+    const en = B.gloss.entries(c, texts).map((r) => words(r.en)).join('|');
+    const answer = norm(c.correct).replace(/^(to|the|a|an) /, '');
+    if (answer.length > 2 && en.includes(` ${answer} `)) gfail(`${c.id}: a translation gives away the answer "${c.correct}" (add gloss: false)`);
+  }
+
+  // The rule must not contain an answer sentence of the card — unless it stays folded (asksRule: true).
+  if (!c.asksRule) {
+    const rule = deck.rulesFor(c).map((r) => words([r.title, r.text, ...(r.points || [])].join(' . '))).join(' ');
+    const filled = (a) => (c.q && B.ex.BLANK.test(c.q) ? c.q.replace(B.ex.BLANK, a) : null);
+    const answers = [
+      ...B.ex.choices(c).filter((a) => c.type !== 'mc' || a === c.correct),
+      ...(c.type === 'type' ? B.ex.asList(c.answer).map(filled) : []),
+      c.type === 'mc' ? filled(c.correct) : null,
+      c.type === 'gap' ? c.q.replace(/\{([^}|]+)[^}]*\}/g, '$1') : null,
+      c.type === 'spot' ? c.fixed || c.q.replace(c.wrong, c.correct) : null,
+      ...(c.type === 'table' ? (c.verb ? deck.verbRows(c.verb) : c.rows).map((r) => r[1]) : []),
+    ].filter(Boolean).map((a) => norm(show(a))).filter((a) => a.includes(' '));
+    const hit = answers.find((a) => rule.includes(` ${a} `));
+    if (hit) gfail(`${c.id}: the rule text contains the answer "${hit}" (change the example, or add asksRule: true)`);
+  }
+}
+const folded = deck.cards.filter((c) => c.asksRule).length;
+const hidden = deck.cards.filter((c) => c.gloss === false).length;
+if (!glossErrors) console.log(`  ✓ every card has a rule (${deck.rules.length} rules; ${folded} cards keep it folded)`);
+if (!glossErrors) console.log(`  ✓ every question word has a translation (${hidden} meaning cards hide them)`);
+
 // --- typed-answer checker -------------------------------------------------------
 console.log('\nChecker:');
 const cases = [

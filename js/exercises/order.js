@@ -114,12 +114,12 @@
         });
       }
 
-      root.append(
+      root.append(...[
         B.ex.header(card, 'Put the words in the right order', { noEn: true }),
         card.en ? h('div', { class: 'order-en' }, h('span', { class: 'order-en-label' }, 'Translate'), ' “' + card.en + '”') : null,
         h('div', { class: 'order-stage' }, answerEl),
-        bankEl
-      );
+        bankEl,
+      ].filter(Boolean)); // append() would print a null as the text "null"
 
       function built() {
         return startWords.concat(placed().map((el) => el._t.w));

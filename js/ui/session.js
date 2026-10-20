@@ -3,7 +3,8 @@
  *  - The queue is every not-yet-mastered card (optionally one topic), shuffled, cut to the session size.
  *  - A wrong answer shows the correct one and puts the card back at a random later position.
  *  - Only correct answers count as mastered (practice mode never changes mastery).
- * Keys: Enter = check / continue, 1–6 = choose, Esc = quit.
+ * The 📖 Glossary button (or G) shows the question's words in English and the card's rule.
+ * Keys: Enter = check / continue, 1–6 = choose, G = Glossary, Esc = quit.
  */
 (function () {
   'use strict';
@@ -70,10 +71,13 @@
     const stage = h('main', { class: 's-stage' });
     const skipBtn = h('button', { class: 'btn btn-ghost skip-btn', type: 'button' }, 'I don’t know');
     skipBtn.addEventListener('click', () => check(true));
+    const glossBtn = h('button', { class: 'btn btn-outline gloss-btn', type: 'button', title: 'Words and rule (G)' },
+      h('span', { 'aria-hidden': 'true' }, '📖'), h('span', { class: 'gloss-btn-label' }, 'Glossary'));
+    glossBtn.addEventListener('click', () => openGlossary());
     const mainBtn = h('button', { class: 'btn btn-primary main-btn', type: 'button' }, 'Check');
     mainBtn.addEventListener('click', () => (phase === 'feedback' ? next() : check(false)));
     const feedback = h('div', { class: 'feedback', 'aria-live': 'polite' });
-    const foot = h('footer', { class: 's-foot' }, feedback, h('div', { class: 's-foot-inner' }, skipBtn, mainBtn));
+    const foot = h('footer', { class: 's-foot' }, feedback, h('div', { class: 's-foot-inner' }, skipBtn, glossBtn, mainBtn));
 
     root.append(h('div', { class: 'session' + (practice ? ' is-practice' : '') },
       h('header', { class: 's-top' }, quitBtn, bar, totalPill),
@@ -99,6 +103,7 @@
 
     // --- flow ------------------------------------------------------------------------
     function showCard(animate) {
+      B.gloss.hideTip();
       card = queue[idx];
       const def = B.ex.get(card.type);
       const topic = B.deck.topicMap[card.topic];
@@ -144,10 +149,16 @@
       else if (document.activeElement && document.activeElement !== document.body && !stage.contains(document.activeElement)) document.activeElement.blur();
     }
 
+    function openGlossary() {
+      if (phase !== 'answer' || introEl) return;
+      B.glossary.open(card, ctrl && ctrl.glossTexts ? ctrl.glossTexts() : B.ex.questionTexts(card));
+    }
+
     function check(skipped) {
       if (phase !== 'answer' || introEl) return;
       if (!skipped && !ready) return;
       phase = 'feedback';
+      B.gloss.hideTip();
       const ms = performance.now() - shownAt;
       let res = ctrl.check() || { ok: false };
       if (skipped) res = { ok: false, given: '', skipped: true };
@@ -253,6 +264,7 @@
         mainBtn.className = 'btn btn-primary main-btn';
         mainBtn.disabled = !ready;
         skipBtn.hidden = false;
+        glossBtn.hidden = false;
         return;
       }
       foot.classList.add('has-feedback', mode === 'good' ? 'is-good' : 'is-bad');
@@ -260,6 +272,7 @@
       mainBtn.className = 'btn main-btn ' + (mode === 'good' ? 'btn-primary' : 'btn-danger');
       mainBtn.disabled = false;
       skipBtn.hidden = true;
+      glossBtn.hidden = true;
       mainBtn.focus({ preventScroll: true });
     }
 
@@ -378,7 +391,8 @@
         }
         if (e.key === 'Escape') {
           e.preventDefault();
-          quit();
+          if (B.gloss.tipOpen()) B.gloss.hideTip();
+          else quit();
           return;
         }
         if (e.key === 'Enter' && e.repeat) {
@@ -393,6 +407,11 @@
           return;
         }
         if (phase !== 'answer') return;
+        if ((e.key === 'g' || e.key === 'G') && !/^(INPUT|TEXTAREA)$/.test(e.target.tagName)) {
+          e.preventDefault();
+          openGlossary();
+          return;
+        }
         if (ctrl && ctrl.key && ctrl.key(e)) {
           e.preventDefault();
           return;
@@ -405,6 +424,7 @@
       onBack: () => (introEl ? dismissIntro() : quit()),
       destroy() {
         clearTimeout(introTimer);
+        B.gloss.hideTip();
         if (B.audio.canSpeak) window.speechSynthesis.cancel();
       },
     };

@@ -86,11 +86,47 @@
     }, ms);
   }
 
-  // --- confirm dialog -----------------------------------------------------------
+  // --- dialogs ------------------------------------------------------------------
   let dialogSeq = 0;
+
+  /** Show a .modal box over the screen. Esc and the backdrop close it; Tab stays inside. Returns close(value). */
+  function modal(box, { initial, onClose }) {
+    const prev = document.activeElement;
+    const overlay = h('div', { class: 'modal-backdrop' }, box);
+    let open = true;
+
+    function close(value) {
+      if (!open) return;
+      open = false;
+      modalOpen = false;
+      document.removeEventListener('keydown', onKey, true);
+      overlay.classList.add('out');
+      setTimeout(() => overlay.remove(), 200);
+      if (prev && prev.focus && prev.isConnected) prev.focus({ preventScroll: true });
+      onClose(value);
+    }
+    function onKey(e) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        close(false);
+      } else if (e.key === 'Tab') {
+        e.preventDefault();
+        const els = Array.from(box.querySelectorAll('button, [tabindex="0"]')).filter((el) => !el.disabled && el.offsetParent !== null);
+        if (!els.length) return;
+        const i = els.indexOf(document.activeElement);
+        els[(i + (e.shiftKey ? -1 : 1) + els.length) % els.length].focus();
+      }
+    }
+    overlay.addEventListener('click', (e) => e.target === overlay && close(false));
+    document.addEventListener('keydown', onKey, true);
+    modalOpen = true;
+    document.body.append(overlay);
+    if (initial) initial.focus({ preventScroll: true });
+    return close;
+  }
+
   function confirm({ title, text, ok = 'OK', cancel = 'Cancel', danger = false }) {
     return new Promise((resolve) => {
-      const prev = document.activeElement;
       const id = 'dlg-' + ++dialogSeq;
       const okBtn = h('button', { type: 'button', class: 'btn ' + (danger ? 'btn-danger' : 'btn-primary') }, ok);
       const cancelBtn = h('button', { type: 'button', class: 'btn btn-outline' }, cancel);
@@ -99,32 +135,18 @@
         h('h2', { id, class: 'modal-title' }, title),
         text ? h('p', { class: 'modal-text' }, text) : null,
         h('div', { class: 'modal-actions' }, cancelBtn, okBtn));
-      const overlay = h('div', { class: 'modal-backdrop' }, box);
-
-      function close(value) {
-        modalOpen = false;
-        document.removeEventListener('keydown', onKey, true);
-        overlay.classList.add('out');
-        setTimeout(() => overlay.remove(), 200);
-        if (prev && prev.focus && prev.isConnected) prev.focus({ preventScroll: true });
-        resolve(value);
-      }
-      function onKey(e) {
-        if (e.key === 'Escape') {
-          e.preventDefault();
-          close(false);
-        } else if (e.key === 'Tab') {
-          e.preventDefault();
-          (document.activeElement === okBtn ? cancelBtn : okBtn).focus();
-        }
-      }
+      const close = modal(box, { initial: danger ? cancelBtn : okBtn, onClose: resolve });
       okBtn.addEventListener('click', () => close(true));
       cancelBtn.addEventListener('click', () => close(false));
-      overlay.addEventListener('click', (e) => e.target === overlay && close(false));
-      document.addEventListener('keydown', onKey, true);
-      modalOpen = true;
-      document.body.append(overlay);
-      (danger ? cancelBtn : okBtn).focus({ preventScroll: true });
+    });
+  }
+
+  /** A dialog with any content (the Glossary): build(close) returns the .modal box. Resolves when it closes. */
+  function sheet(build) {
+    return new Promise((resolve) => {
+      let close = null;
+      const box = build((v) => close && close(v));
+      close = modal(box, { initial: box.querySelector('[data-autofocus]'), onClose: resolve });
     });
   }
 
@@ -156,6 +178,7 @@
     go,
     toast,
     confirm,
+    sheet,
     confetti,
     applyTheme,
     toggleTheme,

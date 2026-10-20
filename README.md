@@ -34,6 +34,26 @@ keeps its own progress.
   per topic, first-try accuracy per exercise type and accuracy per session.
   Every chart can be switched to a table.
 
+### Word translations and the Glossary
+
+- Words in the speech bubble (and in fill-the-gaps sentences) have **dots
+  underneath**. Hover over a word, or tap it on a phone, and a small bubble
+  shows its English meaning. Words that belong together light up together:
+  *noch nie*, or a split verb such as *stehe … auf*.
+- The **📖 Glossary** button, between *I don't know* and *Check*, lists every
+  German word in the question with its meaning (and its dictionary form, e.g.
+  *ist* → *sein*), followed by the rule the card practises.
+- The Glossary can't give the answer away:
+  - It only translates what the question shows, in the form it is written.
+    Answer choices (options, chips, tiles, pairs, items to sort) are never
+    translated.
+  - Verb forms are translated without the person (*wohnt* = "live(s)").
+  - Cards that ask what a word means (*What does glücklich mean?*) hide
+    the translations.
+  - When the rule itself is the answer (true/false statements about grammar,
+    "Why is it *studiert*…?", a table of *sein*), the rule stays folded until
+    you press **Show the rule anyway**.
+
 ### The typo rule (typed answers)
 
 - **One wrong letter** (missing, extra, swapped or different) counts as correct,
@@ -57,7 +77,8 @@ The typo allowance never lets wrong grammar through, so these are marked wrong:
 | `1`–`4` | Pick a multiple-choice option |
 | `1`/`T`, `2`/`F` | True / False |
 | `Backspace` | Sentence builder: take back the last word |
-| `Esc` | Quit the session |
+| `G` | Open the Glossary (`Enter` or `Esc` closes it) |
+| `Esc` | Close a word bubble, or quit the session |
 
 ## Adding cards
 
@@ -67,6 +88,7 @@ Cards live in `data/cards/*.js`. Each file adds cards to one topic:
 Brezel.deck.addCards('present', [
   {
     id: 'pr-99', type: 'type',          // unique id + exercise type
+    rule: 'vowel-change',               // the rule shown in the Glossary (data/rules.js)
     prompt: 'Conjugate the verb',
     q: 'Er ___ Deutsch.', hint: 'sprechen',
     answer: 'spricht',
@@ -94,6 +116,18 @@ Each exercise type takes these fields:
 
 Each file in `js/exercises/` starts with a comment documenting its fields.
 
+- **Glossary fields** (on any card):
+  - `rule`: the id of a rule in `data/rules.js`, or a list of up to two ids.
+    Write a new rule there if none fits. Its examples must not be a card's
+    answer, which the deck check verifies.
+  - `asksRule: true`: the rule gives this card's answer away, so the Glossary
+    keeps it folded.
+  - `gloss: false`: the card asks what words mean, so their translations are
+    hidden.
+  - `gloss: { Sie: 'she' }`: a meaning for this card only, e.g. when *Sie* at
+    the start of a sentence means *she*.
+- **New words** in a question go in `data/glossary.js`. The deck check lists
+  any question word that has no translation yet.
 - **A new topic:** add it to `data/topics.js`, then create a card file and add
   its `<script>` tag to `index.html` next to the others.
 - **New verbs** go in `data/lexicon.js`. That powers conjugation tables and
@@ -117,7 +151,11 @@ node tools/validate.js
 ```
 
 This lists any invalid cards and duplicate ids, prints the counts per topic
-and per type, and runs the typo-rule tests.
+and per type, and runs the typo-rule tests. It also checks the Glossary:
+
+- every card has a known rule;
+- every question word has a translation;
+- no translation or unfolded rule gives an answer away.
 
 ### Rebuild Brezel.html
 
@@ -135,11 +173,14 @@ node tools/build.js
 Brezel.html           the whole app in one file (generated: node tools/build.js)
 index.html            entry point for the source files (script order matters)
 css/app.css           all styles, light + dark theme
-js/core/              utilities, deck registry, answer checker, storage, stats, sound, drag & drop
+js/core/              utilities, deck registry, answer checker, storage, stats, sound, drag & drop,
+                      word translations (gloss.js)
 js/exercises/         one file per exercise type
-js/ui/                screens: home, session, summary, review, charts
+js/ui/                screens: home, session, summary, review, charts; the Glossary dialog
 data/topics.js        topics + the rule tip shown for each
 data/lexicon.js       verb forms, word families, proper nouns
+data/glossary.js      English meanings of the words in the questions
+data/rules.js         the grammar rules shown in the Glossary
 data/cards/           the cards, one file per topic
 tools/validate.js     deck checker
 tools/build.js        builds Brezel.html

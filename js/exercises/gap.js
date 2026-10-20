@@ -116,6 +116,7 @@
         paint();
       }
 
+      B.gloss.decorate(sentence, card);
       root.append(B.ex.header(card, 'Fill in the gaps', { noBubble: true }), h('div', { class: 'gap-card' }, h('span', { class: 'mascot mini', 'aria-hidden': 'true' }, '🥨'), sentence), bank);
       paint();
 

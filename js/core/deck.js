@@ -3,6 +3,7 @@
  *   Brezel.deck.addTopics([...])
  *   Brezel.deck.addVerbs({...}), addFamilies([...]), addProperNouns([...])
  *   Brezel.deck.addCards('topicId', [...])
+ *   Brezel.deck.addRules([...])   (the rule a card practises, shown in the Glossary)
  * finalize() then validates everything; broken cards are skipped and reported
  * in the console (and by tools/validate.js), so one typo never breaks the app.
  */
@@ -22,6 +23,8 @@
     verbs: Object.create(null),
     families: [],
     properNouns: new Set(),
+    rules: [],
+    ruleMap: Object.create(null),
     problems: [],
     PRONOUNS,
 
@@ -48,6 +51,23 @@
 
     addProperNouns(list) {
       for (const w of list) this.properNouns.add(w);
+    },
+
+    /** rules: [{ id, title, text, points?: [...], examples?: [...] }] — markdown-lite like card text. */
+    addRules(list) {
+      for (const r of list) {
+        this.rules.push(r);
+        this.ruleMap[r.id] = r;
+      }
+    },
+
+    /** The rules a card practises (card.rule: id or [ids]); without one, the topic tip. */
+    rulesFor(card) {
+      const ids = Array.isArray(card.rule) ? card.rule : card.rule ? [card.rule] : [];
+      const list = ids.map((id) => this.ruleMap[id]).filter(Boolean);
+      if (list.length) return list;
+      const t = this.topicMap[card.topic];
+      return t && t.tip ? [{ id: 'topic:' + t.id, title: t.name, text: t.tip }] : [];
     },
 
     /** Table rows for a verb: [['ich','wohne'], ['du','wohnst'], ...] */
