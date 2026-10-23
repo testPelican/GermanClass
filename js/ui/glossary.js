@@ -33,9 +33,10 @@
         h('tbody', {}, rows.map((r) => h('tr', {}, r.map((c, i) => h(i ? 'td' : 'th', { scope: i ? null : 'row', html: md(c) })))))));
   }
 
-  function rule(r) {
+  /** One rule: title, text, table, points. The Rule book shows its title itself ({ title: false }). */
+  function rule(r, { title = true } = {}) {
     return h('div', { class: 'gl-rule' },
-      h('h4', { class: 'gl-rule-title', html: md(r.title) }),
+      title ? h('h4', { class: 'gl-rule-title', html: md(r.title) }) : null,
       r.text ? h('p', { class: 'gl-rule-text', html: md(r.text) }) : null,
       r.table ? table(r.table) : null,
       r.points ? h('ul', { class: 'gl-points' }, r.points.map((p) => h('li', { html: md(p) }))) : null);
@@ -44,7 +45,7 @@
   function rules(card) {
     const list = B.deck.rulesFor(card);
     if (!list.length) return null;
-    const body = h('div', { class: 'gl-rules', tabindex: '-1' }, list.map(rule));
+    const body = h('div', { class: 'gl-rules', tabindex: '-1' }, list.map((r) => rule(r)));
     const parts = [h('h3', { class: 'gl-h' }, list.length > 1 ? 'The rules' : 'The rule'), body];
     if (card.asksRule) {
       body.hidden = true;
@@ -78,5 +79,5 @@
     });
   }
 
-  B.glossary = { open };
+  B.glossary = { open, rule };
 })();

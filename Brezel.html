@@ -642,6 +642,17 @@ b {
   margin-top: 4px;
 }
 
+.hero-text .due-line {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--orange-soft);
+  color: var(--orange-ink);
+  font-size: 14px;
+  font-weight: 800;
+}
+
 .ring {
   position: relative;
   width: 120px;
@@ -891,6 +902,21 @@ b {
   font-variant-numeric: tabular-nums;
 }
 
+.due-pill {
+  flex: none;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--orange-soft);
+  color: var(--orange-ink);
+  font-size: 13px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.topic-tip .tip-more {
+  margin-top: 8px;
+}
+
 .topic-card.is-complete .topic-count {
   background: var(--good-bg);
   color: var(--good-ink);
@@ -1114,6 +1140,17 @@ b {
   color: var(--muted);
 }
 
+.again-tag.is-review {
+  gap: 6px;
+  background: var(--blue-soft);
+  color: var(--blue-ink);
+}
+
+.step-dots {
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+
 /* footer: Check / Continue + feedback panel */
 .s-foot {
   flex: none;
@@ -1267,7 +1304,8 @@ b {
   font-weight: 900;
 }
 
-.fb-again {
+.fb-again,
+.fb-next {
   font-size: 14px;
   font-weight: 800;
   color: var(--muted);
@@ -2798,6 +2836,19 @@ body.is-dragging * {
 .t-bad {
   --accent: var(--red);
 }
+.t-due {
+  --accent: var(--orange);
+}
+
+.memory-sub {
+  margin: -6px 0 14px;
+}
+
+@media (min-width: 560px) {
+  .memory-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
 
 .stat-icon {
   font-size: 24px;
@@ -3578,6 +3629,120 @@ body.is-dragging * {
   padding: 0 12px;
   min-height: 48px;
   font-size: 14px;
+}
+
+/* === Rule book ============================================================================ */
+.rulebook {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 16px max(16px, env(safe-area-inset-right)) calc(32px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  display: grid;
+  gap: 14px;
+}
+
+.rb-tools {
+  display: grid;
+  gap: 6px;
+}
+
+.rb-search {
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 16px;
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 700;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.rb-search::placeholder {
+  color: var(--faint);
+  font-weight: 600;
+}
+
+.rb-search:focus {
+  border-color: var(--blue);
+  background: var(--surface);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--blue) 18%, transparent);
+}
+
+.rb-empty {
+  color: var(--muted);
+  text-align: center;
+}
+
+.rb-topic {
+  scroll-margin-top: 72px;
+  padding-bottom: 8px;
+}
+
+.rb-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.rb-icon {
+  font-size: 22px;
+}
+
+.rb-de {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.rb-rule:not([hidden]) ~ .rb-rule:not([hidden]) {
+  border-top: 2px solid var(--border);
+}
+
+.rb-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 2px;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  list-style: none;
+  border-radius: 8px;
+}
+
+.rb-summary::-webkit-details-marker {
+  display: none;
+}
+
+.rb-summary::before {
+  content: '▸';
+  flex: none;
+  color: var(--muted);
+  transition: transform 0.15s ease;
+}
+
+.rb-rule[open] > .rb-summary::before {
+  transform: rotate(90deg);
+}
+
+.rb-summary em {
+  font-style: normal;
+  color: var(--blue-ink);
+}
+
+.rb-rule > .gl-rule {
+  margin-bottom: 12px;
+}
+
+@media (hover: hover) {
+  .rb-summary:hover {
+    color: var(--link);
+  }
 }
 
 /* the 📖 Glossary */
@@ -4433,7 +4598,7 @@ body.is-dragging * {
  *   Brezel.deck.addTopics([...])
  *   Brezel.deck.addVerbs({...}), addFamilies([...]), addProperNouns([...])
  *   Brezel.deck.addCards('topicId', [...])
- *   Brezel.deck.addRules([...])   (the rule a card practises, shown in the Glossary)
+ *   Brezel.deck.addRules('topicId', [...])   (the rules a card practises: Glossary and Rule book)
  * A card belongs to one topic. A topic with collects: 'theory' (Rules) also holds every card
  * marked theory: true: a question about a rule itself, never a translation.
  * finalize() then validates everything; broken cards are skipped and reported
@@ -4486,10 +4651,11 @@ body.is-dragging * {
     },
 
     /** rules: [{ id, title, text, table?: { head, rows }, points?: [...] }] — markdown-lite like card text. */
-    addRules(list) {
+    addRules(topicId, list) {
       for (const r of list) {
-        this.rules.push(r);
-        this.ruleMap[r.id] = r;
+        const rule = Object.assign({ topic: topicId }, r);
+        this.rules.push(rule);
+        this.ruleMap[rule.id] = rule;
       }
     },
 
@@ -4664,13 +4830,103 @@ body.is-dragging * {
 })();
 
 </script>
+  <script>/* js/core/srs.js */
+/*
+ * Spaced repetition. A card is mastered the first time it is answered right; then it comes back
+ * for review on its due day. Each right answer on a due card moves it one step up, so it comes
+ * back later:
+ *
+ *   step    1    2    3    4    5    6
+ *   days    1    3    7   14   30   90
+ *
+ * A wrong answer moves a mastered card two steps down (not below 1) and keeps it due today.
+ * Once it is right again it comes back tomorrow, then climbs from that step.
+ * Days are calendar days (days since 1 Jan 1970, local time), so a card is due from the morning.
+ * Saved per card in Brezel.store: lv = step, due = day number, bad = 1 after a wrong answer.
+ */
+(function () {
+  'use strict';
+  const B = window.Brezel;
+
+  const DAYS = [0, 1, 3, 7, 14, 30, 90]; // index = step
+  const MAX = DAYS.length - 1;
+  const DROP = 2; // steps lost by a wrong answer
+  const PER_DAY = 25; // at most this many old cards fall due on one day when schedules are first added
+
+  /** The calendar day of a time, as a number. */
+  function day(t = Date.now()) {
+    const d = new Date(t);
+    return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86400000);
+  }
+
+  /** A mastered card that is due on or before that day. */
+  const isDue = (s, today) => !!(s && s.done && (s.due == null || s.due <= today));
+
+  /**
+   * The new schedule after an answer: { lv, due, bad }, or null if nothing changes.
+   * s = the card's saved state before this answer ({} for a card never answered).
+   */
+  function next(s, ok, today) {
+    if (!s.done) return ok ? { lv: 1, due: today + DAYS[1], bad: 0 } : null;
+    const lv = s.lv || 1;
+    if (!ok) return { lv: Math.max(1, lv - DROP), due: today, bad: 1 };
+    if (s.bad) return { lv, due: today + DAYS[1], bad: 0 };
+    if (s.due > today) return null; // not due yet: an early extra answer changes nothing
+    const up = Math.min(MAX, lv + 1);
+    return { lv: up, due: today + DAYS[up], bad: 0 };
+  }
+
+  /**
+   * Give cards mastered before spaced repetition existed a schedule. A card right on the first
+   * try starts at step 2. Cards that would already be due are spread over the next days
+   * (oldest first, at most PER_DAY a day), so they don't all come back at once.
+   * Returns the number of cards changed.
+   */
+  function migrate(cards, today) {
+    const old = Object.values(cards).filter((s) => s && s.done && s.lv == null);
+    const late = [];
+    for (const s of old) {
+      s.lv = s.first === 1 ? 2 : 1;
+      s.due = day(s.d || Date.now()) + DAYS[s.lv];
+      if (s.due < today) late.push(s);
+    }
+    late.sort((a, b) => (a.d || 0) - (b.d || 0));
+    const per = Math.max(PER_DAY, Math.ceil(late.length / 14));
+    late.forEach((s, i) => (s.due = today + Math.floor(i / per)));
+    return old.length;
+  }
+
+  /** "today", "tomorrow", "in 3 days", "in 2 weeks", "in a month", "in 3 months". */
+  function when(due, today) {
+    const n = due - today;
+    if (n <= 0) return 'today';
+    if (n === 1) return 'tomorrow';
+    if (n < 14) return `in ${n} days`;
+    if (n < 28) return `in ${Math.round(n / 7)} weeks`;
+    const m = Math.round(n / 30);
+    return m === 1 ? 'in a month' : `in ${m} months`;
+  }
+
+  /** How well a card is remembered, by step: 1–2 learning, 3–4 getting solid, 5–6 solid. */
+  const GROUPS = [
+    { key: 'learning', label: 'Learning', sub: 'steps 1–2: back within days', icon: '🌱', steps: [1, 2] },
+    { key: 'growing', label: 'Getting solid', sub: 'steps 3–4: back in 1–2 weeks', icon: '🌿', steps: [3, 4] },
+    { key: 'solid', label: 'Solid', sub: 'steps 5–6: back in 1–3 months', icon: '🌳', steps: [5, 6] },
+  ];
+  const group = (lv) => GROUPS.find((g) => g.steps.includes(lv || 1));
+
+  B.srs = { DAYS, MAX, GROUPS, day, isDue, next, migrate, when, group };
+})();
+
+</script>
   <script>/* js/core/store.js */
 /*
  * Progress persistence (localStorage). Everything is keyed by card id, so
  * adding new cards later keeps all existing progress.
  *
  * cards[id] = { a: attempts, w: wrong attempts, done: bool, first: 1|0 (first attempt right?),
- *               lw: last wrong answer given, d: time it was mastered }
+ *               lw: last wrong answer given, d: time it was mastered,
+ *               lv, due, bad: the review schedule (js/core/srs.js) }
  * log      = every answer: { id, ok, t, ms, s: session id, p: practice?1:0 }
  * sessions = { id, start, end, answered, correct, wrong, mastered, xp, practice }
  */
@@ -4704,6 +4960,8 @@ body.is-dragging * {
           settings: Object.assign(base.settings, parsed.settings || {}),
           streak: Object.assign(base.streak, parsed.streak || {}),
         });
+        // progress from before spaced repetition: give mastered cards a review schedule
+        if (B.srs.migrate(state.cards, B.srs.day())) save();
       }
     } catch (e) {
       storageOk = false;
@@ -4756,7 +5014,7 @@ body.is-dragging * {
     return state.sessions[state.sessions.length - 1];
   }
 
-  /** Record one answer. Returns {newlyDone} */
+  /** Record one answer. Returns {newlyDone, due?} — due: the next review day, if the schedule changed. */
   function record(card, ok, given, ms, { practice = false, xp = 0 } = {}) {
     const sess = currentSession();
     state.log.push({ id: card.id, ok: ok ? 1 : 0, t: Date.now(), ms: Math.round(ms || 0), s: sess ? sess.id : 0, p: practice ? 1 : 0 });
@@ -4769,24 +5027,32 @@ body.is-dragging * {
       sess.end = Date.now();
     }
     let newlyDone = false;
+    let due = null;
     if (!practice) {
       const c = (state.cards[card.id] = state.cards[card.id] || { a: 0, w: 0, done: false, first: null });
+      const plan = B.srs.next(c, ok, B.srs.day());
+      if (plan) {
+        c.lv = plan.lv;
+        c.due = due = plan.due;
+        if (plan.bad) c.bad = 1;
+        else delete c.bad;
+      }
       c.a++;
       if (c.first === null) c.first = ok ? 1 : 0;
       if (ok) {
         if (!c.done) {
           newlyDone = true;
           if (sess) sess.mastered++;
+          c.d = Date.now();
         }
         c.done = true;
-        c.d = Date.now();
       } else {
         c.w++;
         c.lw = String(given == null ? '' : given).slice(0, 200);
       }
     }
     save();
-    return { newlyDone };
+    return { newlyDone, due };
   }
 
   function endSession(extra) {
@@ -4851,9 +5117,10 @@ body.is-dragging * {
     return { key: 'bad', icon: '✗', label: 'Needs work' };
   }
 
-  /** Aggregate a list of cards. first = right on the very first try; retry = mastered later. */
+  /** Aggregate a list of cards. first = right on the very first try; retry = mastered later; due = to review today. */
   function summarize(cards) {
-    let done = 0, first = 0, retry = 0, attempted = 0, wrong = 0, answers = 0, stillWrong = 0;
+    let done = 0, first = 0, retry = 0, attempted = 0, wrong = 0, answers = 0, stillWrong = 0, due = 0;
+    const today = B.srs.day();
     for (const c of cards) {
       const s = B.store.cardState(c.id);
       if (!s || !s.a) continue;
@@ -4864,6 +5131,7 @@ body.is-dragging * {
         done++;
         if (s.first === 1) first++;
         else retry++;
+        if (B.srs.isDue(s, today)) due++;
       } else stillWrong++;
     }
     const firstPct = pct(first, attempted);
@@ -4873,6 +5141,7 @@ body.is-dragging * {
       first,
       retry,
       stillWrong,
+      due,
       unseen: cards.length - attempted,
       notDone: cards.length - done,
       attempted,
@@ -4939,10 +5208,46 @@ body.is-dragging * {
       .slice(0, limit);
   }
 
-  const pending = (topic) =>
-    B.deck.cards.filter((c) => (topic === 'all' || !topic || B.deck.inTopic(c, topic)) && !B.store.isDone(c.id));
+  const inTopic = (c, topic) => topic === 'all' || !topic || B.deck.inTopic(c, topic);
 
-  B.stats = { STRONG, OKAY, MIN_CARDS, status, summarize, overview, byTopic, byType, sessions, missed, mistakeCards, pending };
+  /** Cards never mastered. */
+  const fresh = (topic) => B.deck.cards.filter((c) => inTopic(c, topic) && !B.store.isDone(c.id));
+
+  /** Mastered cards due for review today (or overdue). */
+  function due(topic) {
+    const today = B.srs.day();
+    return B.deck.cards.filter((c) => inTopic(c, topic) && B.srs.isDue(B.store.cardState(c.id), today));
+  }
+
+  /** Everything a session can show now: reviews that are due, then new cards. */
+  const pending = (topic) => due(topic).concat(fresh(topic));
+
+  /** The earliest review day of the topic's mastered cards, or null if none is mastered. */
+  function nextDue(topic) {
+    let min = null;
+    for (const c of B.deck.cards) {
+      const s = B.store.cardState(c.id);
+      if (inTopic(c, topic) && s && s.done && s.due != null && (min === null || s.due < min)) min = s.due;
+    }
+    return min;
+  }
+
+  /** Mastered cards per memory group (srs.GROUPS), and reviews due on each of the next `days` days. */
+  function memory(days = 7) {
+    const today = B.srs.day();
+    const groups = B.srs.GROUPS.map((g) => ({ group: g, count: 0 }));
+    const ahead = Array.from({ length: days }, (_, i) => ({ day: today + i, count: 0 }));
+    for (const c of B.deck.cards) {
+      const s = B.store.cardState(c.id);
+      if (!s || !s.done) continue;
+      groups[B.srs.GROUPS.indexOf(B.srs.group(s.lv))].count++;
+      const i = Math.max(0, (s.due == null ? today : s.due) - today); // overdue counts as today
+      if (i < days) ahead[i].count++;
+    }
+    return { groups, ahead };
+  }
+
+  B.stats = { STRONG, OKAY, MIN_CARDS, status, summarize, overview, byTopic, byType, sessions, missed, mistakeCards, fresh, due, pending, nextDue, memory };
 })();
 
 </script>
@@ -7727,9 +8032,11 @@ Brezel.gloss.addNames(['PlayStation']);
  *   { id, title, text?, table?: { head?: [...], rows: [[...], …] }, points?: [...] }
  * **bold** and *italic* work as in card text, also in table cells. A table row starts with its label.
  * Examples here are deliberately not the sentences from the cards (tools/validate.js checks).
+ * Each addRules call holds the rules of one topic; the 📖 Rule book shows them in that order.
  */
-Brezel.deck.addRules([
-  // --- word order ---------------------------------------------------------------------
+
+// --- word order --------------------------------------------------------------------------
+Brezel.deck.addRules('order', [
   {
     id: 'verb-2',
     title: 'The verb comes second',
@@ -7776,8 +8083,10 @@ Brezel.deck.addRules([
     text: 'A question with a question word: **W-word (1) + verb (2) + subject**, then the rest. A second verb part still goes to the end.',
     points: ['*Wo **arbeitet** dein Bruder?*', '*Wann **hast** du das Auto **gekauft**?*'],
   },
+]);
 
-  // --- present tense ---------------------------------------------------------------------
+// --- present tense -----------------------------------------------------------------------
+Brezel.deck.addRules('present', [
   {
     id: 'present-endings',
     title: 'Present tense endings',
@@ -7828,8 +8137,10 @@ Brezel.deck.addRules([
     text: '**es gibt** means *there is* or *there are*. It is always *gibt*, even for many things, and the thing after it is in the **Akkusativ**.',
     points: ['*Hier gibt es einen Park.* (der Park → einen)', 'Question: *Gibt es hier ein Kino?*'],
   },
+]);
 
-  // --- Perfekt ------------------------------------------------------------------------------
+// --- Perfekt -----------------------------------------------------------------------------
+Brezel.deck.addRules('past', [
   {
     id: 'perfekt-form',
     title: 'Perfekt = Hilfsverb + Partizip II',
@@ -7897,8 +8208,10 @@ Brezel.deck.addRules([
       'Separable: **prefix + ge + verb** — *aufgemacht, mitgebracht*',
     ],
   },
+]);
 
-  // --- cases, articles -----------------------------------------------------------------------
+// --- cases, articles ---------------------------------------------------------------------
+Brezel.deck.addRules('cases', [
   {
     id: 'cases',
     title: 'The four cases',
@@ -8024,8 +8337,10 @@ Brezel.deck.addRules([
       'The indefinite article follows the gender: der / das → **ein**, die → **eine**',
     ],
   },
+]);
 
-  // --- prepositions ---------------------------------------------------------------------------
+// --- prepositions ------------------------------------------------------------------------
+Brezel.deck.addRules('prepositions', [
   {
     id: 'im-ins',
     title: 'im (where?) or ins (where to?)',
@@ -8068,8 +8383,10 @@ Brezel.deck.addRules([
       '*seit* (since) ≠ *seid* (the ihr form of sein).',
     ],
   },
+]);
 
-  // --- female forms -------------------------------------------------------------------------------
+// --- female forms ------------------------------------------------------------------------
+Brezel.deck.addRules('gender', [
   {
     id: 'female-forms',
     title: 'Female and male job titles',
@@ -8082,8 +8399,10 @@ Brezel.deck.addRules([
       'After *sein*, jobs usually have no article: *Sie ist Bäckerin.*',
     ],
   },
+]);
 
-  // --- possessives --------------------------------------------------------------------------------
+// --- possessives -------------------------------------------------------------------------
+Brezel.deck.addRules('possessive', [
   {
     id: 'possessive',
     title: 'mein, dein, sein, ihr …',
@@ -8105,8 +8424,10 @@ Brezel.deck.addRules([
       'The same for dein, sein, ihr …: *mit seiner Oma, in ihrer Stadt*',
     ],
   },
+]);
 
-  // --- questions, negation ------------------------------------------------------------------------
+// --- questions, negation -----------------------------------------------------------------
+Brezel.deck.addRules('questions', [
   {
     id: 'w-words',
     title: 'Question words',
@@ -8127,8 +8448,10 @@ Brezel.deck.addRules([
       '*nicht* goes after the object, or just before the second verb part: *Ich kenne ihn nicht. Ich habe gestern nicht gekocht.*',
     ],
   },
+]);
 
-  // --- modal verbs, gern --------------------------------------------------------------------------
+// --- modal verbs, gern -------------------------------------------------------------------
+Brezel.deck.addRules('verbs', [
   {
     id: 'modal',
     title: 'Modal verbs: muss, kann, möchte',
@@ -8148,8 +8471,10 @@ Brezel.deck.addRules([
       '*gern* comes right after the verb and its subject: *Tanzt du gern?*',
     ],
   },
+]);
 
-  // --- separable / inseparable verbs ---------------------------------------------------------------
+// --- separable / inseparable verbs -------------------------------------------------------
+Brezel.deck.addRules('prefix', [
   {
     id: 'separable',
     title: 'Separable verbs split',
@@ -8182,8 +8507,10 @@ Brezel.deck.addRules([
       'It changes a → ä with er / sie / es (*es gefällt*), and it never splits: *ge-* is inseparable.',
     ],
   },
+]);
 
-  // --- tenses ---------------------------------------------------------------------------------------
+// --- tenses ------------------------------------------------------------------------------
+Brezel.deck.addRules('tenses', [
   {
     id: 'tenses',
     title: 'Präsens, Perfekt, Präteritum',
@@ -8205,8 +8532,10 @@ Brezel.deck.addRules([
       'Many verbs are irregular in English too, often with similar vowels: *swim – swam – swum / schwimmen – schwamm – geschwommen*.',
     ],
   },
+]);
 
-  // --- Präteritum -------------------------------------------------------------------------------------
+// --- Präteritum --------------------------------------------------------------------------
+Brezel.deck.addRules('praet', [
   {
     id: 'praet-sein-haben',
     title: 'Präteritum of sein and haben',
@@ -8234,8 +8563,10 @@ Brezel.deck.addRules([
       'The other endings: du **-st**, wir **-en**, ihr **-t**, sie **-en**: *du fandst, wir fanden*',
     ],
   },
+]);
 
-  // --- reflexive verbs ---------------------------------------------------------------------------------
+// --- reflexive verbs ---------------------------------------------------------------------
+Brezel.deck.addRules('reflexive', [
   {
     id: 'reflexive-pronouns',
     title: 'Reflexive pronouns',
@@ -8274,8 +8605,10 @@ Brezel.deck.addRules([
       'German and Polish don’t always match: *sich erholen* (to rest) is reflexive, *odpoczywać* isn’t.',
     ],
   },
+]);
 
-  // --- talking about the past ----------------------------------------------------------------------------
+// --- talking about the past --------------------------------------------------------------
+Brezel.deck.addRules('pastq', [
   {
     id: 'perfekt-question',
     title: 'Questions in the Perfekt',
@@ -8294,8 +8627,10 @@ Brezel.deck.addRules([
       'Present → past: *Heute tanze ich.* → *Gestern habe ich getanzt.* (time word, Hilfsverb, subject … participle)',
     ],
   },
+]);
 
-  // --- vocabulary ---------------------------------------------------------------------------------------
+// --- vocabulary --------------------------------------------------------------------------
+Brezel.deck.addRules('vocab', [
   {
     id: 'vocab-nouns',
     title: 'Nouns: capital letter and article',
@@ -12109,7 +12444,7 @@ Brezel.deck.addCards('vocab', [
 
 </script>
   <script>/* js/ui/home.js */
-/* Home screen: overall progress, session setup, topics with their grammar rules. */
+/* Home screen: overall progress, reviews due, session setup, topics with their grammar rules. */
 (function () {
   'use strict';
   const B = window.Brezel;
@@ -12201,18 +12536,23 @@ Brezel.deck.addCards('vocab', [
       h('div', { class: 'top-actions' }, soundBtn, themeBtn));
 
     // --- hero ---------------------------------------------------------------------
+    const dueLine = ov.due
+      ? h('p', { class: 'due-line' }, h('span', { 'aria-hidden': 'true' }, '🔁 '), `${ov.due} card${ov.due === 1 ? '' : 's'} to review today`)
+      : null;
     const heroText = ov.complete
       ? h('div', { class: 'hero-text' },
         h('h1', {}, 'Alles fertig! 🎉'),
         h('p', {}, `You’ve mastered all ${ov.total} cards.`),
-        h('p', { class: 'muted' }, 'Your detailed review is ready.'))
+        h('p', { class: 'muted' }, 'Your detailed review is ready.'),
+        dueLine)
       : h('div', { class: 'hero-text' },
         h('h1', {}, greeting()),
         h('p', {}, ov.done ? `You’ve mastered ${ov.done} of ${ov.total} cards.` : `${ov.total} cards are waiting for you.`),
         h('p', { class: 'muted' },
           ov.done
             ? `${ov.total - ov.done} to go` + (ov.stillWrong ? ` · ${ov.stillWrong} need another try` : '')
-            : 'Grammar first: word order, verbs, tenses, articles and more.'));
+            : 'Grammar first: word order, verbs, tenses, articles and more.'),
+        dueLine);
     const hero = h('section', { class: 'card hero' }, ring(ov.done, ov.total), heroText);
 
     // --- session setup --------------------------------------------------------------
@@ -12248,20 +12588,24 @@ Brezel.deck.addCards('vocab', [
     }
 
     function paintSetup() {
-      const pending = B.stats.pending(topic).length;
+      const due = B.stats.due(topic).length;
+      const fresh = B.stats.fresh(topic).length;
+      const pending = due + fresh;
       const n = size ? Math.min(size, pending) : pending;
       sizeBtns.forEach(({ n: k, b }) => b.setAttribute('aria-pressed', String(k === size)));
       chipBtns.forEach(({ id, b }) => b.setAttribute('aria-pressed', String(id === topic)));
       topicCards.forEach(({ id, el }) => el.classList.toggle('is-selected', id === topic));
       const tName = topic === 'all' ? 'all topics' : B.deck.topicMap[topic].name;
       if (!pending) {
+        const next = B.stats.nextDue(topic);
         startBtn.disabled = true;
-        startBtn.textContent = 'Topic complete ✓';
-        startSub.textContent = 'Every card here is mastered — pick another topic.';
+        startBtn.textContent = 'All caught up ✓';
+        startSub.textContent = `Every card here is mastered. The next review is ${B.srs.when(next, B.srs.day())} — or pick another topic.`;
       } else {
         startBtn.disabled = false;
         startBtn.textContent = 'Start';
-        startSub.textContent = `${n} card${n === 1 ? '' : 's'} · ${tName} · ${pending} left to master`;
+        const parts = [due ? `${due} to review` : '', fresh ? `${fresh} new` : ''].filter(Boolean).join(' + ');
+        startSub.textContent = `${n} card${n === 1 ? '' : 's'} · ${tName} · ${parts}` + (due && n < pending ? ' · reviews first' : '');
       }
     }
 
@@ -12274,30 +12618,25 @@ Brezel.deck.addCards('vocab', [
     const reportBtn = h('button', { class: 'btn btn-outline', type: 'button' }, h('span', { 'aria-hidden': 'true' }, '📊 '), ov.complete ? 'Detailed review' : 'Progress report');
     reportBtn.addEventListener('click', () => B.app.go('review'));
 
-    let setup;
-    if (ov.complete) {
-      const reviewBtn = h('button', { class: 'btn btn-primary btn-big', type: 'button' }, 'See my detailed review');
-      reviewBtn.addEventListener('click', () => B.app.go('review'));
-      const againBtn = h('button', { class: 'btn btn-outline', type: 'button' }, h('span', { 'aria-hidden': 'true' }, '↺ '), 'Start over');
-      againBtn.addEventListener('click', resetAll);
-      setup = h('section', { class: 'card setup' },
-        h('h2', { class: 'section-title' }, 'What next?'),
-        reviewBtn,
-        h('div', { class: 'home-links' }, practiseBtn, againBtn));
-    } else {
-      setup = h('section', { class: 'card setup' },
-        h('h2', { class: 'section-title' }, 'New session'),
-        h('div', { class: 'field' }, h('span', { class: 'field-label' }, 'Cards'), sizeSeg),
-        h('div', { class: 'field' }, h('span', { class: 'field-label' }, 'Topic'), chipRow),
-        startBtn,
-        startSub,
-        h('div', { class: 'home-links' }, practiseBtn, reportBtn));
-    }
+    const bookBtn = h('button', { class: 'btn btn-outline', type: 'button' }, h('span', { 'aria-hidden': 'true' }, '📖 '), 'Rule book');
+    bookBtn.addEventListener('click', () => B.app.go('rulebook'));
+
+    // Once every card is mastered, sessions are reviews only: the setup stays.
+    const setup = h('section', { class: 'card setup' },
+      h('h2', { class: 'section-title' }, ov.complete ? 'Keep it fresh' : 'New session'),
+      h('div', { class: 'field' }, h('span', { class: 'field-label' }, 'Cards'), sizeSeg),
+      h('div', { class: 'field' }, h('span', { class: 'field-label' }, 'Topic'), chipRow),
+      startBtn,
+      startSub,
+      h('div', { class: 'home-links' }, practiseBtn, reportBtn, bookBtn));
 
     // --- topics ------------------------------------------------------------------------
     const topicCards = topics.map((t) => {
       const tipId = 'tip-' + t.topic.id;
-      const tip = h('div', { class: 'topic-tip', id: tipId, hidden: true, html: md(t.topic.tip || '') });
+      const allRules = h('button', { class: 'link-btn tip-more', type: 'button' }, 'All rules of this topic →');
+      allRules.addEventListener('click', () => B.app.go('rulebook', { topic: t.topic.collects ? null : t.topic.id }));
+      if (t.topic.collects) allRules.textContent = 'Open the Rule book →';
+      const tip = h('div', { class: 'topic-tip', id: tipId, hidden: true }, h('div', { html: md(t.topic.tip || '') }), allRules);
       const ruleBtn = h('button', { class: 'link-btn rule-btn', type: 'button', 'aria-expanded': 'false', 'aria-controls': tipId }, h('span', { 'aria-hidden': 'true' }, '📖 '), 'Rule');
       ruleBtn.addEventListener('click', () => {
         const open = tip.hidden;
@@ -12305,9 +12644,10 @@ Brezel.deck.addCards('vocab', [
         ruleBtn.setAttribute('aria-expanded', String(open));
         if (open) B.util.pulse(tip, 'reveal');
       });
-      const main = h('button', { class: 'topic-main', type: 'button', 'aria-label': `${t.topic.name}: ${t.done} of ${t.total} mastered. Select topic.` },
+      const main = h('button', { class: 'topic-main', type: 'button', 'aria-label': `${t.topic.name}: ${t.done} of ${t.total} mastered${t.due ? `, ${t.due} to review today` : ''}. Select topic.` },
         h('span', { class: 'topic-icon', 'aria-hidden': 'true' }, t.topic.icon),
         h('span', { class: 'topic-text' }, h('b', {}, t.topic.name), h('small', {}, t.topic.de)),
+        t.due ? h('span', { class: 'due-pill', title: `${t.due} to review today` }, `🔁 ${t.due}`) : null,
         h('span', { class: 'topic-count' }, t.done === t.total ? '✓' : `${t.done}/${t.total}`));
       main.addEventListener('click', () => selectTopic(t.topic.id, true));
       const bar = h('div', { class: 'mini-bar', 'aria-hidden': 'true' }, h('span', { style: { width: pct(t.done, t.total) + '%' } }));
@@ -12346,12 +12686,11 @@ Brezel.deck.addCards('vocab', [
           h('div', { class: 'topic-grid' }, topicCards.map((t) => t.el))),
         h('footer', { class: 'home-foot' }, resetBtn, h('p', { class: 'muted small' }, 'Progress is saved in this browser on this device.')))
     );
-    if (!ov.complete) paintSetup();
-    else topicCards.forEach(({ el }) => el.querySelector('.topic-main').setAttribute('disabled', ''));
+    paintSetup();
 
     return {
       onKey(e) {
-        if (e.key === 'Enter' && e.target === document.body && !ov.complete && !startBtn.disabled) {
+        if (e.key === 'Enter' && e.target === document.body && !startBtn.disabled) {
           e.preventDefault();
           startBtn.click();
         }
@@ -12397,9 +12736,10 @@ Brezel.deck.addCards('vocab', [
         h('tbody', {}, rows.map((r) => h('tr', {}, r.map((c, i) => h(i ? 'td' : 'th', { scope: i ? null : 'row', html: md(c) })))))));
   }
 
-  function rule(r) {
+  /** One rule: title, text, table, points. The Rule book shows its title itself ({ title: false }). */
+  function rule(r, { title = true } = {}) {
     return h('div', { class: 'gl-rule' },
-      h('h4', { class: 'gl-rule-title', html: md(r.title) }),
+      title ? h('h4', { class: 'gl-rule-title', html: md(r.title) }) : null,
       r.text ? h('p', { class: 'gl-rule-text', html: md(r.text) }) : null,
       r.table ? table(r.table) : null,
       r.points ? h('ul', { class: 'gl-points' }, r.points.map((p) => h('li', { html: md(p) }))) : null);
@@ -12408,7 +12748,7 @@ Brezel.deck.addCards('vocab', [
   function rules(card) {
     const list = B.deck.rulesFor(card);
     if (!list.length) return null;
-    const body = h('div', { class: 'gl-rules', tabindex: '-1' }, list.map(rule));
+    const body = h('div', { class: 'gl-rules', tabindex: '-1' }, list.map((r) => rule(r)));
     const parts = [h('h3', { class: 'gl-h' }, list.length > 1 ? 'The rules' : 'The rule'), body];
     if (card.asksRule) {
       body.hidden = true;
@@ -12442,14 +12782,126 @@ Brezel.deck.addCards('vocab', [
     });
   }
 
-  B.glossary = { open };
+  B.glossary = { open, rule };
+})();
+
+</script>
+  <script>/* js/ui/rulebook.js */
+/*
+ * 📖 Rule book: every grammar rule of data/rules.js, grouped by topic, with a search box.
+ * Opened from the home screen, or from a topic's 📖 Rule tip with { topic } to open that topic.
+ * The search ignores case, umlauts and accents of the question: "dativ" finds Dativ, "madchen" Mädchen.
+ * Keys: / = search, Esc = clear the search, then back home.
+ */
+(function () {
+  'use strict';
+  const B = window.Brezel;
+  const { h, md, norm } = B.util;
+
+  /** Everything a rule says, in one searchable string (umlauts also as plain vowels). */
+  function haystack(r, topic) {
+    const table = r.table ? [...(r.table.head || []), ...r.table.rows.flat()] : [];
+    const text = norm([r.title, r.text, ...(r.points || []), ...table, topic.name, topic.de].join(' ').replace(/\*+/g, ''));
+    return ` ${text} ${text.replace(/([aou])e/g, '$1')} `;
+  }
+
+  B.ui.rulebook = function (root, opts) {
+    const back = h('button', { class: 'icon-btn', type: 'button', 'aria-label': 'Back to home' }, '←');
+    back.addEventListener('click', () => B.app.go('home'));
+    const search = h('input', {
+      class: 'rb-search',
+      type: 'search',
+      autocomplete: 'off',
+      autocorrect: 'off',
+      autocapitalize: 'off',
+      spellcheck: 'false',
+      enterkeyhint: 'search',
+      'aria-label': 'Search the rules',
+      placeholder: 'Search, e.g. Dativ, seit, Partizip',
+    });
+    const count = h('p', { class: 'muted small rb-count', 'aria-live': 'polite' });
+    const empty = h('p', { class: 'card rb-empty', hidden: true });
+
+    const sections = B.deck.topics.filter((t) => !t.collects).map((t) => {
+      const rules = B.deck.rules.filter((r) => r.topic === t.id);
+      if (!rules.length) return null;
+      const items = rules.map((r) => ({
+        el: h('details', { class: 'rb-rule' },
+          h('summary', { class: 'rb-summary', html: md(r.title) }),
+          B.glossary.rule(r, { title: false })),
+        text: haystack(r, t),
+      }));
+      const el = h('section', { class: 'card rb-topic', 'aria-label': t.name },
+        h('h2', { class: 'section-title rb-head' },
+          h('span', { class: 'rb-icon', 'aria-hidden': 'true' }, t.icon),
+          h('span', {}, t.name, h('small', { class: 'rb-de' }, t.de))),
+        h('div', { class: 'rb-list' }, items.map((i) => i.el)));
+      return { id: t.id, el, items };
+    }).filter(Boolean);
+    const total = sections.reduce((n, s) => n + s.items.length, 0);
+
+    function filter() {
+      const words = norm(search.value).split(' ').filter(Boolean);
+      let shown = 0;
+      for (const s of sections) {
+        let any = false;
+        for (const i of s.items) {
+          const hit = words.every((w) => i.text.includes(w));
+          i.el.hidden = !hit;
+          if (words.length) i.el.open = hit;
+          if (hit) shown++;
+          any = any || hit;
+        }
+        s.el.hidden = !any;
+      }
+      count.textContent = words.length
+        ? `${shown} of ${total} rules match`
+        : `${total} rules in ${sections.length} topics. Tap a rule to open it.`;
+      empty.hidden = shown > 0;
+      empty.textContent = `No rule mentions “${search.value.trim()}”.`;
+    }
+    search.addEventListener('input', () => {
+      if (!search.value) sections.forEach((s) => s.items.forEach((i) => (i.el.open = false)));
+      filter();
+    });
+
+    root.append(
+      h('header', { class: 'page-top' }, back, h('h1', { class: 'page-title' }, 'Rule book')),
+      h('main', { class: 'rulebook' },
+        h('div', { class: 'rb-tools' }, search, count),
+        empty,
+        sections.map((s) => s.el)));
+    filter();
+
+    const jump = opts.topic && sections.find((s) => s.id === opts.topic);
+    if (jump) {
+      jump.items.forEach((i) => (i.el.open = true));
+      requestAnimationFrame(() => jump.el.scrollIntoView({ block: 'start' }));
+    }
+
+    return {
+      onKey(e) {
+        if (e.key === '/' && e.target !== search) {
+          e.preventDefault();
+          search.focus();
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          if (search.value) {
+            search.value = '';
+            search.dispatchEvent(new Event('input'));
+          } else B.app.go('home');
+        }
+      },
+    };
+  };
 })();
 
 </script>
   <script>/* js/ui/session.js */
 /*
  * A learning session.
- *  - The queue is every not-yet-mastered card (optionally one topic), shuffled, cut to the session size.
+ *  - The queue is the reviews due today, then new cards (optionally one topic), cut to the session
+ *    size and shuffled. Reviews come first, so a mastered card never waits past its day (js/core/srs.js).
  *  - A wrong answer shows the correct one and puts the card back at a random later position.
  *  - Only correct answers count as mastered (practice mode never changes mastery).
  * The 📖 Glossary button (or G) shows the question's words in English and the card's rule.
@@ -12467,9 +12919,13 @@ Brezel.deck.addCards('vocab', [
   const XP_COMBO = 5; // bonus per card while on a streak of 5+
 
   function buildQueue({ topic, size, practice }) {
-    const pool = practice ? B.stats.mistakeCards() : B.stats.pending(topic);
-    const list = shuffle(pool);
-    return size ? list.slice(0, size) : list;
+    const list = practice ? shuffle(B.stats.mistakeCards()) : shuffle(B.stats.due(topic)).concat(shuffle(B.stats.fresh(topic)));
+    return shuffle(size ? list.slice(0, size) : list);
+  }
+
+  /** ●●●○○○ — a review card's step. */
+  function stepDots(lv) {
+    return h('span', { class: 'step-dots', 'aria-hidden': 'true' }, '●'.repeat(lv) + '○'.repeat(B.srs.MAX - lv));
   }
 
   B.ui.session = function (root, opts) {
@@ -12485,6 +12941,7 @@ Brezel.deck.addCards('vocab', [
 
     const total = queue.length;
     const deckTotal = B.deck.cards.length;
+    const reviews = new Set(practice ? [] : queue.filter((c) => B.store.isDone(c.id)).map((c) => c.id));
     const cleared = new Set(); // answered correctly in this session
     const missed = new Set(); // answered wrong at least once in this session
     let idx = 0;
@@ -12559,9 +13016,11 @@ Brezel.deck.addCards('vocab', [
       const prev = B.store.cardState(card.id);
       const tag = missed.has(card.id)
         ? h('span', { class: 'again-tag' }, '↻ Try again')
-        : prev && prev.w
-          ? h('span', { class: 'again-tag old' }, '↻ Missed before')
-          : null;
+        : reviews.has(card.id)
+          ? h('span', { class: 'again-tag is-review', title: `Review · step ${prev.lv || 1} of ${B.srs.MAX}` }, '🔁 Review ', stepDots(prev.lv || 1))
+          : prev && prev.w
+            ? h('span', { class: 'again-tag old' }, '↻ Missed before')
+            : null;
       const exRoot = h('div', { class: 'ex ex-' + card.type });
       const wrap = h('div', { class: 's-card' + (animate ? ' enter' : '') },
         h('div', { class: 'card-meta' }, h('span', { class: 'topic-tag' }, h('span', { 'aria-hidden': 'true' }, topic.icon + ' '), topic.name), tag),
@@ -12633,7 +13092,7 @@ Brezel.deck.addCards('vocab', [
         requeue();
       }
       xp += gained;
-      const { newlyDone } = B.store.record(card, ok, res.skipped ? '(skipped)' : res.given, ms, { practice, xp: gained });
+      const { newlyDone, due } = B.store.record(card, ok, res.skipped ? '(skipped)' : res.given, ms, { practice, xp: gained });
       if (newlyDone) {
         mastered++;
         doneNum.textContent = String(doneCount());
@@ -12644,7 +13103,7 @@ Brezel.deck.addCards('vocab', [
       B.audio.play(ok ? 'correct' : 'wrong');
       if (ok && COMBOS[combo]) showCombo(combo);
       if (!ok) pulse(stage.firstElementChild, 'shake');
-      renderFeedback(res, ok, gained);
+      renderFeedback(res, ok, gained, due);
       setFooter(ok ? 'good' : 'bad');
     }
 
@@ -12669,7 +13128,7 @@ Brezel.deck.addCards('vocab', [
       setTimeout(() => B.audio.play('combo'), 260);
     }
 
-    function renderFeedback(res, ok, gained) {
+    function renderFeedback(res, ok, gained, due) {
       let sol = null;
       try {
         sol = ctrl.solution ? ctrl.solution() : null;
@@ -12690,6 +13149,7 @@ Brezel.deck.addCards('vocab', [
       }
       if (res.note) body.push(h('div', { class: 'fb-note', html: md(res.note) }));
       if (card.explain) body.push(h('div', { class: 'fb-explain' }, h('span', { class: 'fb-why' }, 'Why? '), h('span', { html: md(card.explain) })));
+      if (ok && due != null) body.push(h('div', { class: 'fb-next' }, `📅 This card comes back ${B.srs.when(due, B.srs.day())} for a review.`));
       if (!ok) {
         body.push(h('div', { class: 'fb-again' }, comeBackGap === 0
           ? '↻ This card comes straight back — try it again.'
@@ -12753,6 +13213,7 @@ Brezel.deck.addCards('vocab', [
         correct,
         wrong: answered - correct,
         firstTry,
+        reviewed: [...reviews].filter((id) => cleared.has(id)).length,
         cleared: cleared.size,
         missed: [...missed],
         mastered,
@@ -12794,7 +13255,7 @@ Brezel.deck.addCards('vocab', [
           h('div', { class: 'intro-bar', 'aria-hidden': 'true' }, barFill),
           h('div', { class: 'intro-session' }, practice
             ? `Practising ${total} card${total === 1 ? '' : 's'} you got wrong before`
-            : `This session: ${total} card${total === 1 ? '' : 's'}${topicName}`),
+            : `This session: ${total} card${total === 1 ? '' : 's'}${reviews.size ? ` (${reviews.size} to review)` : ''}${topicName}`),
           h('div', { class: 'intro-tap' }, 'Tap anywhere to start')));
       introEl.addEventListener('click', dismissIntro);
       root.append(introEl);
@@ -12882,7 +13343,7 @@ Brezel.deck.addCards('vocab', [
 
 </script>
   <script>/* js/ui/summary.js */
-/* End-of-session summary: XP, accuracy, time, newly mastered cards and the cards that were missed. */
+/* End-of-session summary: XP, accuracy, time, newly mastered and reviewed cards, and the cards that were missed. */
 (function () {
   'use strict';
   const B = window.Brezel;
@@ -12933,9 +13394,9 @@ Brezel.deck.addCards('vocab', [
       ? 'Wunderbar! Your detailed review with charts is ready.'
       : r.practice
         ? `You practised ${r.total} card${r.total === 1 ? '' : 's'} you had got wrong before.`
-        : r.quit
-          ? `You mastered ${r.mastered} new card${r.mastered === 1 ? '' : 's'} before stopping.`
-          : `You mastered ${r.mastered} new card${r.mastered === 1 ? '' : 's'}.`;
+        : `You mastered ${r.mastered} new card${r.mastered === 1 ? '' : 's'}` +
+          (r.reviewed ? ` and reviewed ${r.reviewed}` : '') +
+          (r.quit ? ' before stopping.' : '.');
 
     const tiles = h('div', { class: 'stat-grid' },
       tile('⚡', '+' + r.xp, 'XP earned', 't-xp'),
@@ -12947,7 +13408,9 @@ Brezel.deck.addCards('vocab', [
       h('div', { class: 'overall-row' }, h('b', {}, 'Overall'), h('span', {}, h('b', {}, String(ov.done)), ` / ${ov.total} mastered`)),
       h('div', { class: 'progress big', role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': String(ov.total), 'aria-valuenow': String(ov.done), 'aria-label': 'Overall progress' },
         h('div', { class: 'progress-fill', style: { width: pct(ov.done, ov.total) + '%' } })),
-      h('p', { class: 'muted small' }, complete ? 'Every card is done.' : `${ov.total - ov.done} cards left${r.bestCombo >= 3 ? ` · best combo this session: 🔥 ${r.bestCombo}` : ''}`));
+      h('p', { class: 'muted small' }, (complete ? 'Every card is mastered' : `${ov.total - ov.done} cards left`) +
+        (ov.due ? ` · ${ov.due} to review today` : '') +
+        (r.bestCombo >= 3 ? ` · best combo this session: 🔥 ${r.bestCombo}` : '')));
 
     const missedCards = r.missed.map((id) => B.deck.cardMap[id]).filter(Boolean);
     const missedList = missedCards.length
@@ -13090,6 +13553,34 @@ Brezel.deck.addCards('vocab', [
       h('section', { class: 'card area weak' },
         h('h2', { class: 'section-title' }, h('span', { 'aria-hidden': 'true' }, '🎯 '), 'Focus on these'),
         weak.length ? h('ul', { class: 'area-list' }, weak.map(areaItem)) : noneYet(judged.length ? 'Nothing weak right now — sehr gut!' : `Answer at least ${B.stats.MIN_CARDS} cards in a topic to see how you’re doing.`))));
+
+    // --- memory: spaced repetition ------------------------------------------------------------------
+    if (ov.done) {
+      const mem = B.stats.memory(7);
+      const days = B.srs.DAYS.slice(1).join(', ');
+      main.append(h('section', { class: 'card memory' },
+        h('h2', { class: 'section-title' }, h('span', { 'aria-hidden': 'true' }, '🧠 '), 'How well you remember'),
+        h('p', { class: 'muted small memory-sub' }, `A mastered card comes back for review after ${days} days. Each right answer moves it a step up, a wrong one two steps down.`),
+        h('div', { class: 'stat-grid memory-grid' },
+          tile('🔁', String(ov.due), 'to review today', ov.due ? 't-due' : ''),
+          mem.groups.map(({ group, count }) => tile(group.icon, String(count), group.label)))));
+
+      const max = Math.max(1, ...mem.ahead.map((d) => d.count));
+      const dayName = (d, i) => (i === 0 ? 'Today' : i === 1 ? 'Tomorrow'
+        : new Date(d * 86400000).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' }));
+      const aheadRows = mem.ahead.map((d, i) => ({ label: dayName(d.day, i), count: d.count }));
+      main.append(B.charts.card({
+        title: 'Reviews coming up',
+        sub: 'Mastered cards due on each of the next 7 days. Today includes anything overdue.',
+        body: B.charts.bars(aheadRows.map((r) => ({
+          label: r.label,
+          value: Math.round((r.count / max) * 100),
+          text: String(r.count),
+          tip: [r.label, `${r.count} card${r.count === 1 ? '' : 's'} to review`],
+        }))),
+        table: { head: ['Day', 'Cards to review'], rows: aheadRows.map((r) => [r.label, r.count]) },
+      }));
+    }
 
     // --- chart: mastery by topic ------------------------------------------------------------------
     const topicRows = topics.map((t) => ({

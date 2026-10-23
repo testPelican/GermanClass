@@ -24,8 +24,10 @@ keeps its own progress.
 ## How a session works
 
 - The start screen shows how far you are, e.g. **23/500**. A card only counts
-  once you answer it correctly.
-- Cards and answer options are shuffled every session.
+  once you answer it correctly. Then it comes back for reviews (see below).
+- **Start** first takes the reviews that are due, then new cards, up to the
+  session size, and mixes them. Cards and answer options are shuffled every
+  session.
 - If you get a card wrong, the correct answer and the reason are shown, and the
   card goes back into the pile at a random later spot in the same session.
 - **Practise mistakes** replays every card you have ever got wrong. It is extra
@@ -33,6 +35,42 @@ keeps its own progress.
 - When all 500 are done, **Review** shows your strong and weak topics, mastery
   per topic, first-try accuracy per exercise type and accuracy per session.
   Every chart can be switched to a table.
+
+### Reviews (spaced repetition)
+
+A mastered card comes back for a review, later and later each time you get
+it right:
+
+| Step | 1 | 2 | 3 | 4 | 5 | 6 |
+|---|---|---|---|---|---|---|
+| Comes back after | 1 day | 3 days | 7 days | 2 weeks | 1 month | 3 months |
+
+- A right answer on its day moves the card one step up.
+- A wrong answer moves it **two steps down** (never below step 1) and keeps it
+  in today's pile. Once you get it right again, it comes back tomorrow and
+  climbs from there.
+- The start screen shows **🔁 N cards to review today**, and each topic shows
+  how many of its cards are due. A review card is tagged **🔁 Review** with
+  its step (●●○○○○), and after a right answer the app says when it comes back.
+- When nothing is due and every card of a topic is mastered, the topic says
+  **All caught up** and when the next review is.
+- *Practise mistakes* doesn't change the review steps.
+- The **Progress report** shows how many cards are *Learning* (steps 1–2),
+  *Getting solid* (3–4) and *Solid* (5–6), and the reviews coming up in the
+  next 7 days.
+- Cards mastered before reviews existed got a schedule the first time the new
+  version opened: step 2 if they were right on the first try, otherwise step 1.
+  The ones already overdue were spread over the next days, at most 25 a day,
+  oldest first.
+
+### The Rule book
+
+- **📖 Rule book** on the start screen lists all 53 grammar rules, grouped by
+  topic, with their tables (e.g. the four cases). Tap a rule to open it.
+- The search box finds rules by any word in them. Case and umlauts don't
+  matter: *dativ* finds *Dativ*, *madchen* finds *Mädchen*.
+- **All rules of this topic →** in a topic's 📖 Rule tip opens the Rule book
+  at that topic.
 
 ### The Rules topic
 
@@ -91,6 +129,7 @@ The typo allowance never lets wrong grammar through, so these are marked wrong:
 | `1`/`T`, `2`/`F` | True / False |
 | `Backspace` | Sentence builder: take back the last word |
 | `G` | Open the Glossary (`Enter` or `Esc` closes it) |
+| `/` | Rule book: search |
 | `Esc` | Close a word bubble, or quit the session |
 
 ## Adding cards
@@ -131,7 +170,8 @@ Each file in `js/exercises/` starts with a comment documenting its fields.
 
 - **Glossary fields** (on any card):
   - `rule`: the id of a rule in `data/rules.js`, or a list of up to two ids.
-    Write a new rule there if none fits. Its examples must not be a card's
+    Write a new rule there if none fits, in the `addRules('<topic>', …)` list
+    of its topic (the Rule book groups rules that way). Its examples must not be a card's
     answer, which the deck check verifies. A rule can have a small `table`
     (`{ head, rows }`), like the article tables of the four cases.
   - `asksRule: true`: the rule gives this card's answer away, so the Glossary
@@ -169,7 +209,8 @@ node tools/validate.js
 ```
 
 This lists any invalid cards and duplicate ids, prints the counts per topic
-and per type, and runs the typo-rule tests. It also checks the Glossary:
+and per type, and runs the typo-rule and review-schedule tests. It also checks
+the Glossary:
 
 - every card has a known rule;
 - every question word has a translation;
@@ -192,14 +233,14 @@ node tools/build.js
 Brezel.html           the whole app in one file (generated: node tools/build.js)
 index.html            entry point for the source files (script order matters)
 css/app.css           all styles, light + dark theme
-js/core/              utilities, deck registry, answer checker, storage, stats, sound, drag & drop,
-                      word translations (gloss.js)
+js/core/              utilities, deck registry, answer checker, review schedule (srs.js), storage,
+                      stats, sound, drag & drop, word translations (gloss.js)
 js/exercises/         one file per exercise type
-js/ui/                screens: home, session, summary, review, charts; the Glossary dialog
+js/ui/                screens: home, session, summary, review, Rule book, charts; the Glossary dialog
 data/topics.js        topics + the rule tip shown for each
 data/lexicon.js       verb forms, word families, proper nouns
 data/glossary.js      English meanings of the words in the questions
-data/rules.js         the grammar rules shown in the Glossary
+data/rules.js         the grammar rules, by topic: shown in the Glossary and the Rule book
 data/cards/           the cards, one file per topic; 16-rules.js has rule questions for several topics
 tools/validate.js     deck checker
 tools/build.js        builds Brezel.html

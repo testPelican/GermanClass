@@ -86,6 +86,34 @@
         h('h2', { class: 'section-title' }, h('span', { 'aria-hidden': 'true' }, '🎯 '), 'Focus on these'),
         weak.length ? h('ul', { class: 'area-list' }, weak.map(areaItem)) : noneYet(judged.length ? 'Nothing weak right now — sehr gut!' : `Answer at least ${B.stats.MIN_CARDS} cards in a topic to see how you’re doing.`))));
 
+    // --- memory: spaced repetition ------------------------------------------------------------------
+    if (ov.done) {
+      const mem = B.stats.memory(7);
+      const days = B.srs.DAYS.slice(1).join(', ');
+      main.append(h('section', { class: 'card memory' },
+        h('h2', { class: 'section-title' }, h('span', { 'aria-hidden': 'true' }, '🧠 '), 'How well you remember'),
+        h('p', { class: 'muted small memory-sub' }, `A mastered card comes back for review after ${days} days. Each right answer moves it a step up, a wrong one two steps down.`),
+        h('div', { class: 'stat-grid memory-grid' },
+          tile('🔁', String(ov.due), 'to review today', ov.due ? 't-due' : ''),
+          mem.groups.map(({ group, count }) => tile(group.icon, String(count), group.label)))));
+
+      const max = Math.max(1, ...mem.ahead.map((d) => d.count));
+      const dayName = (d, i) => (i === 0 ? 'Today' : i === 1 ? 'Tomorrow'
+        : new Date(d * 86400000).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' }));
+      const aheadRows = mem.ahead.map((d, i) => ({ label: dayName(d.day, i), count: d.count }));
+      main.append(B.charts.card({
+        title: 'Reviews coming up',
+        sub: 'Mastered cards due on each of the next 7 days. Today includes anything overdue.',
+        body: B.charts.bars(aheadRows.map((r) => ({
+          label: r.label,
+          value: Math.round((r.count / max) * 100),
+          text: String(r.count),
+          tip: [r.label, `${r.count} card${r.count === 1 ? '' : 's'} to review`],
+        }))),
+        table: { head: ['Day', 'Cards to review'], rows: aheadRows.map((r) => [r.label, r.count]) },
+      }));
+    }
+
     // --- chart: mastery by topic ------------------------------------------------------------------
     const topicRows = topics.map((t) => ({
       label: t.topic.name,

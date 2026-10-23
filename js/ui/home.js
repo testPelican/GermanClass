@@ -1,4 +1,4 @@
-/* Home screen: overall progress, session setup, topics with their grammar rules. */
+/* Home screen: overall progress, reviews due, session setup, topics with their grammar rules. */
 (function () {
   'use strict';
   const B = window.Brezel;
@@ -90,18 +90,23 @@
       h('div', { class: 'top-actions' }, soundBtn, themeBtn));
 
     // --- hero ---------------------------------------------------------------------
+    const dueLine = ov.due
+      ? h('p', { class: 'due-line' }, h('span', { 'aria-hidden': 'true' }, '🔁 '), `${ov.due} card${ov.due === 1 ? '' : 's'} to review today`)
+      : null;
     const heroText = ov.complete
       ? h('div', { class: 'hero-text' },
         h('h1', {}, 'Alles fertig! 🎉'),
         h('p', {}, `You’ve mastered all ${ov.total} cards.`),
-        h('p', { class: 'muted' }, 'Your detailed review is ready.'))
+        h('p', { class: 'muted' }, 'Your detailed review is ready.'),
+        dueLine)
       : h('div', { class: 'hero-text' },
         h('h1', {}, greeting()),
         h('p', {}, ov.done ? `You’ve mastered ${ov.done} of ${ov.total} cards.` : `${ov.total} cards are waiting for you.`),
         h('p', { class: 'muted' },
           ov.done
             ? `${ov.total - ov.done} to go` + (ov.stillWrong ? ` · ${ov.stillWrong} need another try` : '')
-            : 'Grammar first: word order, verbs, tenses, articles and more.'));
+            : 'Grammar first: word order, verbs, tenses, articles and more.'),
+        dueLine);
     const hero = h('section', { class: 'card hero' }, ring(ov.done, ov.total), heroText);
 
     // --- session setup --------------------------------------------------------------
@@ -137,20 +142,24 @@
     }
 
     function paintSetup() {
-      const pending = B.stats.pending(topic).length;
+      const due = B.stats.due(topic).length;
+      const fresh = B.stats.fresh(topic).length;
+      const pending = due + fresh;
       const n = size ? Math.min(size, pending) : pending;
       sizeBtns.forEach(({ n: k, b }) => b.setAttribute('aria-pressed', String(k === size)));
       chipBtns.forEach(({ id, b }) => b.setAttribute('aria-pressed', String(id === topic)));
       topicCards.forEach(({ id, el }) => el.classList.toggle('is-selected', id === topic));
       const tName = topic === 'all' ? 'all topics' : B.deck.topicMap[topic].name;
       if (!pending) {
+        const next = B.stats.nextDue(topic);
         startBtn.disabled = true;
-        startBtn.textContent = 'Topic complete ✓';
-        startSub.textContent = 'Every card here is mastered — pick another topic.';
+        startBtn.textContent = 'All caught up ✓';
+        startSub.textContent = `Every card here is mastered. The next review is ${B.srs.when(next, B.srs.day())} — or pick another topic.`;
       } else {
         startBtn.disabled = false;
         startBtn.textContent = 'Start';
-        startSub.textContent = `${n} card${n === 1 ? '' : 's'} · ${tName} · ${pending} left to master`;
+        const parts = [due ? `${due} to review` : '', fresh ? `${fresh} new` : ''].filter(Boolean).join(' + ');
+        startSub.textContent = `${n} card${n === 1 ? '' : 's'} · ${tName} · ${parts}` + (due && n < pending ? ' · reviews first' : '');
       }
     }
 
@@ -163,30 +172,25 @@
     const reportBtn = h('button', { class: 'btn btn-outline', type: 'button' }, h('span', { 'aria-hidden': 'true' }, '📊 '), ov.complete ? 'Detailed review' : 'Progress report');
     reportBtn.addEventListener('click', () => B.app.go('review'));
 
-    let setup;
-    if (ov.complete) {
-      const reviewBtn = h('button', { class: 'btn btn-primary btn-big', type: 'button' }, 'See my detailed review');
-      reviewBtn.addEventListener('click', () => B.app.go('review'));
-      const againBtn = h('button', { class: 'btn btn-outline', type: 'button' }, h('span', { 'aria-hidden': 'true' }, '↺ '), 'Start over');
-      againBtn.addEventListener('click', resetAll);
-      setup = h('section', { class: 'card setup' },
-        h('h2', { class: 'section-title' }, 'What next?'),
-        reviewBtn,
-        h('div', { class: 'home-links' }, practiseBtn, againBtn));
-    } else {
-      setup = h('section', { class: 'card setup' },
-        h('h2', { class: 'section-title' }, 'New session'),
-        h('div', { class: 'field' }, h('span', { class: 'field-label' }, 'Cards'), sizeSeg),
-        h('div', { class: 'field' }, h('span', { class: 'field-label' }, 'Topic'), chipRow),
-        startBtn,
-        startSub,
-        h('div', { class: 'home-links' }, practiseBtn, reportBtn));
-    }
+    const bookBtn = h('button', { class: 'btn btn-outline', type: 'button' }, h('span', { 'aria-hidden': 'true' }, '📖 '), 'Rule book');
+    bookBtn.addEventListener('click', () => B.app.go('rulebook'));
+
+    // Once every card is mastered, sessions are reviews only: the setup stays.
+    const setup = h('section', { class: 'card setup' },
+      h('h2', { class: 'section-title' }, ov.complete ? 'Keep it fresh' : 'New session'),
+      h('div', { class: 'field' }, h('span', { class: 'field-label' }, 'Cards'), sizeSeg),
+      h('div', { class: 'field' }, h('span', { class: 'field-label' }, 'Topic'), chipRow),
+      startBtn,
+      startSub,
+      h('div', { class: 'home-links' }, practiseBtn, reportBtn, bookBtn));
 
     // --- topics ------------------------------------------------------------------------
     const topicCards = topics.map((t) => {
       const tipId = 'tip-' + t.topic.id;
-      const tip = h('div', { class: 'topic-tip', id: tipId, hidden: true, html: md(t.topic.tip || '') });
+      const allRules = h('button', { class: 'link-btn tip-more', type: 'button' }, 'All rules of this topic →');
+      allRules.addEventListener('click', () => B.app.go('rulebook', { topic: t.topic.collects ? null : t.topic.id }));
+      if (t.topic.collects) allRules.textContent = 'Open the Rule book →';
+      const tip = h('div', { class: 'topic-tip', id: tipId, hidden: true }, h('div', { html: md(t.topic.tip || '') }), allRules);
       const ruleBtn = h('button', { class: 'link-btn rule-btn', type: 'button', 'aria-expanded': 'false', 'aria-controls': tipId }, h('span', { 'aria-hidden': 'true' }, '📖 '), 'Rule');
       ruleBtn.addEventListener('click', () => {
         const open = tip.hidden;
@@ -194,9 +198,10 @@
         ruleBtn.setAttribute('aria-expanded', String(open));
         if (open) B.util.pulse(tip, 'reveal');
       });
-      const main = h('button', { class: 'topic-main', type: 'button', 'aria-label': `${t.topic.name}: ${t.done} of ${t.total} mastered. Select topic.` },
+      const main = h('button', { class: 'topic-main', type: 'button', 'aria-label': `${t.topic.name}: ${t.done} of ${t.total} mastered${t.due ? `, ${t.due} to review today` : ''}. Select topic.` },
         h('span', { class: 'topic-icon', 'aria-hidden': 'true' }, t.topic.icon),
         h('span', { class: 'topic-text' }, h('b', {}, t.topic.name), h('small', {}, t.topic.de)),
+        t.due ? h('span', { class: 'due-pill', title: `${t.due} to review today` }, `🔁 ${t.due}`) : null,
         h('span', { class: 'topic-count' }, t.done === t.total ? '✓' : `${t.done}/${t.total}`));
       main.addEventListener('click', () => selectTopic(t.topic.id, true));
       const bar = h('div', { class: 'mini-bar', 'aria-hidden': 'true' }, h('span', { style: { width: pct(t.done, t.total) + '%' } }));
@@ -235,12 +240,11 @@
           h('div', { class: 'topic-grid' }, topicCards.map((t) => t.el))),
         h('footer', { class: 'home-foot' }, resetBtn, h('p', { class: 'muted small' }, 'Progress is saved in this browser on this device.')))
     );
-    if (!ov.complete) paintSetup();
-    else topicCards.forEach(({ el }) => el.querySelector('.topic-main').setAttribute('disabled', ''));
+    paintSetup();
 
     return {
       onKey(e) {
-        if (e.key === 'Enter' && e.target === document.body && !ov.complete && !startBtn.disabled) {
+        if (e.key === 'Enter' && e.target === document.body && !startBtn.disabled) {
           e.preventDefault();
           startBtn.click();
         }

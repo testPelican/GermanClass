@@ -4,7 +4,7 @@
  *  - loads the core, exercise types and all data files (same order as index.html)
  *  - reports cards that failed validation, duplicate ids, counts per topic / type
  *  - checks the Glossary (rules, translations) and that the Rules topic covers every rule
- *  - runs a few sanity tests of the typed-answer checker
+ *  - runs a few sanity tests of the typed-answer checker and the review schedule
  * Exit code 1 if anything is wrong.
  */
 'use strict';
@@ -127,6 +127,7 @@ const hidden = deck.cards.filter((c) => c.gloss === false).length;
 if (!glossErrors) console.log(`  ✓ every card has a rule (${deck.rules.length} rules; ${folded} cards keep it folded)`);
 if (!glossErrors) console.log(`  ✓ every question word has a translation (${hidden} meaning cards hide them)`);
 for (const r of deck.rules) {
+  if (!deck.topicMap[r.topic] || deck.topicMap[r.topic].collects) gfail(`rule ${r.id}: unknown topic "${r.topic}" (use Brezel.deck.addRules('<topic>', [...]))`);
   if (r.table && !(Array.isArray(r.table.rows) && r.table.rows.length && r.table.rows.every((row) => Array.isArray(row) && row.length === (r.table.head || r.table.rows[0]).length))) {
     gfail(`rule ${r.id}: every table row needs as many cells as the head`);
   }
@@ -195,6 +196,48 @@ else console.log('  ✓ formal Sie capital reminder');
 const nounHint = B.check.typed('lehrerin', ['Lehrerin'], { nounHint: true });
 if (!nounHint.caseNote) fail('noun capital note missing');
 else console.log('  ✓ noun capital reminder');
+
+// --- review schedule (js/core/srs.js) -------------------------------------------------------
+console.log('\nReview schedule:');
+const S = B.srs;
+const T = 20000; // any day number
+const srsCases = [
+  // [state before, answer right?, expected {lv, due, bad} or null, label]
+  [{}, true, { lv: 1, due: T + 1, bad: 0 }, 'first right answer: step 1, back tomorrow'],
+  [{}, false, null, 'a new card answered wrong gets no schedule'],
+  [{ done: true, lv: 1, due: T }, true, { lv: 2, due: T + 3, bad: 0 }, 'due on step 1 and right: step 2, back in 3 days'],
+  [{ done: true, lv: 3, due: T - 5 }, true, { lv: 4, due: T + 14, bad: 0 }, 'overdue on step 3 and right: step 4, back in 14 days'],
+  [{ done: true, lv: 6, due: T }, true, { lv: 6, due: T + 90, bad: 0 }, 'step 6 is the top: back in 90 days'],
+  [{ done: true, lv: 5, due: T }, false, { lv: 3, due: T, bad: 1 }, 'wrong on step 5: two steps down, still due today'],
+  [{ done: true, lv: 1, due: T }, false, { lv: 1, due: T, bad: 1 }, 'wrong on step 1 stays on step 1'],
+  [{ done: true, lv: 3, due: T, bad: 1 }, true, { lv: 3, due: T + 1, bad: 0 }, 'right again after a slip: back tomorrow, same step'],
+  [{ done: true, lv: 2, due: T + 2 }, true, null, 'right before its day: nothing changes'],
+];
+for (const [s, ok, want, label] of srsCases) {
+  const got = S.next(s, ok, T);
+  if (JSON.stringify(got) === JSON.stringify(want)) console.log(`  ✓ ${label}`);
+  else fail(`${label}: got ${JSON.stringify(got)}, expected ${JSON.stringify(want)}`);
+}
+{
+  // 60 cards mastered weeks ago (half on the first try), one mastered yesterday, one never mastered
+  const today = S.day(new Date(2026, 9, 23, 9));
+  const old = new Date(2026, 8, 1, 12).getTime();
+  const cards = {};
+  for (let i = 0; i < 60; i++) cards['c' + i] = { done: true, first: i % 2, d: old + i * 1000 };
+  cards.fresh = { done: true, first: 1, d: new Date(2026, 9, 22, 12).getTime() };
+  cards.open = { done: false, a: 1, w: 1 };
+  const n = S.migrate(cards, today);
+  const perDay = {};
+  for (let i = 0; i < 60; i++) perDay[cards['c' + i].due] = (perDay[cards['c' + i].due] || 0) + 1;
+  const ok = n === 61 && cards.c1.lv === 2 && cards.c0.lv === 1 && Math.max(...Object.values(perDay)) <= 25 &&
+    Math.min(...Object.keys(perDay).map(Number)) === today && cards.fresh.due === today + 2 && cards.open.lv == null && S.migrate(cards, today) === 0;
+  if (ok) console.log('  ✓ old progress gets a schedule: at most 25 old cards a day, recent ones keep their date');
+  else fail(`migration: ${JSON.stringify({ n, perDay, fresh: cards.fresh, c0: cards.c0, c1: cards.c1 })}`);
+}
+if ([[0, 'today'], [1, 'tomorrow'], [3, 'in 3 days'], [14, 'in 2 weeks'], [30, 'in a month'], [90, 'in 3 months']].every(([n, w]) => S.when(T + n, T) === w)) console.log('  ✓ "when" texts');
+else fail('srs.when texts');
+if (S.day(new Date(2026, 9, 23, 0, 5)) === S.day(new Date(2026, 9, 23, 23, 55)) && S.day(new Date(2026, 9, 24, 0, 5)) - S.day(new Date(2026, 9, 23, 23, 55)) === 1) console.log('  ✓ days follow the local calendar');
+else fail('srs.day: a calendar day must be one number from midnight to midnight');
 
 // Every typed card: the shown answer must be accepted, and must not be flagged by its own family rules.
 for (const c of deck.cards) {

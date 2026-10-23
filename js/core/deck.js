@@ -3,7 +3,7 @@
  *   Brezel.deck.addTopics([...])
  *   Brezel.deck.addVerbs({...}), addFamilies([...]), addProperNouns([...])
  *   Brezel.deck.addCards('topicId', [...])
- *   Brezel.deck.addRules([...])   (the rule a card practises, shown in the Glossary)
+ *   Brezel.deck.addRules('topicId', [...])   (the rules a card practises: Glossary and Rule book)
  * A card belongs to one topic. A topic with collects: 'theory' (Rules) also holds every card
  * marked theory: true: a question about a rule itself, never a translation.
  * finalize() then validates everything; broken cards are skipped and reported
@@ -56,10 +56,11 @@
     },
 
     /** rules: [{ id, title, text, table?: { head, rows }, points?: [...] }] — markdown-lite like card text. */
-    addRules(list) {
+    addRules(topicId, list) {
       for (const r of list) {
-        this.rules.push(r);
-        this.ruleMap[r.id] = r;
+        const rule = Object.assign({ topic: topicId }, r);
+        this.rules.push(rule);
+        this.ruleMap[rule.id] = rule;
       }
     },
 

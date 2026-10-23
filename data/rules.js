@@ -8,9 +8,11 @@
  *   { id, title, text?, table?: { head?: [...], rows: [[...], …] }, points?: [...] }
  * **bold** and *italic* work as in card text, also in table cells. A table row starts with its label.
  * Examples here are deliberately not the sentences from the cards (tools/validate.js checks).
+ * Each addRules call holds the rules of one topic; the 📖 Rule book shows them in that order.
  */
-Brezel.deck.addRules([
-  // --- word order ---------------------------------------------------------------------
+
+// --- word order --------------------------------------------------------------------------
+Brezel.deck.addRules('order', [
   {
     id: 'verb-2',
     title: 'The verb comes second',
@@ -57,8 +59,10 @@ Brezel.deck.addRules([
     text: 'A question with a question word: **W-word (1) + verb (2) + subject**, then the rest. A second verb part still goes to the end.',
     points: ['*Wo **arbeitet** dein Bruder?*', '*Wann **hast** du das Auto **gekauft**?*'],
   },
+]);
 
-  // --- present tense ---------------------------------------------------------------------
+// --- present tense -----------------------------------------------------------------------
+Brezel.deck.addRules('present', [
   {
     id: 'present-endings',
     title: 'Present tense endings',
@@ -109,8 +113,10 @@ Brezel.deck.addRules([
     text: '**es gibt** means *there is* or *there are*. It is always *gibt*, even for many things, and the thing after it is in the **Akkusativ**.',
     points: ['*Hier gibt es einen Park.* (der Park → einen)', 'Question: *Gibt es hier ein Kino?*'],
   },
+]);
 
-  // --- Perfekt ------------------------------------------------------------------------------
+// --- Perfekt -----------------------------------------------------------------------------
+Brezel.deck.addRules('past', [
   {
     id: 'perfekt-form',
     title: 'Perfekt = Hilfsverb + Partizip II',
@@ -178,8 +184,10 @@ Brezel.deck.addRules([
       'Separable: **prefix + ge + verb** — *aufgemacht, mitgebracht*',
     ],
   },
+]);
 
-  // --- cases, articles -----------------------------------------------------------------------
+// --- cases, articles ---------------------------------------------------------------------
+Brezel.deck.addRules('cases', [
   {
     id: 'cases',
     title: 'The four cases',
@@ -305,8 +313,10 @@ Brezel.deck.addRules([
       'The indefinite article follows the gender: der / das → **ein**, die → **eine**',
     ],
   },
+]);
 
-  // --- prepositions ---------------------------------------------------------------------------
+// --- prepositions ------------------------------------------------------------------------
+Brezel.deck.addRules('prepositions', [
   {
     id: 'im-ins',
     title: 'im (where?) or ins (where to?)',
@@ -349,8 +359,10 @@ Brezel.deck.addRules([
       '*seit* (since) ≠ *seid* (the ihr form of sein).',
     ],
   },
+]);
 
-  // --- female forms -------------------------------------------------------------------------------
+// --- female forms ------------------------------------------------------------------------
+Brezel.deck.addRules('gender', [
   {
     id: 'female-forms',
     title: 'Female and male job titles',
@@ -363,8 +375,10 @@ Brezel.deck.addRules([
       'After *sein*, jobs usually have no article: *Sie ist Bäckerin.*',
     ],
   },
+]);
 
-  // --- possessives --------------------------------------------------------------------------------
+// --- possessives -------------------------------------------------------------------------
+Brezel.deck.addRules('possessive', [
   {
     id: 'possessive',
     title: 'mein, dein, sein, ihr …',
@@ -386,8 +400,10 @@ Brezel.deck.addRules([
       'The same for dein, sein, ihr …: *mit seiner Oma, in ihrer Stadt*',
     ],
   },
+]);
 
-  // --- questions, negation ------------------------------------------------------------------------
+// --- questions, negation -----------------------------------------------------------------
+Brezel.deck.addRules('questions', [
   {
     id: 'w-words',
     title: 'Question words',
@@ -408,8 +424,10 @@ Brezel.deck.addRules([
       '*nicht* goes after the object, or just before the second verb part: *Ich kenne ihn nicht. Ich habe gestern nicht gekocht.*',
     ],
   },
+]);
 
-  // --- modal verbs, gern --------------------------------------------------------------------------
+// --- modal verbs, gern -------------------------------------------------------------------
+Brezel.deck.addRules('verbs', [
   {
     id: 'modal',
     title: 'Modal verbs: muss, kann, möchte',
@@ -429,8 +447,10 @@ Brezel.deck.addRules([
       '*gern* comes right after the verb and its subject: *Tanzt du gern?*',
     ],
   },
+]);
 
-  // --- separable / inseparable verbs ---------------------------------------------------------------
+// --- separable / inseparable verbs -------------------------------------------------------
+Brezel.deck.addRules('prefix', [
   {
     id: 'separable',
     title: 'Separable verbs split',
@@ -463,8 +483,10 @@ Brezel.deck.addRules([
       'It changes a → ä with er / sie / es (*es gefällt*), and it never splits: *ge-* is inseparable.',
     ],
   },
+]);
 
-  // --- tenses ---------------------------------------------------------------------------------------
+// --- tenses ------------------------------------------------------------------------------
+Brezel.deck.addRules('tenses', [
   {
     id: 'tenses',
     title: 'Präsens, Perfekt, Präteritum',
@@ -486,8 +508,10 @@ Brezel.deck.addRules([
       'Many verbs are irregular in English too, often with similar vowels: *swim – swam – swum / schwimmen – schwamm – geschwommen*.',
     ],
   },
+]);
 
-  // --- Präteritum -------------------------------------------------------------------------------------
+// --- Präteritum --------------------------------------------------------------------------
+Brezel.deck.addRules('praet', [
   {
     id: 'praet-sein-haben',
     title: 'Präteritum of sein and haben',
@@ -515,8 +539,10 @@ Brezel.deck.addRules([
       'The other endings: du **-st**, wir **-en**, ihr **-t**, sie **-en**: *du fandst, wir fanden*',
     ],
   },
+]);
 
-  // --- reflexive verbs ---------------------------------------------------------------------------------
+// --- reflexive verbs ---------------------------------------------------------------------
+Brezel.deck.addRules('reflexive', [
   {
     id: 'reflexive-pronouns',
     title: 'Reflexive pronouns',
@@ -555,8 +581,10 @@ Brezel.deck.addRules([
       'German and Polish don’t always match: *sich erholen* (to rest) is reflexive, *odpoczywać* isn’t.',
     ],
   },
+]);
 
-  // --- talking about the past ----------------------------------------------------------------------------
+// --- talking about the past --------------------------------------------------------------
+Brezel.deck.addRules('pastq', [
   {
     id: 'perfekt-question',
     title: 'Questions in the Perfekt',
@@ -575,8 +603,10 @@ Brezel.deck.addRules([
       'Present → past: *Heute tanze ich.* → *Gestern habe ich getanzt.* (time word, Hilfsverb, subject … participle)',
     ],
   },
+]);
 
-  // --- vocabulary ---------------------------------------------------------------------------------------
+// --- vocabulary --------------------------------------------------------------------------
+Brezel.deck.addRules('vocab', [
   {
     id: 'vocab-nouns',
     title: 'Nouns: capital letter and article',

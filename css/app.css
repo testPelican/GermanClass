@@ -630,6 +630,17 @@ b {
   margin-top: 4px;
 }
 
+.hero-text .due-line {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--orange-soft);
+  color: var(--orange-ink);
+  font-size: 14px;
+  font-weight: 800;
+}
+
 .ring {
   position: relative;
   width: 120px;
@@ -879,6 +890,21 @@ b {
   font-variant-numeric: tabular-nums;
 }
 
+.due-pill {
+  flex: none;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--orange-soft);
+  color: var(--orange-ink);
+  font-size: 13px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.topic-tip .tip-more {
+  margin-top: 8px;
+}
+
 .topic-card.is-complete .topic-count {
   background: var(--good-bg);
   color: var(--good-ink);
@@ -1102,6 +1128,17 @@ b {
   color: var(--muted);
 }
 
+.again-tag.is-review {
+  gap: 6px;
+  background: var(--blue-soft);
+  color: var(--blue-ink);
+}
+
+.step-dots {
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+
 /* footer: Check / Continue + feedback panel */
 .s-foot {
   flex: none;
@@ -1255,7 +1292,8 @@ b {
   font-weight: 900;
 }
 
-.fb-again {
+.fb-again,
+.fb-next {
   font-size: 14px;
   font-weight: 800;
   color: var(--muted);
@@ -2786,6 +2824,19 @@ body.is-dragging * {
 .t-bad {
   --accent: var(--red);
 }
+.t-due {
+  --accent: var(--orange);
+}
+
+.memory-sub {
+  margin: -6px 0 14px;
+}
+
+@media (min-width: 560px) {
+  .memory-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
 
 .stat-icon {
   font-size: 24px;
@@ -3566,6 +3617,120 @@ body.is-dragging * {
   padding: 0 12px;
   min-height: 48px;
   font-size: 14px;
+}
+
+/* === Rule book ============================================================================ */
+.rulebook {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 16px max(16px, env(safe-area-inset-right)) calc(32px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  display: grid;
+  gap: 14px;
+}
+
+.rb-tools {
+  display: grid;
+  gap: 6px;
+}
+
+.rb-search {
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 16px;
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 700;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.rb-search::placeholder {
+  color: var(--faint);
+  font-weight: 600;
+}
+
+.rb-search:focus {
+  border-color: var(--blue);
+  background: var(--surface);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--blue) 18%, transparent);
+}
+
+.rb-empty {
+  color: var(--muted);
+  text-align: center;
+}
+
+.rb-topic {
+  scroll-margin-top: 72px;
+  padding-bottom: 8px;
+}
+
+.rb-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.rb-icon {
+  font-size: 22px;
+}
+
+.rb-de {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.rb-rule:not([hidden]) ~ .rb-rule:not([hidden]) {
+  border-top: 2px solid var(--border);
+}
+
+.rb-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 2px;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  list-style: none;
+  border-radius: 8px;
+}
+
+.rb-summary::-webkit-details-marker {
+  display: none;
+}
+
+.rb-summary::before {
+  content: '▸';
+  flex: none;
+  color: var(--muted);
+  transition: transform 0.15s ease;
+}
+
+.rb-rule[open] > .rb-summary::before {
+  transform: rotate(90deg);
+}
+
+.rb-summary em {
+  font-style: normal;
+  color: var(--blue-ink);
+}
+
+.rb-rule > .gl-rule {
+  margin-bottom: 12px;
+}
+
+@media (hover: hover) {
+  .rb-summary:hover {
+    color: var(--link);
+  }
 }
 
 /* the 📖 Glossary */

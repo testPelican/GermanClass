@@ -3,7 +3,8 @@
  * adding new cards later keeps all existing progress.
  *
  * cards[id] = { a: attempts, w: wrong attempts, done: bool, first: 1|0 (first attempt right?),
- *               lw: last wrong answer given, d: time it was mastered }
+ *               lw: last wrong answer given, d: time it was mastered,
+ *               lv, due, bad: the review schedule (js/core/srs.js) }
  * log      = every answer: { id, ok, t, ms, s: session id, p: practice?1:0 }
  * sessions = { id, start, end, answered, correct, wrong, mastered, xp, practice }
  */
@@ -37,6 +38,8 @@
           settings: Object.assign(base.settings, parsed.settings || {}),
           streak: Object.assign(base.streak, parsed.streak || {}),
         });
+        // progress from before spaced repetition: give mastered cards a review schedule
+        if (B.srs.migrate(state.cards, B.srs.day())) save();
       }
     } catch (e) {
       storageOk = false;
@@ -89,7 +92,7 @@
     return state.sessions[state.sessions.length - 1];
   }
 
-  /** Record one answer. Returns {newlyDone} */
+  /** Record one answer. Returns {newlyDone, due?} — due: the next review day, if the schedule changed. */
   function record(card, ok, given, ms, { practice = false, xp = 0 } = {}) {
     const sess = currentSession();
     state.log.push({ id: card.id, ok: ok ? 1 : 0, t: Date.now(), ms: Math.round(ms || 0), s: sess ? sess.id : 0, p: practice ? 1 : 0 });
@@ -102,24 +105,32 @@
       sess.end = Date.now();
     }
     let newlyDone = false;
+    let due = null;
     if (!practice) {
       const c = (state.cards[card.id] = state.cards[card.id] || { a: 0, w: 0, done: false, first: null });
+      const plan = B.srs.next(c, ok, B.srs.day());
+      if (plan) {
+        c.lv = plan.lv;
+        c.due = due = plan.due;
+        if (plan.bad) c.bad = 1;
+        else delete c.bad;
+      }
       c.a++;
       if (c.first === null) c.first = ok ? 1 : 0;
       if (ok) {
         if (!c.done) {
           newlyDone = true;
           if (sess) sess.mastered++;
+          c.d = Date.now();
         }
         c.done = true;
-        c.d = Date.now();
       } else {
         c.w++;
         c.lw = String(given == null ? '' : given).slice(0, 200);
       }
     }
     save();
-    return { newlyDone };
+    return { newlyDone, due };
   }
 
   function endSession(extra) {

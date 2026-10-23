@@ -19,9 +19,10 @@
     return { key: 'bad', icon: '✗', label: 'Needs work' };
   }
 
-  /** Aggregate a list of cards. first = right on the very first try; retry = mastered later. */
+  /** Aggregate a list of cards. first = right on the very first try; retry = mastered later; due = to review today. */
   function summarize(cards) {
-    let done = 0, first = 0, retry = 0, attempted = 0, wrong = 0, answers = 0, stillWrong = 0;
+    let done = 0, first = 0, retry = 0, attempted = 0, wrong = 0, answers = 0, stillWrong = 0, due = 0;
+    const today = B.srs.day();
     for (const c of cards) {
       const s = B.store.cardState(c.id);
       if (!s || !s.a) continue;
@@ -32,6 +33,7 @@
         done++;
         if (s.first === 1) first++;
         else retry++;
+        if (B.srs.isDue(s, today)) due++;
       } else stillWrong++;
     }
     const firstPct = pct(first, attempted);
@@ -41,6 +43,7 @@
       first,
       retry,
       stillWrong,
+      due,
       unseen: cards.length - attempted,
       notDone: cards.length - done,
       attempted,
@@ -107,8 +110,44 @@
       .slice(0, limit);
   }
 
-  const pending = (topic) =>
-    B.deck.cards.filter((c) => (topic === 'all' || !topic || B.deck.inTopic(c, topic)) && !B.store.isDone(c.id));
+  const inTopic = (c, topic) => topic === 'all' || !topic || B.deck.inTopic(c, topic);
 
-  B.stats = { STRONG, OKAY, MIN_CARDS, status, summarize, overview, byTopic, byType, sessions, missed, mistakeCards, pending };
+  /** Cards never mastered. */
+  const fresh = (topic) => B.deck.cards.filter((c) => inTopic(c, topic) && !B.store.isDone(c.id));
+
+  /** Mastered cards due for review today (or overdue). */
+  function due(topic) {
+    const today = B.srs.day();
+    return B.deck.cards.filter((c) => inTopic(c, topic) && B.srs.isDue(B.store.cardState(c.id), today));
+  }
+
+  /** Everything a session can show now: reviews that are due, then new cards. */
+  const pending = (topic) => due(topic).concat(fresh(topic));
+
+  /** The earliest review day of the topic's mastered cards, or null if none is mastered. */
+  function nextDue(topic) {
+    let min = null;
+    for (const c of B.deck.cards) {
+      const s = B.store.cardState(c.id);
+      if (inTopic(c, topic) && s && s.done && s.due != null && (min === null || s.due < min)) min = s.due;
+    }
+    return min;
+  }
+
+  /** Mastered cards per memory group (srs.GROUPS), and reviews due on each of the next `days` days. */
+  function memory(days = 7) {
+    const today = B.srs.day();
+    const groups = B.srs.GROUPS.map((g) => ({ group: g, count: 0 }));
+    const ahead = Array.from({ length: days }, (_, i) => ({ day: today + i, count: 0 }));
+    for (const c of B.deck.cards) {
+      const s = B.store.cardState(c.id);
+      if (!s || !s.done) continue;
+      groups[B.srs.GROUPS.indexOf(B.srs.group(s.lv))].count++;
+      const i = Math.max(0, (s.due == null ? today : s.due) - today); // overdue counts as today
+      if (i < days) ahead[i].count++;
+    }
+    return { groups, ahead };
+  }
+
+  B.stats = { STRONG, OKAY, MIN_CARDS, status, summarize, overview, byTopic, byType, sessions, missed, mistakeCards, fresh, due, pending, nextDue, memory };
 })();

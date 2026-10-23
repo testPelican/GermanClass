@@ -1,6 +1,7 @@
 /*
  * A learning session.
- *  - The queue is every not-yet-mastered card (optionally one topic), shuffled, cut to the session size.
+ *  - The queue is the reviews due today, then new cards (optionally one topic), cut to the session
+ *    size and shuffled. Reviews come first, so a mastered card never waits past its day (js/core/srs.js).
  *  - A wrong answer shows the correct one and puts the card back at a random later position.
  *  - Only correct answers count as mastered (practice mode never changes mastery).
  * The 📖 Glossary button (or G) shows the question's words in English and the card's rule.
@@ -18,9 +19,13 @@
   const XP_COMBO = 5; // bonus per card while on a streak of 5+
 
   function buildQueue({ topic, size, practice }) {
-    const pool = practice ? B.stats.mistakeCards() : B.stats.pending(topic);
-    const list = shuffle(pool);
-    return size ? list.slice(0, size) : list;
+    const list = practice ? shuffle(B.stats.mistakeCards()) : shuffle(B.stats.due(topic)).concat(shuffle(B.stats.fresh(topic)));
+    return shuffle(size ? list.slice(0, size) : list);
+  }
+
+  /** ●●●○○○ — a review card's step. */
+  function stepDots(lv) {
+    return h('span', { class: 'step-dots', 'aria-hidden': 'true' }, '●'.repeat(lv) + '○'.repeat(B.srs.MAX - lv));
   }
 
   B.ui.session = function (root, opts) {
@@ -36,6 +41,7 @@
 
     const total = queue.length;
     const deckTotal = B.deck.cards.length;
+    const reviews = new Set(practice ? [] : queue.filter((c) => B.store.isDone(c.id)).map((c) => c.id));
     const cleared = new Set(); // answered correctly in this session
     const missed = new Set(); // answered wrong at least once in this session
     let idx = 0;
@@ -110,9 +116,11 @@
       const prev = B.store.cardState(card.id);
       const tag = missed.has(card.id)
         ? h('span', { class: 'again-tag' }, '↻ Try again')
-        : prev && prev.w
-          ? h('span', { class: 'again-tag old' }, '↻ Missed before')
-          : null;
+        : reviews.has(card.id)
+          ? h('span', { class: 'again-tag is-review', title: `Review · step ${prev.lv || 1} of ${B.srs.MAX}` }, '🔁 Review ', stepDots(prev.lv || 1))
+          : prev && prev.w
+            ? h('span', { class: 'again-tag old' }, '↻ Missed before')
+            : null;
       const exRoot = h('div', { class: 'ex ex-' + card.type });
       const wrap = h('div', { class: 's-card' + (animate ? ' enter' : '') },
         h('div', { class: 'card-meta' }, h('span', { class: 'topic-tag' }, h('span', { 'aria-hidden': 'true' }, topic.icon + ' '), topic.name), tag),
@@ -184,7 +192,7 @@
         requeue();
       }
       xp += gained;
-      const { newlyDone } = B.store.record(card, ok, res.skipped ? '(skipped)' : res.given, ms, { practice, xp: gained });
+      const { newlyDone, due } = B.store.record(card, ok, res.skipped ? '(skipped)' : res.given, ms, { practice, xp: gained });
       if (newlyDone) {
         mastered++;
         doneNum.textContent = String(doneCount());
@@ -195,7 +203,7 @@
       B.audio.play(ok ? 'correct' : 'wrong');
       if (ok && COMBOS[combo]) showCombo(combo);
       if (!ok) pulse(stage.firstElementChild, 'shake');
-      renderFeedback(res, ok, gained);
+      renderFeedback(res, ok, gained, due);
       setFooter(ok ? 'good' : 'bad');
     }
 
@@ -220,7 +228,7 @@
       setTimeout(() => B.audio.play('combo'), 260);
     }
 
-    function renderFeedback(res, ok, gained) {
+    function renderFeedback(res, ok, gained, due) {
       let sol = null;
       try {
         sol = ctrl.solution ? ctrl.solution() : null;
@@ -241,6 +249,7 @@
       }
       if (res.note) body.push(h('div', { class: 'fb-note', html: md(res.note) }));
       if (card.explain) body.push(h('div', { class: 'fb-explain' }, h('span', { class: 'fb-why' }, 'Why? '), h('span', { html: md(card.explain) })));
+      if (ok && due != null) body.push(h('div', { class: 'fb-next' }, `📅 This card comes back ${B.srs.when(due, B.srs.day())} for a review.`));
       if (!ok) {
         body.push(h('div', { class: 'fb-again' }, comeBackGap === 0
           ? '↻ This card comes straight back — try it again.'
@@ -304,6 +313,7 @@
         correct,
         wrong: answered - correct,
         firstTry,
+        reviewed: [...reviews].filter((id) => cleared.has(id)).length,
         cleared: cleared.size,
         missed: [...missed],
         mastered,
@@ -345,7 +355,7 @@
           h('div', { class: 'intro-bar', 'aria-hidden': 'true' }, barFill),
           h('div', { class: 'intro-session' }, practice
             ? `Practising ${total} card${total === 1 ? '' : 's'} you got wrong before`
-            : `This session: ${total} card${total === 1 ? '' : 's'}${topicName}`),
+            : `This session: ${total} card${total === 1 ? '' : 's'}${reviews.size ? ` (${reviews.size} to review)` : ''}${topicName}`),
           h('div', { class: 'intro-tap' }, 'Tap anywhere to start')));
       introEl.addEventListener('click', dismissIntro);
       root.append(introEl);

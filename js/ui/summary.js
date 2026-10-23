@@ -1,4 +1,4 @@
-/* End-of-session summary: XP, accuracy, time, newly mastered cards and the cards that were missed. */
+/* End-of-session summary: XP, accuracy, time, newly mastered and reviewed cards, and the cards that were missed. */
 (function () {
   'use strict';
   const B = window.Brezel;
@@ -49,9 +49,9 @@
       ? 'Wunderbar! Your detailed review with charts is ready.'
       : r.practice
         ? `You practised ${r.total} card${r.total === 1 ? '' : 's'} you had got wrong before.`
-        : r.quit
-          ? `You mastered ${r.mastered} new card${r.mastered === 1 ? '' : 's'} before stopping.`
-          : `You mastered ${r.mastered} new card${r.mastered === 1 ? '' : 's'}.`;
+        : `You mastered ${r.mastered} new card${r.mastered === 1 ? '' : 's'}` +
+          (r.reviewed ? ` and reviewed ${r.reviewed}` : '') +
+          (r.quit ? ' before stopping.' : '.');
 
     const tiles = h('div', { class: 'stat-grid' },
       tile('⚡', '+' + r.xp, 'XP earned', 't-xp'),
@@ -63,7 +63,9 @@
       h('div', { class: 'overall-row' }, h('b', {}, 'Overall'), h('span', {}, h('b', {}, String(ov.done)), ` / ${ov.total} mastered`)),
       h('div', { class: 'progress big', role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': String(ov.total), 'aria-valuenow': String(ov.done), 'aria-label': 'Overall progress' },
         h('div', { class: 'progress-fill', style: { width: pct(ov.done, ov.total) + '%' } })),
-      h('p', { class: 'muted small' }, complete ? 'Every card is done.' : `${ov.total - ov.done} cards left${r.bestCombo >= 3 ? ` · best combo this session: 🔥 ${r.bestCombo}` : ''}`));
+      h('p', { class: 'muted small' }, (complete ? 'Every card is mastered' : `${ov.total - ov.done} cards left`) +
+        (ov.due ? ` · ${ov.due} to review today` : '') +
+        (r.bestCombo >= 3 ? ` · best combo this session: 🔥 ${r.bestCombo}` : '')));
 
     const missedCards = r.missed.map((id) => B.deck.cardMap[id]).filter(Boolean);
     const missedList = missedCards.length
