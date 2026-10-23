@@ -1,8 +1,8 @@
 # 🥨 Brezel — German grammar flashcards
 
-A Duolingo-style flashcard app built from your class notes: 450 cards across
-15 topics, 9 exercise types. It runs offline in any modern browser; nothing to
-install.
+A Duolingo-style flashcard app built from your class notes: 500 cards across
+15 topics, plus a 📏 **Rules** topic, in 9 exercise types. It runs offline in
+any modern browser; nothing to install.
 
 ## Open it
 
@@ -23,16 +23,29 @@ keeps its own progress.
 
 ## How a session works
 
-- The start screen shows how far you are, e.g. **23/450**. A card only counts
+- The start screen shows how far you are, e.g. **23/500**. A card only counts
   once you answer it correctly.
 - Cards and answer options are shuffled every session.
 - If you get a card wrong, the correct answer and the reason are shown, and the
   card goes back into the pile at a random later spot in the same session.
 - **Practise mistakes** replays every card you have ever got wrong. It is extra
   training only and doesn't change your progress.
-- When all 450 are done, **Review** shows your strong and weak topics, mastery
+- When all 500 are done, **Review** shows your strong and weak topics, mastery
   per topic, first-try accuracy per exercise type and accuracy per session.
   Every chart can be switched to a table.
+
+### The Rules topic
+
+- **📏 Rules** asks only about the grammar rules themselves, such as *What is a
+  Hilfsverb?*, *Perfekt or Präteritum?*, *Where does the verb go?* and *Which
+  case is dem?*. It never asks you to translate a word.
+- Its 97 questions come from every topic, and every rule in the Glossary has
+  at least one. That includes the four cases: Nominativ, Akkusativ, Dativ and
+  Genitiv (*der, ein, mein · den, einen, meinen · dem, einem, meinem · des,
+  eines, meines*).
+- Each question also belongs to its own topic, e.g. the case questions are in
+  *Articles & cases*. Mastering it in Rules counts there too, and the total
+  stays 500.
 
 ### Word translations and the Glossary
 
@@ -82,7 +95,7 @@ The typo allowance never lets wrong grammar through, so these are marked wrong:
 
 ## Adding cards
 
-Cards live in `data/cards/*.js`. Each file adds cards to one topic:
+Cards live in `data/cards/*.js`. Each file adds cards to one topic (`16-rules.js` adds rule questions to several):
 
 ```js
 Brezel.deck.addCards('present', [
@@ -119,13 +132,18 @@ Each file in `js/exercises/` starts with a comment documenting its fields.
 - **Glossary fields** (on any card):
   - `rule`: the id of a rule in `data/rules.js`, or a list of up to two ids.
     Write a new rule there if none fits. Its examples must not be a card's
-    answer, which the deck check verifies.
+    answer, which the deck check verifies. A rule can have a small `table`
+    (`{ head, rows }`), like the article tables of the four cases.
   - `asksRule: true`: the rule gives this card's answer away, so the Glossary
     keeps it folded.
   - `gloss: false`: the card asks what words mean, so their translations are
     hidden.
   - `gloss: { Sie: 'she' }`: a meaning for this card only, e.g. when *Sie* at
     the start of a sentence means *she*.
+- **`theory: true`**: the card asks about a rule itself, so it is in the Rules
+  topic too. Don't use it on cards that ask what a word means (`gloss: false`),
+  conjugation tables or sentence building. A new rule needs at least one
+  theory card; `data/cards/16-rules.js` has one for each rule that had none.
 - **New words** in a question go in `data/glossary.js`. The deck check lists
   any question word that has no translation yet.
 - **A new topic:** add it to `data/topics.js`, then create a card file and add
@@ -155,7 +173,8 @@ and per type, and runs the typo-rule tests. It also checks the Glossary:
 
 - every card has a known rule;
 - every question word has a translation;
-- no translation or unfolded rule gives an answer away.
+- no translation or unfolded rule gives an answer away;
+- every rule has at least one Rules question, and no meaning card is in Rules.
 
 ### Rebuild Brezel.html
 
@@ -181,7 +200,7 @@ data/topics.js        topics + the rule tip shown for each
 data/lexicon.js       verb forms, word families, proper nouns
 data/glossary.js      English meanings of the words in the questions
 data/rules.js         the grammar rules shown in the Glossary
-data/cards/           the cards, one file per topic
+data/cards/           the cards, one file per topic; 16-rules.js has rule questions for several topics
 tools/validate.js     deck checker
 tools/build.js        builds Brezel.html
 backup/               earlier versions, complete and working (see backup/README.md)

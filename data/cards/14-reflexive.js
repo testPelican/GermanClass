@@ -1,14 +1,14 @@
 /* Reflexive verbs (sich freuen, sich anziehen …): pronouns, word order, Perfekt with haben; Polish "się" as a guide (Begegnungen A2+ p. 33). */
 Brezel.deck.addCards('reflexive', [
   {
-    id: 'rf-01', type: 'mc', rule: 'reflexive', asksRule: true,
+    id: 'rf-01', type: 'mc', rule: 'reflexive', asksRule: true, theory: true,
     prompt: 'What is a **reflexive verb**?',
     correct: 'A verb whose action goes back to the subject, with sich (mich, dich …)',
     wrong: ['A verb that changes its vowel', 'A verb with a separable prefix', 'A verb that takes sein in the Perfekt'],
     explain: '*Ich wasche **mich*** = I wash **myself**. Polish does the same with **się**: *myję **się***.',
   },
   {
-    id: 'rf-02', type: 'mc', rule: 'reflexive-pronouns', asksRule: true,
+    id: 'rf-02', type: 'mc', rule: 'reflexive-pronouns', asksRule: true, theory: true,
     prompt: 'Polish **się** (*cieszę się, ubieram się*) works like German …',
     correct: 'sich', wrong: ['sie', 'sein', 'selbst'],
     explain: '*sich freuen* = *cieszyć **się***, *sich anziehen* = *ubierać **się***. (*sie* = she / they, *selbst* = myself / yourself … for emphasis.)',
@@ -22,7 +22,7 @@ Brezel.deck.addCards('reflexive', [
     explain: 'Only **er/sie/es** and **sie/Sie** use *sich*. The others are the normal object pronouns: *mich, dich, uns, euch*. Polish uses *się* for everyone: *myję się, myjesz się, myjemy się*.',
   },
   {
-    id: 'rf-04', type: 'tf', rule: 'reflexive-pronouns', asksRule: true,
+    id: 'rf-04', type: 'tf', rule: 'reflexive-pronouns', asksRule: true, theory: true,
     statement: 'Like Polish *się*, German uses **sich** for every person: *ich freue sich, du freust sich*.',
     answer: false,
     explain: 'Polish: *cieszę **się**, cieszysz **się***. German changes the pronoun: *ich freue **mich**, du freust **dich**, er freut **sich***.',
@@ -101,7 +101,7 @@ Brezel.deck.addCards('reflexive', [
     explain: 'Perfekt: **haben** + **uns** + … + **gestritten** at the end. *sich streiten* = *kłócić **się***.',
   },
   {
-    id: 'rf-15', type: 'mc', rule: 'reflexive-perfekt', asksRule: true,
+    id: 'rf-15', type: 'mc', rule: 'reflexive-perfekt', asksRule: true, theory: true,
     prompt: 'Which Hilfsverb do reflexive verbs take in the Perfekt?',
     correct: 'Always haben',
     wrong: ['Always sein', 'sein if the verb is irregular', 'sein if the verb is separable'],
@@ -164,7 +164,7 @@ Brezel.deck.addCards('reflexive', [
     explain: 'None of these are reflexive in English, but in German they all need *sich*: *Ich habe **mich** erkältet* (I caught a cold).',
   },
   {
-    id: 'rf-24', type: 'mc', rule: 'reflexive', asksRule: true,
+    id: 'rf-24', type: 'mc', rule: 'reflexive', asksRule: true, theory: true,
     prompt: 'What does **teilreflexiv** (partly reflexive) mean?',
     correct: 'The verb can take sich or another object',
     wrong: ['The verb has sich only in the Perfekt', 'Only some persons use sich', 'The verb is reflexive only in the past'],

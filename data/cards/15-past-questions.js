@@ -52,7 +52,7 @@ Brezel.deck.addCards('pastq', [
     explain: '*Urlaub machen* → **gemacht**, with **haben**. Question: Hilfsverb first, participle last.',
   },
   {
-    id: 'pq-08', type: 'mc', rule: 'perfekt-question', asksRule: true,
+    id: 'pq-08', type: 'mc', rule: 'perfekt-question', asksRule: true, theory: true,
     prompt: 'How do you make a **yes/no question** in the Perfekt?',
     correct: 'Hilfsverb first, participle at the end: Hast du … gebacken?',
     wrong: ['Participle first: Gebacken hast du …?', 'Hilfsverb at the end: Du … gebacken hast?', 'Start with “ob”: Ob du hast … gebacken?'],

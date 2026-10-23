@@ -2,8 +2,19 @@
  * Topics (skill areas). The review screen groups results by these.
  * To add a topic: add an entry here and a card file in data/cards/ that calls
  * Brezel.deck.addCards('<id>', [...]), then add a <script> tag in index.html.
+ * A topic with collects: 'theory' has no cards of its own: it gathers every card marked
+ * theory: true, from all topics (the card still counts in its own topic too).
  */
 Brezel.deck.addTopics([
+  {
+    id: 'rules',
+    name: 'Rules',
+    de: 'Grammatikregeln',
+    icon: '📏',
+    collects: 'theory',
+    tip:
+      'Only questions **about the rules**: what the Perfekt is, Präsens or past, when to use *sein*, where the verb goes, the four cases — no translations. They come from every topic, so a rule you master here also counts in its own topic. The 📖 Glossary on each card has the full rule.',
+  },
   {
     id: 'order',
     name: 'Word order',
@@ -34,7 +45,7 @@ Brezel.deck.addTopics([
     de: 'der, die, das',
     icon: '🎯',
     tip:
-      '**mit** always takes the Dativ: der/das → **dem**, die → **der**, plural → **den** + n (*mit dem Zug, mit der Bahn, mit meinen Freunden*). The object of most verbs is Akkusativ: only masculine changes — *ein → **einen***, *kein → **keinen***. Nouns in **-ung** are *die*, nouns in **-um** are *das*.',
+      'Four cases, shown by the article: **Nominativ** = the subject (*der, ein, mein*), **Akkusativ** = the object (*den, einen, meinen*), **Dativ** = to whom? and after *mit* (*dem, einem, meinem*), **Genitiv** = whose? (*des, eines, meines* + -s). **mit** always takes the Dativ: der/das → **dem**, die → **der**, plural → **den** + n (*mit dem Zug, mit der Bahn, mit meinen Freunden*). The object of most verbs is Akkusativ: only masculine changes — *ein → **einen***, *kein → **keinen***. Nouns in **-ung** are *die*, nouns in **-um** are *das*.',
   },
   {
     id: 'prepositions',

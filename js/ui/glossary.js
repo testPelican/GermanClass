@@ -25,10 +25,19 @@
           r.base ? h('span', { class: 'gl-base', lang: 'de', title: 'Dictionary form' }, r.base) : null))));
   }
 
+  /** A rule's table (the articles of a case): the first column is a row label. */
+  function table({ head, rows }) {
+    return h('div', { class: 'table-scroll gl-table-wrap' },
+      h('table', { class: 'data-table gl-table', lang: 'de' },
+        head ? h('thead', {}, h('tr', {}, head.map((c) => h('th', { scope: 'col', html: md(c) })))) : null,
+        h('tbody', {}, rows.map((r) => h('tr', {}, r.map((c, i) => h(i ? 'td' : 'th', { scope: i ? null : 'row', html: md(c) })))))));
+  }
+
   function rule(r) {
     return h('div', { class: 'gl-rule' },
       h('h4', { class: 'gl-rule-title', html: md(r.title) }),
       r.text ? h('p', { class: 'gl-rule-text', html: md(r.text) }) : null,
+      r.table ? table(r.table) : null,
       r.points ? h('ul', { class: 'gl-points' }, r.points.map((p) => h('li', { html: md(p) }))) : null);
   }
 

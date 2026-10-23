@@ -91,7 +91,7 @@ Brezel.deck.addCards('gender', [
     explain: 'Managerin ends in -in → die → **eine**.',
   },
   {
-    id: 'ge-15', type: 'tf', rule: 'female-forms', asksRule: true,
+    id: 'ge-15', type: 'tf', rule: 'female-forms', asksRule: true, theory: true,
     statement: 'The plural of **Kollegin** is **Kolleginnen** (double n).',
     answer: true,
     explain: '-in → **-innen** in the plural: *Kolleginnen und Kollegen*.',

@@ -22,6 +22,7 @@
  * speech bubble, "___" marks a blank), say (text for the speaker button),
  * en (English meaning, shown small), explain (the "why", shown after answering),
  * rule (id from data/rules.js, shown in the Glossary), asksRule (the rule gives the answer away),
+ * theory (a question about the rule itself, so it is in the Rules topic too),
  * gloss (word translations: see js/core/gloss.js).
  */
 (function () {

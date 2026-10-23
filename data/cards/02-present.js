@@ -324,7 +324,7 @@ Brezel.deck.addCards('present', [
     explain: 'Martina = sie → **hat**. *habt* is the ihr-form (ihr habt).',
   },
   {
-    id: 'pr-62', type: 'tf', rule: 'vowel-change', asksRule: true,
+    id: 'pr-62', type: 'tf', rule: 'vowel-change', asksRule: true, theory: true,
     statement: 'Verbs like *fahren*, *geben* and *sehen* also change their vowel with **ihr**: *ihr fährt, ihr gibt, ihr sieht*.',
     answer: false,
     fix: 'ihr fahrt, ihr gebt, ihr seht',

@@ -149,14 +149,14 @@ Brezel.deck.addCards('order', [
     explain: '*Bei der Arbeit* (1) **habe** (2) **ich** (3) … — the subject moves behind the verb.',
   },
   {
-    id: 'wo-29', type: 'mc', rule: 'verb-end', asksRule: true,
+    id: 'wo-29', type: 'mc', rule: 'verb-end', asksRule: true, theory: true,
     prompt: 'In a Perfekt sentence, where does the participle (e.g. *gearbeitet*) go?',
     correct: 'At the very end',
     wrong: ['In position 2', 'Right after the subject', 'At the very start'],
     explain: 'Perfekt = **haben/sein in position 2** + **participle at the end**: *Ich **habe** bei Uniqa **gearbeitet**.*',
   },
   {
-    id: 'wo-30', type: 'mc', rule: 'modal', asksRule: true,
+    id: 'wo-30', type: 'mc', rule: 'modal', asksRule: true, theory: true,
     prompt: 'With a modal verb (*muss, kann, möchte*), where does the second verb go?',
     correct: 'At the end, as an infinitive (lesen)',
     wrong: ['Right after the modal verb', 'In position 1', 'At the end, conjugated (liest)'],
@@ -171,7 +171,7 @@ Brezel.deck.addCards('order', [
     explain: 'After *In meiner Freizeit* the **verb** must come next (position 2), then the subject: **spiele ich**.',
   },
   {
-    id: 'wo-33', type: 'tf', rule: 'yes-no', asksRule: true,
+    id: 'wo-33', type: 'tf', rule: 'yes-no', asksRule: true, theory: true,
     statement: 'In a **yes/no question**, the verb comes first.',
     answer: true,
     explain: '**Sind** Sie verheiratet? **Wohnt** Julia in Innsbruck? **Waren** Sie schon mal in Österreich?',

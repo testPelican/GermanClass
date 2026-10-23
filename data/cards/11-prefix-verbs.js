@@ -25,7 +25,7 @@ Brezel.deck.addCards('prefix', [
     explain: 'Separable verb: *Ich **kaufe** … **ein**.* (Not *Ich einkaufe*.)',
   },
   {
-    id: 'mv-11', type: 'tf', rule: 'separable', asksRule: true,
+    id: 'mv-11', type: 'tf', rule: 'separable', asksRule: true, theory: true,
     statement: 'In the present tense, the prefix of a separable verb (**ein**-, **fern**-, **um**-, **ab**-) goes to the end of the sentence.',
     answer: true,
     explain: '*Ich kaufe allein **ein**. Am Sonntag sehe ich **fern**.*',
@@ -161,7 +161,7 @@ Brezel.deck.addCards('prefix', [
     explain: '*aufstehen* → **bin … aufgestanden**: it takes sein, and **ge** goes after the prefix.',
   },
   {
-    id: 'px-20', type: 'tf', rule: ['separable', 'inseparable'], asksRule: true,
+    id: 'px-20', type: 'tf', rule: ['separable', 'inseparable'], asksRule: true, theory: true,
     statement: 'You can recognise a **separable** prefix because it is also a word on its own (*an, auf, aus, ein, fern*).',
     answer: true,
     explain: 'Separable prefixes are prepositions or adverbs. Inseparable ones (*be-, er-, ver-*) are not words — so *beginnen, erwarten, vereinbaren* never split.',

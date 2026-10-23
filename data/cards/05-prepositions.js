@@ -88,7 +88,7 @@ Brezel.deck.addCards('prepositions', [
     explain: 'das Zentrum, location → in dem = **im** Zentrum.',
   },
   {
-    id: 'pp-19', type: 'tf', rule: 'im-ins', asksRule: true,
+    id: 'pp-19', type: 'tf', rule: 'im-ins', asksRule: true, theory: true,
     statement: '**im** is short for *in dem*, and **ins** is short for *in das*.',
     answer: true,
     explain: 'im = in dem (where?), ins = in das (where to?).',

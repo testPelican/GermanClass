@@ -131,7 +131,7 @@ Brezel.deck.addCards('past', [
     explain: 'Regular verbs end in **-t**: ge-arbeit-**et**.',
   },
   {
-    id: 'pa-24', type: 'mc', rule: 'partizip-no-ge', asksRule: true,
+    id: 'pa-24', type: 'mc', rule: 'partizip-no-ge', asksRule: true, theory: true,
     prompt: 'Why is it *studiert* and not *gestudiert*?',
     correct: 'Verbs ending in -ieren never take ge-',
     wrong: ['Because studieren is irregular', 'Because it uses sein', 'Because it is a separable verb'],
@@ -294,14 +294,14 @@ Brezel.deck.addCards('past', [
     explain: 'regular **ge…t** (gefragt) · irregular **ge…en** (getrunken) · **-ieren**: no ge (kopiert) · separable: ge in the middle (ein**ge**kauft, an**ge**rufen) · inseparable: no ge (besucht).',
   },
   {
-    id: 'pa-50', type: 'mc', rule: 'partizip-regular', asksRule: true,
+    id: 'pa-50', type: 'mc', rule: 'partizip-regular', asksRule: true, theory: true,
     prompt: 'How do you build the Partizip II of a **regular** verb (no prefix)?',
     correct: 'ge + stem + t (fragen → gefragt)',
     wrong: ['ge + stem + en (fragen → gefragen)', 'stem + t, no ge (fragen → fragt)', 'ge + stem + te (fragen → gefragte)'],
     explain: 'Take the stem (*frag-*), put **ge-** in front and **-t** at the end: **ge**frag**t**, **ge**mach**t**, **ge**kauf**t**. It works like English *-ed*: ask → ask**ed**.',
   },
   {
-    id: 'pa-51', type: 'mc', rule: 'partizip-irregular', asksRule: true,
+    id: 'pa-51', type: 'mc', rule: 'partizip-irregular', asksRule: true, theory: true,
     prompt: 'What is typical of an **irregular** Partizip II?',
     correct: 'It ends in -en and the vowel often changes',
     wrong: ['It ends in -t and the stem stays the same', 'It never has ge-', 'It always takes sein'],

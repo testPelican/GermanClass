@@ -3584,6 +3584,7 @@ body.is-dragging * {
 .modal.sheet {
   display: flex;
   flex-direction: column;
+  min-width: 0; /* a wide rule table scrolls inside instead of widening the sheet */
   max-width: 520px;
   max-height: min(86vh, 760px);
   max-height: min(86dvh, 760px);
@@ -3723,6 +3724,33 @@ body.is-dragging * {
 
 .gl-points li + li {
   margin-top: 4px;
+}
+
+.gl-table-wrap {
+  margin-top: 8px;
+}
+
+.gl-table {
+  font-size: 14px;
+}
+
+.gl-table th,
+.gl-table td {
+  padding: 5px 6px;
+  border-bottom-color: var(--border);
+}
+
+.gl-table thead th {
+  font-size: 11px;
+}
+
+.gl-table tbody th {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.gl-table tr:last-child > * {
+  border-bottom: 0;
 }
 
 .gl-rule em {
@@ -4406,6 +4434,8 @@ body.is-dragging * {
  *   Brezel.deck.addVerbs({...}), addFamilies([...]), addProperNouns([...])
  *   Brezel.deck.addCards('topicId', [...])
  *   Brezel.deck.addRules([...])   (the rule a card practises, shown in the Glossary)
+ * A card belongs to one topic. A topic with collects: 'theory' (Rules) also holds every card
+ * marked theory: true: a question about a rule itself, never a translation.
  * finalize() then validates everything; broken cards are skipped and reported
  * in the console (and by tools/validate.js), so one typo never breaks the app.
  */
@@ -4455,7 +4485,7 @@ body.is-dragging * {
       for (const w of list) this.properNouns.add(w);
     },
 
-    /** rules: [{ id, title, text, points?: [...], examples?: [...] }] — markdown-lite like card text. */
+    /** rules: [{ id, title, text, table?: { head, rows }, points?: [...] }] — markdown-lite like card text. */
     addRules(list) {
       for (const r of list) {
         this.rules.push(r);
@@ -4536,8 +4566,15 @@ body.is-dragging * {
       return this;
     },
 
+    /** Is the card in this topic? A collecting topic (Rules) holds every card with its flag. */
+    inTopic(card, topicId) {
+      if (card.topic === topicId) return true;
+      const t = this.topicMap[topicId];
+      return !!(t && t.collects && card[t.collects]);
+    },
+
     byTopic(topicId) {
-      return this.cards.filter((c) => c.topic === topicId);
+      return this.cards.filter((c) => this.inTopic(c, topicId));
     },
   };
 
@@ -4903,7 +4940,7 @@ body.is-dragging * {
   }
 
   const pending = (topic) =>
-    B.deck.cards.filter((c) => (topic === 'all' || !topic || c.topic === topic) && !B.store.isDone(c.id));
+    B.deck.cards.filter((c) => (topic === 'all' || !topic || B.deck.inTopic(c, topic)) && !B.store.isDone(c.id));
 
   B.stats = { STRONG, OKAY, MIN_CARDS, status, summarize, overview, byTopic, byType, sessions, missed, mistakeCards, pending };
 })();
@@ -5514,6 +5551,7 @@ body.is-dragging * {
  * speech bubble, "___" marks a blank), say (text for the speaker button),
  * en (English meaning, shown small), explain (the "why", shown after answering),
  * rule (id from data/rules.js, shown in the Glossary), asksRule (the rule gives the answer away),
+ * theory (a question about the rule itself, so it is in the Rules topic too),
  * gloss (word translations: see js/core/gloss.js).
  */
 (function () {
@@ -6790,8 +6828,19 @@ body.is-dragging * {
  * Topics (skill areas). The review screen groups results by these.
  * To add a topic: add an entry here and a card file in data/cards/ that calls
  * Brezel.deck.addCards('<id>', [...]), then add a <script> tag in index.html.
+ * A topic with collects: 'theory' has no cards of its own: it gathers every card marked
+ * theory: true, from all topics (the card still counts in its own topic too).
  */
 Brezel.deck.addTopics([
+  {
+    id: 'rules',
+    name: 'Rules',
+    de: 'Grammatikregeln',
+    icon: '📏',
+    collects: 'theory',
+    tip:
+      'Only questions **about the rules**: what the Perfekt is, Präsens or past, when to use *sein*, where the verb goes, the four cases — no translations. They come from every topic, so a rule you master here also counts in its own topic. The 📖 Glossary on each card has the full rule.',
+  },
   {
     id: 'order',
     name: 'Word order',
@@ -6822,7 +6871,7 @@ Brezel.deck.addTopics([
     de: 'der, die, das',
     icon: '🎯',
     tip:
-      '**mit** always takes the Dativ: der/das → **dem**, die → **der**, plural → **den** + n (*mit dem Zug, mit der Bahn, mit meinen Freunden*). The object of most verbs is Akkusativ: only masculine changes — *ein → **einen***, *kein → **keinen***. Nouns in **-ung** are *die*, nouns in **-um** are *das*.',
+      'Four cases, shown by the article: **Nominativ** = the subject (*der, ein, mein*), **Akkusativ** = the object (*den, einen, meinen*), **Dativ** = to whom? and after *mit* (*dem, einem, meinem*), **Genitiv** = whose? (*des, eines, meines* + -s). **mit** always takes the Dativ: der/das → **dem**, die → **der**, plural → **den** + n (*mit dem Zug, mit der Bahn, mit meinen Freunden*). The object of most verbs is Akkusativ: only masculine changes — *ein → **einen***, *kein → **keinen***. Nouns in **-ung** are *die*, nouns in **-um** are *das*.',
   },
   {
     id: 'prepositions',
@@ -7675,7 +7724,8 @@ Brezel.gloss.addNames(['PlayStation']);
  * (a card that asks about the rule, a table of exactly these forms), add asksRule: true and the
  * Glossary keeps the rule folded until the learner asks for it.
  *
- *   { id, title, text?, points?: [...] }   — **bold** and *italic* work as in card text.
+ *   { id, title, text?, table?: { head?: [...], rows: [[...], …] }, points?: [...] }
+ * **bold** and *italic* work as in card text, also in table cells. A table row starts with its label.
  * Examples here are deliberately not the sentences from the cards (tools/validate.js checks).
  */
 Brezel.deck.addRules([
@@ -7850,6 +7900,46 @@ Brezel.deck.addRules([
 
   // --- cases, articles -----------------------------------------------------------------------
   {
+    id: 'cases',
+    title: 'The four cases',
+    text: 'The **article** shows what a noun does in the sentence. The table shows a **masculine** noun (*der Hund*); the rule of each case has all the forms.',
+    table: {
+      head: ['', 'the', 'a', 'my'],
+      rows: [
+        ['Nominativ', 'der', 'ein', 'mein'],
+        ['Akkusativ', 'den', 'einen', 'meinen'],
+        ['Dativ', 'dem', 'einem', 'meinem'],
+        ['Genitiv', 'des', 'eines', 'meines'],
+      ],
+    },
+    points: [
+      '**Nominativ** (*Wer? Was?*) — the subject, who does it: ***Der Hund** schläft.*',
+      '**Akkusativ** (*Wen? Was?*) — the object of most verbs: *Ich sehe **den Hund**.*',
+      '**Dativ** (*Wem?*) — the person who gets something, and after *mit, bei, zu …*: *Ich gebe **dem Hund** Wasser.*',
+      '**Genitiv** (*Wessen?*) — whose? The noun adds **-s**: *der Ball **des Hundes***',
+      '*kein, dein, sein, ihr, unser …* take the same endings as *ein* and *mein*.',
+    ],
+  },
+  {
+    id: 'nominativ',
+    title: 'Nominativ: der, ein, mein',
+    text: 'The **Nominativ** is the **subject**: the person or thing that does something (*Wer? Was?*). It is the form in the dictionary.',
+    table: {
+      head: ['', 'masc.', 'fem.', 'neut.', 'plural'],
+      rows: [
+        ['the', 'der', 'die', 'das', 'die'],
+        ['a', 'ein', 'eine', 'ein', '—'],
+        ['no', 'kein', 'keine', 'kein', 'keine'],
+        ['my', 'mein', 'meine', 'mein', 'meine'],
+      ],
+    },
+    points: [
+      '***Mein Bruder** wohnt in Graz.* Who lives in Graz? → my brother = the subject.',
+      'The subject isn’t always first: *Heute kommt **mein Bruder**.*',
+      'After **sein** the noun is Nominativ too: *Tom ist **mein Freund**.*',
+    ],
+  },
+  {
     id: 'mit-dativ',
     title: 'mit + Dativ',
     text: 'After **mit** (and *bei, nach, aus, zu, seit*) comes the **Dativ**. The article changes:',
@@ -7863,12 +7953,64 @@ Brezel.deck.addRules([
   },
   {
     id: 'akkusativ',
-    title: 'Akkusativ: den, einen, keinen',
-    text: 'The **object** of most verbs (what you have, read, need, see …) is in the Akkusativ. Only **masculine** words change:',
+    title: 'Akkusativ: den, einen, meinen',
+    text: 'The **object** of most verbs (what you have, read, need, see …) is in the Akkusativ (*Wen? Was?*). Only **masculine** words change:',
+    table: {
+      head: ['', 'masc.', 'fem.', 'neut.', 'plural'],
+      rows: [
+        ['the', '**den**', 'die', 'das', 'die'],
+        ['a', '**einen**', 'eine', 'ein', '—'],
+        ['no', '**keinen**', 'keine', 'kein', 'keine'],
+        ['my', '**meinen**', 'meine', 'mein', 'meine'],
+      ],
+    },
     points: [
       'der → **den**, ein → **einen**, kein → **keinen**, mein → **meinen**',
       'die, das and plural stay the same: *eine Katze, ein Fahrrad, keine Zeit*',
       'The subject (who does it) stays in the Nominativ: ***Der** Hund sieht **den** Mann.*',
+      'Always Akkusativ after **für, ohne, durch, gegen, um**: *ein Geschenk für meinen Vater*',
+    ],
+  },
+  {
+    id: 'dativ',
+    title: 'Dativ: dem, einem, meinem',
+    text: 'The **Dativ** is usually the **person** who gets something or is helped (*Wem?* = to whom?). It also comes after **mit, bei, nach, aus, zu, seit, von**.',
+    table: {
+      head: ['', 'masc.', 'fem.', 'neut.', 'plural'],
+      rows: [
+        ['the', 'dem', 'der', 'dem', 'den'],
+        ['a', 'einem', 'einer', 'einem', '—'],
+        ['no', 'keinem', 'keiner', 'keinem', 'keinen'],
+        ['my', 'meinem', 'meiner', 'meinem', 'meinen'],
+        ['noun', '—', '—', '—', '**+ -n**'],
+      ],
+    },
+    points: [
+      '*Ich gebe **dem Kind** einen Apfel.* Who gets the apple? → the child = Dativ (the apple = Akkusativ).',
+      'Some verbs always take the Dativ: **helfen, danken, gefallen, gehören**: *Das Buch gehört **meinem** Bruder.*',
+      'Pronouns: mir, dir, ihm, ihr, uns, euch, ihnen / Ihnen',
+      'Plural: **den**, and the noun gets an extra **-n**: *mit den Kindern*',
+    ],
+  },
+  {
+    id: 'genitiv',
+    title: 'Genitiv: des, eines, meines',
+    text: 'The **Genitiv** says **whose** something is (*Wessen?* = whose?). It comes **after** the thing: *das Auto des Lehrers*. Masculine and neuter nouns add **-s**, short ones often **-es**.',
+    table: {
+      head: ['', 'masc.', 'fem.', 'neut.', 'plural'],
+      rows: [
+        ['the', 'des', 'der', 'des', 'der'],
+        ['a', 'eines', 'einer', 'eines', '—'],
+        ['no', 'keines', 'keiner', 'keines', 'keiner'],
+        ['my', 'meines', 'meiner', 'meines', 'meiner'],
+        ['noun', '**+ -(e)s**', '—', '**+ -(e)s**', '—'],
+      ],
+    },
+    points: [
+      '*das Zimmer **des** Kind**es***, *die Tasche **meiner** Schwester*, *die Spielsachen **der** Kinder*',
+      'Names just add **-s**, with no apostrophe: *Annas Auto, Toms Hund*',
+      'When **speaking**, people often say **von + Dativ** instead: *das Auto von meinem Vater*',
+      'Some prepositions take the Genitiv in writing, e.g. **wegen** (because of): *wegen des Wetters*',
     ],
   },
   {
@@ -8348,14 +8490,14 @@ Brezel.deck.addCards('order', [
     explain: '*Bei der Arbeit* (1) **habe** (2) **ich** (3) … — the subject moves behind the verb.',
   },
   {
-    id: 'wo-29', type: 'mc', rule: 'verb-end', asksRule: true,
+    id: 'wo-29', type: 'mc', rule: 'verb-end', asksRule: true, theory: true,
     prompt: 'In a Perfekt sentence, where does the participle (e.g. *gearbeitet*) go?',
     correct: 'At the very end',
     wrong: ['In position 2', 'Right after the subject', 'At the very start'],
     explain: 'Perfekt = **haben/sein in position 2** + **participle at the end**: *Ich **habe** bei Uniqa **gearbeitet**.*',
   },
   {
-    id: 'wo-30', type: 'mc', rule: 'modal', asksRule: true,
+    id: 'wo-30', type: 'mc', rule: 'modal', asksRule: true, theory: true,
     prompt: 'With a modal verb (*muss, kann, möchte*), where does the second verb go?',
     correct: 'At the end, as an infinitive (lesen)',
     wrong: ['Right after the modal verb', 'In position 1', 'At the end, conjugated (liest)'],
@@ -8370,7 +8512,7 @@ Brezel.deck.addCards('order', [
     explain: 'After *In meiner Freizeit* the **verb** must come next (position 2), then the subject: **spiele ich**.',
   },
   {
-    id: 'wo-33', type: 'tf', rule: 'yes-no', asksRule: true,
+    id: 'wo-33', type: 'tf', rule: 'yes-no', asksRule: true, theory: true,
     statement: 'In a **yes/no question**, the verb comes first.',
     answer: true,
     explain: '**Sind** Sie verheiratet? **Wohnt** Julia in Innsbruck? **Waren** Sie schon mal in Österreich?',
@@ -8747,7 +8889,7 @@ Brezel.deck.addCards('present', [
     explain: 'Martina = sie → **hat**. *habt* is the ihr-form (ihr habt).',
   },
   {
-    id: 'pr-62', type: 'tf', rule: 'vowel-change', asksRule: true,
+    id: 'pr-62', type: 'tf', rule: 'vowel-change', asksRule: true, theory: true,
     statement: 'Verbs like *fahren*, *geben* and *sehen* also change their vowel with **ihr**: *ihr fährt, ihr gibt, ihr sieht*.',
     answer: false,
     fix: 'ihr fahrt, ihr gebt, ihr seht',
@@ -8931,7 +9073,7 @@ Brezel.deck.addCards('past', [
     explain: 'Regular verbs end in **-t**: ge-arbeit-**et**.',
   },
   {
-    id: 'pa-24', type: 'mc', rule: 'partizip-no-ge', asksRule: true,
+    id: 'pa-24', type: 'mc', rule: 'partizip-no-ge', asksRule: true, theory: true,
     prompt: 'Why is it *studiert* and not *gestudiert*?',
     correct: 'Verbs ending in -ieren never take ge-',
     wrong: ['Because studieren is irregular', 'Because it uses sein', 'Because it is a separable verb'],
@@ -9094,14 +9236,14 @@ Brezel.deck.addCards('past', [
     explain: 'regular **ge…t** (gefragt) · irregular **ge…en** (getrunken) · **-ieren**: no ge (kopiert) · separable: ge in the middle (ein**ge**kauft, an**ge**rufen) · inseparable: no ge (besucht).',
   },
   {
-    id: 'pa-50', type: 'mc', rule: 'partizip-regular', asksRule: true,
+    id: 'pa-50', type: 'mc', rule: 'partizip-regular', asksRule: true, theory: true,
     prompt: 'How do you build the Partizip II of a **regular** verb (no prefix)?',
     correct: 'ge + stem + t (fragen → gefragt)',
     wrong: ['ge + stem + en (fragen → gefragen)', 'stem + t, no ge (fragen → fragt)', 'ge + stem + te (fragen → gefragte)'],
     explain: 'Take the stem (*frag-*), put **ge-** in front and **-t** at the end: **ge**frag**t**, **ge**mach**t**, **ge**kauf**t**. It works like English *-ed*: ask → ask**ed**.',
   },
   {
-    id: 'pa-51', type: 'mc', rule: 'partizip-irregular', asksRule: true,
+    id: 'pa-51', type: 'mc', rule: 'partizip-irregular', asksRule: true, theory: true,
     prompt: 'What is typical of an **irregular** Partizip II?',
     correct: 'It ends in -en and the vowel often changes',
     wrong: ['It ends in -t and the stem stays the same', 'It never has ge-', 'It always takes sein'],
@@ -9483,7 +9625,7 @@ Brezel.deck.addCards('prepositions', [
     explain: 'das Zentrum, location → in dem = **im** Zentrum.',
   },
   {
-    id: 'pp-19', type: 'tf', rule: 'im-ins', asksRule: true,
+    id: 'pp-19', type: 'tf', rule: 'im-ins', asksRule: true, theory: true,
     statement: '**im** is short for *in dem*, and **ins** is short for *in das*.',
     answer: true,
     explain: 'im = in dem (where?), ins = in das (where to?).',
@@ -9601,7 +9743,7 @@ Brezel.deck.addCards('gender', [
     explain: 'Managerin ends in -in → die → **eine**.',
   },
   {
-    id: 'ge-15', type: 'tf', rule: 'female-forms', asksRule: true,
+    id: 'ge-15', type: 'tf', rule: 'female-forms', asksRule: true, theory: true,
     statement: 'The plural of **Kollegin** is **Kolleginnen** (double n).',
     answer: true,
     explain: '-in → **-innen** in the plural: *Kolleginnen und Kollegen*.',
@@ -9682,7 +9824,7 @@ Brezel.deck.addCards('possessive', [
     explain: 'das Studium → **mein** Studium.',
   },
   {
-    id: 'po-09', type: 'tf', rule: 'possessive', asksRule: true,
+    id: 'po-09', type: 'tf', rule: 'possessive', asksRule: true, theory: true,
     statement: '**mein** is used for *der* and *das* words; **meine** for *die* words and plurals.',
     answer: true,
     explain: 'mein Nachbar, mein Studium · meine Nachbarin, meine Freunde.',
@@ -10222,7 +10364,7 @@ Brezel.deck.addCards('prefix', [
     explain: 'Separable verb: *Ich **kaufe** … **ein**.* (Not *Ich einkaufe*.)',
   },
   {
-    id: 'mv-11', type: 'tf', rule: 'separable', asksRule: true,
+    id: 'mv-11', type: 'tf', rule: 'separable', asksRule: true, theory: true,
     statement: 'In the present tense, the prefix of a separable verb (**ein**-, **fern**-, **um**-, **ab**-) goes to the end of the sentence.',
     answer: true,
     explain: '*Ich kaufe allein **ein**. Am Sonntag sehe ich **fern**.*',
@@ -10358,7 +10500,7 @@ Brezel.deck.addCards('prefix', [
     explain: '*aufstehen* → **bin … aufgestanden**: it takes sein, and **ge** goes after the prefix.',
   },
   {
-    id: 'px-20', type: 'tf', rule: ['separable', 'inseparable'], asksRule: true,
+    id: 'px-20', type: 'tf', rule: ['separable', 'inseparable'], asksRule: true, theory: true,
     statement: 'You can recognise a **separable** prefix because it is also a word on its own (*an, auf, aus, ein, fern*).',
     answer: true,
     explain: 'Separable prefixes are prepositions or adverbs. Inseparable ones (*be-, er-, ver-*) are not words — so *beginnen, erwarten, vereinbaren* never split.',
@@ -10397,46 +10539,46 @@ Brezel.deck.addCards('prefix', [
 /* Tenses and grammar terms: what Präsens, Perfekt and Präteritum mean, Hilfsverb, Partizip II, regular / irregular. */
 Brezel.deck.addCards('tenses', [
   {
-    id: 'te-01', type: 'match', rule: 'tenses', asksRule: true,
+    id: 'te-01', type: 'match', rule: 'tenses', asksRule: true, theory: true,
     prompt: 'Match the grammar terms',
     pairs: [['Präsens', 'now, habits, plans'], ['Perfekt', 'the past (spoken)'], ['Präteritum', 'the past (written)'], ['Infinitiv', 'the basic form: trinken'], ['Partizip II', 'the participle: getrunken'], ['Hilfsverb', 'the helping verb: haben / sein']],
     explain: '*Ich **trinke** Tee* (Präsens). *Ich **habe** Tee **getrunken*** (Perfekt = Hilfsverb + Partizip II). *Ich **trank** Tee* (Präteritum).',
   },
   {
-    id: 'te-02', type: 'mc', rule: 'perfekt-form', asksRule: true,
+    id: 'te-02', type: 'mc', rule: 'perfekt-form', asksRule: true, theory: true,
     prompt: 'What is a **Hilfsverb**?',
     correct: 'A helping verb (haben or sein) that builds the Perfekt together with the participle',
     wrong: ['A verb that changes its vowel', 'A verb with a separable prefix', 'The verb at the end of the sentence'],
     explain: 'In *Ich **habe** das Problem gelöst* the Hilfsverb **habe** is conjugated and stands in position 2; the participle *gelöst* carries the meaning. English does the same: *I **have** solved the problem.*',
   },
   {
-    id: 'te-03', type: 'gap', rule: 'perfekt-form', asksRule: true,
+    id: 'te-03', type: 'gap', rule: 'perfekt-form', asksRule: true, theory: true,
     prompt: 'Complete the rule from the book',
     q: 'Das Perfekt besteht aus zwei Teilen: {Hilfsverb} + {Partizip II}.',
     options: ['Infinitiv', 'Präteritum', 'Modalverb'],
     explain: '*Ich **bin** mit dem Auto **gefahren**. Ich **habe** das Problem **gelöst**.* Part 1 = Hilfsverb (bin / habe), part 2 = Partizip II (gefahren / gelöst).',
   },
   {
-    id: 'te-04', type: 'tf', rule: 'perfekt-form', asksRule: true,
+    id: 'te-04', type: 'tf', rule: 'perfekt-form', asksRule: true, theory: true,
     statement: 'In a Perfekt sentence the Hilfsverb stands in **position 2** and the Partizip II goes to the **end**.',
     answer: true,
     explain: '*Ich **habe** gestern das Problem **gelöst**. Gestern **bin** ich mit dem Auto **gefahren**.* The two parts form a bracket around the rest of the sentence.',
   },
   {
-    id: 'te-05', type: 'mc', rule: 'perfekt-aux', asksRule: true,
+    id: 'te-05', type: 'mc', rule: 'perfekt-aux', asksRule: true, theory: true,
     prompt: 'When does the Perfekt take **sein**?',
     correct: 'For a change of place or state (Wechsel von Ort oder Zustand)',
     wrong: ['For all irregular verbs', 'For all verbs with a prefix', 'For actions that happened long ago'],
     explain: 'Change of place: *fahren, gehen, fliegen → **ist** gefahren*. Change of state or position: *aufstehen → **ist** aufgestanden*. Plus the special verbs **sein** and **bleiben**. **All other verbs take haben.**',
   },
   {
-    id: 'te-06', type: 'tf', rule: 'perfekt-aux', asksRule: true,
+    id: 'te-06', type: 'tf', rule: 'perfekt-aux', asksRule: true, theory: true,
     statement: 'Every irregular verb takes **sein** in the Perfekt.',
     answer: false,
     explain: 'Regular / irregular decides the **participle** (*getrunken*), not the Hilfsverb. *trinken* is irregular, but: *Ich **habe** getrunken.* Only a change of place or state → sein.',
   },
   {
-    id: 'te-07', type: 'mc', rule: 'perfekt-aux', asksRule: true,
+    id: 'te-07', type: 'mc', rule: 'perfekt-aux', asksRule: true, theory: true,
     prompt: '*Ich **bin** geblieben.* Why **sein**, when there is no movement?',
     correct: 'bleiben and sein are special verbs: they take sein anyway',
     wrong: ['Because bleiben is irregular', 'Because bleiben is reflexive', 'Because the participle ends in -en'],
@@ -10452,27 +10594,27 @@ Brezel.deck.addCards('tenses', [
     explain: '*schlafen* is a situation that doesn’t change → *ich **habe** geschlafen*. *einschlafen* (to fall asleep) and *aufwachen* (to wake up) change your state → *ich **bin** eingeschlafen, ich **bin** aufgewacht*.',
   },
   {
-    id: 'te-09', type: 'tf', rule: 'tenses', asksRule: true,
+    id: 'te-09', type: 'tf', rule: 'tenses', asksRule: true, theory: true,
     statement: 'German has two past tenses with the same meaning: *Ich habe Kaffee getrunken* = *Ich trank Kaffee*.',
     answer: true,
     explain: 'Both mean *I drank coffee*. The difference is style: **Perfekt** when speaking, **Präteritum** in writing. Polish has just one past tense for both: *piłem / piłam kawę*.',
   },
   {
-    id: 'te-10', type: 'mc', rule: 'tenses', asksRule: true,
+    id: 'te-10', type: 'mc', rule: 'tenses', asksRule: true, theory: true,
     prompt: 'What is the difference between **Perfekt** and **Präteritum**?',
     correct: 'Same meaning: Perfekt is used more in speaking, Präteritum more in writing',
     wrong: ['Perfekt = the recent past, Präteritum = long ago', 'Perfekt = finished, Präteritum = still going on', 'Perfekt = regular verbs, Präteritum = irregular verbs'],
     explain: 'Your note: Präteritum = *past (written)*, Perfekt = *past (speaking)*. A fairy tale starts with *Es **war** einmal …*, but you tell a friend: *Ich **habe** gestern einen Film **gesehen***.',
   },
   {
-    id: 'te-11', type: 'mc', rule: ['tenses', 'praet-sein-haben'], asksRule: true,
+    id: 'te-11', type: 'mc', rule: ['tenses', 'praet-sein-haben'], asksRule: true, theory: true,
     prompt: 'Which verbs are used in the **Präteritum** even when speaking?',
     correct: 'sein and haben (war, hatte)',
     wrong: ['all irregular verbs', 'all separable verbs', 'all verbs that take sein in the Perfekt'],
     explain: 'The book: *Vergangenheit bei haben und sein: oft **hatten / waren** (Präteritum), selten **haben gehabt / sind gewesen** (Perfekt).* So: *Ich **war** krank. Ich **hatte** keine Zeit.*',
   },
   {
-    id: 'te-12', type: 'mc', rule: 'tenses', asksRule: true, gloss: { Morgen: false },
+    id: 'te-12', type: 'mc', rule: 'tenses', asksRule: true, theory: true, gloss: { Morgen: false },
     prompt: 'What does the Präsens express here?',
     q: 'Morgen fahre ich nach Wien.',
     correct: 'The future (a plan)',
@@ -10488,7 +10630,7 @@ Brezel.deck.addCards('tenses', [
     explain: '**seit + Präsens** = it started in the past and is **still true**. English needs *have lived*, but Polish works exactly like German: *Mieszkam w Wiedniu **od** 2016 roku* (present tense).',
   },
   {
-    id: 'te-14', type: 'tf', rule: 'tenses', asksRule: true,
+    id: 'te-14', type: 'tf', rule: 'tenses', asksRule: true, theory: true,
     statement: 'German has a separate *-ing* form for *I am drinking*.',
     answer: false,
     explain: 'Like Polish, German has only one present: *Ich **trinke** Tee* = *I drink* **and** *I am drinking* (Polish *piję herbatę*). For “right now” add **gerade**: *Ich trinke gerade Tee.*',
@@ -10502,7 +10644,7 @@ Brezel.deck.addCards('tenses', [
     explain: 'The Perfekt looks like English *have drunk*, but it is simply the past. With *yesterday* English uses the simple past: *I **drank***.',
   },
   {
-    id: 'te-16', type: 'mc', rule: 'regular-irregular', asksRule: true,
+    id: 'te-16', type: 'mc', rule: 'regular-irregular', asksRule: true, theory: true,
     prompt: 'What makes a verb **unregelmäßig** (irregular)?',
     correct: 'Its stem changes (trinken → trank → getrunken), so you must learn the forms',
     wrong: ['It has a prefix like be- or ver-', 'It takes sein in the Perfekt', 'It ends in -ieren'],
@@ -10515,13 +10657,13 @@ Brezel.deck.addCards('tenses', [
     explain: 'Many verbs are irregular in **both** languages, often with the same vowels (*dr**i**nk – dr**a**nk – dr**u**nk* / *tr**i**nken – tr**a**nk – getr**u**nken*). Use English as a memory hook.',
   },
   {
-    id: 'te-18', type: 'tf', rule: 'regular-irregular', asksRule: true,
+    id: 'te-18', type: 'tf', rule: 'regular-irregular', asksRule: true, theory: true,
     statement: 'You can tell from the infinitive whether a verb is regular or irregular.',
     answer: false,
     explain: '*kaufen* and *laufen* look alike, but *kaufen → gekauft* (regular) and *laufen → gelaufen* (irregular). That’s why the book’s verb list gives all forms: **learn the three forms together** (*bleiben – blieb – ist geblieben*).',
   },
   {
-    id: 'te-19', type: 'mc', rule: 'regular-irregular', asksRule: true,
+    id: 'te-19', type: 'mc', rule: 'regular-irregular', asksRule: true, theory: true,
     prompt: 'The book’s verb list says *bleiben – blieb – ist geblieben*. What are the three forms?',
     correct: 'Infinitiv – Präteritum – Perfekt',
     wrong: ['Präsens – Perfekt – Futur', 'ich – du – er', 'Infinitiv – Präsens – Partizip'],
@@ -10538,13 +10680,13 @@ Brezel.deck.addCards('tenses', [
     explain: 'No prefix → **ge** first. Separable prefix (*ein, an, auf*) → prefix + **ge** + verb. Inseparable prefix (*be-*) or **-ieren** → no ge at all.',
   },
   {
-    id: 'te-21', type: 'tf', rule: 'partizip-regular', asksRule: true,
+    id: 'te-21', type: 'tf', rule: 'partizip-regular', asksRule: true, theory: true,
     statement: '*arbeiten → gearbeitet*, *öffnen → geöffnet*: the extra **e** is there because the ending would be hard to pronounce without it.',
     answer: true,
     explain: 'Stems ending in **-t, -d** or a consonant + **n** add an **e**: *gearbeit**e**t, geöffn**e**t*. You see the same e in *er arbeit**e**t* and in the Präteritum: *arbeit**e**te, erkält**e**te*.',
   },
   {
-    id: 'te-22', type: 'sort', rule: 'tenses',
+    id: 'te-22', type: 'sort', rule: 'tenses', theory: true,
     prompt: 'Which tense is it?',
     buckets: [
       { label: 'Präsens', items: ['ich trinke', 'sie fährt', 'er steht auf'] },
@@ -10554,27 +10696,27 @@ Brezel.deck.addCards('tenses', [
     explain: 'Perfekt = **two parts** (Hilfsverb + Partizip II). Präsens and Präteritum = **one** verb part (plus a separable prefix): *steht … auf* is now, *stand … auf* is the past.',
   },
   {
-    id: 'te-23', type: 'mc', rule: 'tenses',
+    id: 'te-23', type: 'mc', rule: 'tenses', theory: true,
     prompt: 'Which tense is this?',
     q: 'Der Unterricht fing um acht Uhr an.',
     correct: 'Präteritum', wrong: ['Präsens', 'Perfekt'],
     explain: '*fing … an* is the Präteritum of *anfangen* (Präsens: *fängt … an*, Perfekt: *hat angefangen*). One verb part, no Hilfsverb → Präteritum.',
   },
   {
-    id: 'te-24', type: 'mc', rule: 'tenses',
+    id: 'te-24', type: 'mc', rule: 'tenses', theory: true,
     prompt: 'Which tense is this?',
     q: 'Wir sind nach New York geflogen.',
     correct: 'Perfekt', wrong: ['Präsens', 'Präteritum'],
     explain: 'Hilfsverb (*sind*) + Partizip II (*geflogen*) = Perfekt. On its own *sind* is present tense (*Wir sind müde*); only with a participle does it build the past.',
   },
   {
-    id: 'te-25', type: 'tf', rule: 'tenses', asksRule: true,
+    id: 'te-25', type: 'tf', rule: 'tenses', asksRule: true, theory: true,
     statement: 'Like Polish (*piłem / piłam*), the German past changes with the speaker’s gender.',
     answer: false,
     explain: '*Ich habe getrunken* is the same for a man and a woman. Only the **Hilfsverb** changes, and only with the person: *ich habe, du hast, er hat*.',
   },
   {
-    id: 'te-26', type: 'mc', rule: 'perfekt-form', asksRule: true,
+    id: 'te-26', type: 'mc', rule: 'perfekt-form', asksRule: true, theory: true,
     prompt: 'In *Ich habe Tee getrunken*, which part changes with the person?',
     correct: 'habe (the Hilfsverb)',
     wrong: ['getrunken (the participle)', 'both parts', 'neither part'],
@@ -10597,7 +10739,7 @@ Brezel.deck.addCards('tenses', [
     explain: 'Movement → **sein**: bin, bist, ist, sind, seid, sind + **gefahren**. (*seid* with d; *seit* = since.)',
   },
   {
-    id: 'te-29', type: 'mc', rule: 'tenses', asksRule: true,
+    id: 'te-29', type: 'mc', rule: 'tenses', asksRule: true, theory: true,
     prompt: 'Does the **Präteritum** need a Hilfsverb?',
     correct: 'No, it is one word: ich trank, ich fuhr',
     wrong: ['Yes, always haben', 'Yes, haben or sein', 'Only for irregular verbs'],
@@ -10612,14 +10754,14 @@ Brezel.deck.addCards('tenses', [
     explain: 'Still true now → **seit + Präsens**, not the Perfekt. Polish does the same: *Uczę się niemieckiego **od** roku.*',
   },
   {
-    id: 'te-31', type: 'mc', rule: ['tenses', 'seit'], asksRule: true,
+    id: 'te-31', type: 'mc', rule: ['tenses', 'seit'], asksRule: true, theory: true,
     prompt: 'What does the **Perfekt** express?',
     correct: 'A finished action in the past (mostly in spoken German)',
     wrong: ['An action happening right now', 'A plan for the future', 'An action that started in the past and is still going on'],
     explain: '*Ich habe gestern gearbeitet*: finished. For something that is **still going on**, German uses *seit* + Präsens: *Ich arbeite seit 2020 hier.*',
   },
   {
-    id: 'te-32', type: 'gap', rule: 'perfekt-aux', asksRule: true,
+    id: 'te-32', type: 'gap', rule: 'perfekt-aux', asksRule: true, theory: true,
     prompt: 'Complete the rule from the book',
     q: 'Perfekt mit {sein}: Wechsel von Ort oder Zustand. Perfekt mit {haben}: alle anderen Verben.',
     options: ['werden', 'bleiben'],
@@ -10648,7 +10790,7 @@ Brezel.deck.addCards('praet', [
     explain: 'Stem **hatt-** + -e, -est, -e, -en, -et, -en. Again **ich = er**: *ich hatte, sie hatte*.',
   },
   {
-    id: 'pt-03', type: 'mc', rule: ['praet-regular', 'praet-irregular'], asksRule: true,
+    id: 'pt-03', type: 'mc', rule: ['praet-regular', 'praet-irregular'], asksRule: true, theory: true,
     prompt: 'In the Präteritum, which two forms are always the same?',
     correct: 'ich and er/sie/es (ich war – er war)',
     wrong: ['du and ihr (du warst – ihr wart)', 'ich and du (ich war – du warst)', 'er and ihr (er war – ihr wart)'],
@@ -10690,14 +10832,14 @@ Brezel.deck.addCards('praet', [
     explain: '*haben → hatte*, *sein → war*. These two are the Präteritum forms you also use when speaking.',
   },
   {
-    id: 'pt-09', type: 'mc', rule: 'praet-regular', asksRule: true,
+    id: 'pt-09', type: 'mc', rule: 'praet-regular', asksRule: true, theory: true,
     prompt: 'How do **regular** verbs build the Präteritum?',
     correct: 'stem + -te: kaufen → kaufte',
     wrong: ['ge + stem + t: kaufen → gekauft', 'a new vowel: kaufen → kief', 'stem + -en: kaufen → kaufen'],
     explain: '**-te** is the sign of the regular Präteritum: *kauf**te**, frag**te**, ärger**te** sich, dusch**te** sich*. It works like English *-ed*: ask → ask**ed**, fragen → frag**te**.',
   },
   {
-    id: 'pt-10', type: 'mc', rule: 'praet-irregular', asksRule: true,
+    id: 'pt-10', type: 'mc', rule: 'praet-irregular', asksRule: true, theory: true,
     prompt: 'How do **irregular** verbs build the Präteritum?',
     correct: 'The vowel changes, no -te: stehen → stand, essen → aß',
     wrong: ['They add -te: stehen → stehte', 'They use haben + participle', 'They have no Präteritum'],
@@ -10787,7 +10929,7 @@ Brezel.deck.addCards('praet', [
     explain: '*backen* is a **mixed** verb: the Präteritum is regular (*back**te***), the participle is irregular (*geback**en***).',
   },
   {
-    id: 'pt-22', type: 'mc', rule: 'praet-regular', asksRule: true,
+    id: 'pt-22', type: 'mc', rule: 'praet-regular', asksRule: true, theory: true,
     prompt: 'Why is it *erkältete sich* and not *erkältte sich*?',
     correct: 'The stem ends in -t, so an extra e is added (like arbeitete)',
     wrong: ['Because erkälten is irregular', 'Because it is reflexive', 'Because of the prefix er-'],
@@ -10827,7 +10969,7 @@ Brezel.deck.addCards('praet', [
     explain: 'Correct: *war* is the Präteritum of *sein* and perfectly normal in speech. (*Ich bin ins Kino gegangen* says you went; *Ich war im Kino* says where you were.)',
   },
   {
-    id: 'pt-28', type: 'tf', rule: 'praet-irregular', asksRule: true,
+    id: 'pt-28', type: 'tf', rule: 'praet-irregular', asksRule: true, theory: true,
     statement: 'In the Präteritum, the er/sie/es form ends in **-t**: *er standt, sie bekamt*.',
     answer: false,
     explain: 'No -t in the Präteritum: *er stand, sie bekam, es war*. The -t is only in the present: *er steht, sie bekommt*.',
@@ -10856,14 +10998,14 @@ Brezel.deck.addCards('praet', [
 /* Reflexive verbs (sich freuen, sich anziehen …): pronouns, word order, Perfekt with haben; Polish "się" as a guide (Begegnungen A2+ p. 33). */
 Brezel.deck.addCards('reflexive', [
   {
-    id: 'rf-01', type: 'mc', rule: 'reflexive', asksRule: true,
+    id: 'rf-01', type: 'mc', rule: 'reflexive', asksRule: true, theory: true,
     prompt: 'What is a **reflexive verb**?',
     correct: 'A verb whose action goes back to the subject, with sich (mich, dich …)',
     wrong: ['A verb that changes its vowel', 'A verb with a separable prefix', 'A verb that takes sein in the Perfekt'],
     explain: '*Ich wasche **mich*** = I wash **myself**. Polish does the same with **się**: *myję **się***.',
   },
   {
-    id: 'rf-02', type: 'mc', rule: 'reflexive-pronouns', asksRule: true,
+    id: 'rf-02', type: 'mc', rule: 'reflexive-pronouns', asksRule: true, theory: true,
     prompt: 'Polish **się** (*cieszę się, ubieram się*) works like German …',
     correct: 'sich', wrong: ['sie', 'sein', 'selbst'],
     explain: '*sich freuen* = *cieszyć **się***, *sich anziehen* = *ubierać **się***. (*sie* = she / they, *selbst* = myself / yourself … for emphasis.)',
@@ -10877,7 +11019,7 @@ Brezel.deck.addCards('reflexive', [
     explain: 'Only **er/sie/es** and **sie/Sie** use *sich*. The others are the normal object pronouns: *mich, dich, uns, euch*. Polish uses *się* for everyone: *myję się, myjesz się, myjemy się*.',
   },
   {
-    id: 'rf-04', type: 'tf', rule: 'reflexive-pronouns', asksRule: true,
+    id: 'rf-04', type: 'tf', rule: 'reflexive-pronouns', asksRule: true, theory: true,
     statement: 'Like Polish *się*, German uses **sich** for every person: *ich freue sich, du freust sich*.',
     answer: false,
     explain: 'Polish: *cieszę **się**, cieszysz **się***. German changes the pronoun: *ich freue **mich**, du freust **dich**, er freut **sich***.',
@@ -10956,7 +11098,7 @@ Brezel.deck.addCards('reflexive', [
     explain: 'Perfekt: **haben** + **uns** + … + **gestritten** at the end. *sich streiten* = *kłócić **się***.',
   },
   {
-    id: 'rf-15', type: 'mc', rule: 'reflexive-perfekt', asksRule: true,
+    id: 'rf-15', type: 'mc', rule: 'reflexive-perfekt', asksRule: true, theory: true,
     prompt: 'Which Hilfsverb do reflexive verbs take in the Perfekt?',
     correct: 'Always haben',
     wrong: ['Always sein', 'sein if the verb is irregular', 'sein if the verb is separable'],
@@ -11019,7 +11161,7 @@ Brezel.deck.addCards('reflexive', [
     explain: 'None of these are reflexive in English, but in German they all need *sich*: *Ich habe **mich** erkältet* (I caught a cold).',
   },
   {
-    id: 'rf-24', type: 'mc', rule: 'reflexive', asksRule: true,
+    id: 'rf-24', type: 'mc', rule: 'reflexive', asksRule: true, theory: true,
     prompt: 'What does **teilreflexiv** (partly reflexive) mean?',
     correct: 'The verb can take sich or another object',
     wrong: ['The verb has sich only in the Perfekt', 'Only some persons use sich', 'The verb is reflexive only in the past'],
@@ -11137,7 +11279,7 @@ Brezel.deck.addCards('pastq', [
     explain: '*Urlaub machen* → **gemacht**, with **haben**. Question: Hilfsverb first, participle last.',
   },
   {
-    id: 'pq-08', type: 'mc', rule: 'perfekt-question', asksRule: true,
+    id: 'pq-08', type: 'mc', rule: 'perfekt-question', asksRule: true, theory: true,
     prompt: 'How do you make a **yes/no question** in the Perfekt?',
     correct: 'Hilfsverb first, participle at the end: Hast du … gebacken?',
     wrong: ['Participle first: Gebacken hast du …?', 'Hilfsverb at the end: Du … gebacken hast?', 'Start with “ob”: Ob du hast … gebacken?'],
@@ -11298,6 +11440,386 @@ Brezel.deck.addCards('pastq', [
     correct: 'Nein, ich habe gestern Jazz gehört.',
     wrong: ['Nein, ich bin gestern Jazz gehört.', 'Nein, ich habe gestern Jazz gehören.', 'Nein, ich hast gestern Jazz gehört.'],
     explain: '*Hast du …?* → *ich **habe** …*. *hören* is regular: ge + hör + **t**.',
+  },
+]);
+
+</script>
+  <script>/* data/cards/16-rules.js */
+/*
+ * Rule questions for the 📏 Rules topic: they ask about a rule itself, never what a word means.
+ * Every card belongs to the topic its rule is about (so mastering it counts there too) and is
+ * marked theory: true, like the rule questions in the other card files. Together they give
+ * every rule in data/rules.js at least one question (tools/validate.js checks).
+ */
+Brezel.deck.addCards('order', [
+  {
+    id: 'ru-01', type: 'mc', rule: 'verb-2', asksRule: true, theory: true,
+    prompt: 'In a German statement, where does the **conjugated verb** go?',
+    correct: 'Position 2: it is always the second element',
+    wrong: ['Position 1, before everything else', 'Always right after the subject', 'At the end of the sentence'],
+    explain: '*Anna **arbeitet** in Graz. Heute **arbeitet** Anna in Graz.* Whatever stands in position 1, the verb comes next. Only a *second* verb part (participle, infinitive, prefix) goes to the end.',
+  },
+  {
+    id: 'ru-02', type: 'tf', rule: 'verb-2', asksRule: true, theory: true,
+    statement: '**Position 1** can only hold the subject of the sentence.',
+    answer: false,
+    explain: 'Position 1 holds **one element**, but it can be anything: the subject (*Tom*), a time (*Am Montag*), a place (*In Wien*) or a whole group of words (*Mein neuer Kollege*). The verb always comes next.',
+  },
+  {
+    id: 'ru-03', type: 'mc', rule: 'inversion', asksRule: true, theory: true,
+    prompt: 'A sentence starts with *Morgen*. What happens to the subject?',
+    correct: 'It goes right behind the verb: *Morgen fahre ich …*',
+    wrong: ['It stays before the verb: *Morgen ich fahre …*', 'It moves to the end of the sentence', 'It is left out'],
+    explain: '*Morgen* takes position 1 and the verb stays in **position 2**, so the subject moves **behind** the verb: *Morgen **fahre ich** nach Graz.*',
+  },
+  {
+    id: 'ru-04', type: 'tf', rule: 'inversion', asksRule: true, theory: true,
+    statement: 'When a sentence starts with a time (*Heute, Am Abend*), the verb moves to the **end**.',
+    answer: false,
+    explain: 'The verb **stays in position 2**; only the subject moves behind it: *Am Abend **lese ich** ein Buch* — not *Am Abend ich ein Buch lese*.',
+  },
+  {
+    id: 'ru-05', type: 'mc', rule: 'w-question', asksRule: true, theory: true,
+    prompt: 'What is the word order of a **W-question**?',
+    correct: 'W-word + verb + subject: *Wo wohnst du?*',
+    wrong: ['W-word + subject + verb: *Wo du wohnst?*', 'Verb + W-word + subject: *Wohnst wo du?*', 'Subject + W-word + verb: *Du wo wohnst?*'],
+    explain: 'The W-word takes **position 1**, the verb stays in **position 2**, then the subject: *Wann **beginnt** der Kurs? Was **machst** du heute?*',
+  },
+]);
+
+Brezel.deck.addCards('present', [
+  {
+    id: 'ru-06', type: 'mc', rule: 'present-endings', asksRule: true, theory: true,
+    prompt: 'Which ending does the **du** form take in the present tense?',
+    correct: '-st', wrong: ['-t', '-e', '-en'],
+    explain: '*du wohn**st**, du lern**st**, du komm**st***. All the endings: ich -e, du -st, er/sie/es -t, wir -en, ihr -t, sie/Sie -en.',
+  },
+  {
+    id: 'ru-07', type: 'mc', rule: 'present-endings', asksRule: true, theory: true,
+    prompt: 'Which persons take the ending **-en** in the present tense?',
+    correct: 'wir, sie (they) and Sie (formal you)',
+    wrong: ['ich, wir and sie', 'du, ihr and Sie', 'only wir'],
+    explain: '*wir wohn**en**, sie wohn**en**, Sie wohn**en*** — the same form as the infinitive. *ihr* takes **-t**: *ihr wohnt*.',
+  },
+  {
+    id: 'ru-08', type: 'mc', rule: 'present-stem', asksRule: true, theory: true,
+    prompt: 'Why is it *er arbeitet* and not *er arbeitt*?',
+    correct: 'The stem ends in -t, so an extra e makes the ending audible',
+    wrong: ['arbeiten is an irregular verb', 'Every verb takes -et with er / sie / es', 'The e shows that it is the past tense'],
+    explain: 'Stems ending in **-t** or **-d** add an **e** with du, er/sie/es and ihr: *du arbeit**e**st, er arbeit**e**t, ihr find**e**t*. Without it you couldn’t hear the ending.',
+  },
+  {
+    id: 'ru-09', type: 'tf', rule: 'present-stem', asksRule: true, theory: true,
+    statement: 'If the stem ends in **-s, -ß** or **-z**, the du form only adds **-t**: *du reist, du heißt, du tanzt*.',
+    answer: true,
+    explain: 'The stem already ends in an s sound, so *-st* would add nothing you can hear: *du hei**ßt*** (not *heißst*), *du tan**zt***, *du rei**st***.',
+  },
+  {
+    id: 'ru-10', type: 'mc', rule: 'vowel-change', asksRule: true, theory: true,
+    prompt: 'Verbs like *fahren → fährt* change their vowel. With which persons?',
+    correct: 'Only du and er / sie / es',
+    wrong: ['Every person except ich', 'ich, du and er / sie / es', 'Only er / sie / es'],
+    explain: '*du f**ä**hrst, er f**ä**hrt* — but *ich fahre, wir fahren, **ihr fahrt**, sie fahren*. The same with e → i (*du gibst, er gibt*) and e → ie (*du siehst, er sieht*).',
+  },
+  {
+    id: 'ru-11', type: 'tf', rule: 'sein-haben', asksRule: true, theory: true,
+    statement: '*haben* is irregular only with **du** and **er / sie / es**: *du hast, er hat*.',
+    answer: true,
+    explain: 'The other forms are regular: *ich habe, wir haben, ihr habt, sie haben*. Only du and er/sie/es lose the **b**. *sein* is irregular everywhere: *bin, bist, ist, sind, seid, sind*.',
+  },
+  {
+    id: 'ru-12', type: 'mc', rule: ['es-gibt', 'akkusativ'], asksRule: true, theory: true,
+    prompt: 'Which case comes after **es gibt** (there is / there are)?',
+    correct: 'Akkusativ: *Es gibt einen Park.*',
+    wrong: ['Nominativ: *Es gibt ein Park.*', 'Dativ: *Es gibt einem Park.*', 'It depends on how many things there are'],
+    explain: 'The thing after *es gibt* is its **object**, so it is Akkusativ: *der Park → Es gibt **einen** Park.* And it is always *gibt*, even for many things: *Es gibt drei Parks.*',
+  },
+]);
+
+Brezel.deck.addCards('tenses', [
+  {
+    id: 'ru-13', type: 'mc', rule: 'tenses', asksRule: true, theory: true,
+    prompt: 'What do you use the **Präsens** for?',
+    correct: 'Now, habits — and the future, with a time word like *morgen*',
+    wrong: ['Only for what is happening right now', 'For actions that are finished', 'Only for habits and routines'],
+    explain: '*Ich **trinke** gerade Tee* (now). *Ich **trinke** jeden Tag Tee* (habit). *Morgen **trinke** ich Tee* (future). A finished action takes the **Perfekt**: *Ich **habe** Tee **getrunken***.',
+  },
+]);
+
+Brezel.deck.addCards('past', [
+  {
+    id: 'ru-14', type: 'mc', rule: 'partizip-separable', asksRule: true, theory: true,
+    prompt: 'Where does **ge** go in the Partizip II of a separable verb like *einkaufen*?',
+    correct: 'Between the prefix and the verb: *eingekauft*',
+    wrong: ['At the start: *geeinkauft*', 'Nowhere: *einkauft*', 'At the end: *einkaufge*'],
+    explain: 'Separable prefix + **ge** + verb, written as one word: *ein**ge**kauft, auf**ge**standen, an**ge**rufen*.',
+  },
+  {
+    id: 'ru-15', type: 'mc', rule: 'partizip', asksRule: true, theory: true,
+    prompt: 'Which rule for the **Partizip II** is **wrong**?',
+    correct: 'Separable verbs put ge- in front: *geaufmacht*',
+    wrong: ['Regular verbs: ge…t — *gelernt*', 'Irregular verbs: ge…en — *gefunden*', 'Verbs in -ieren: no ge — *diskutiert*'],
+    explain: 'With a separable verb, **ge goes in the middle**: *auf**ge**macht*. The other three are right — and inseparable prefixes (*be-, ver-, er-*) take no ge either: *verkauft*.',
+  },
+]);
+
+Brezel.deck.addCards('cases', [
+  {
+    id: 'ru-16', type: 'match', rule: 'cases', asksRule: true, theory: true,
+    prompt: 'Each case answers its own question. Match them.',
+    pairs: [['Wer?', 'Nominativ'], ['Wen?', 'Akkusativ'], ['Wem?', 'Dativ'], ['Wessen?', 'Genitiv']],
+    explain: '***Wer** kommt?* → Nominativ (*der Mann*). ***Wen** siehst du?* → Akkusativ (*den Mann*). ***Wem** hilfst du?* → Dativ (*dem Mann*). ***Wessen** Auto ist das?* → Genitiv (*des Mannes*).',
+  },
+  {
+    id: 'ru-17', type: 'mc', rule: 'nominativ', asksRule: true, theory: true,
+    prompt: 'Which case is the **subject** of the sentence — the one who does something?',
+    correct: 'Nominativ', wrong: ['Akkusativ', 'Dativ', 'Genitiv'],
+    explain: '***Der Hund** schläft. **Mein Bruder** wohnt in Graz.* The Nominativ is also the form in the dictionary: *der, ein, mein*.',
+  },
+  {
+    id: 'ru-18', type: 'match', rule: 'cases', asksRule: true, theory: true,
+    prompt: 'A masculine noun (*der Hund*): match each article with its case',
+    pairs: [['der', 'Nominativ'], ['den', 'Akkusativ'], ['dem', 'Dativ'], ['des', 'Genitiv']],
+    explain: '***Der** Hund schläft. Ich sehe **den** Hund. Ich gebe **dem** Hund Wasser. Der Ball **des** Hundes.* In the Genitiv the noun gets **-s / -es** too: *des Hund**es***.',
+  },
+  {
+    id: 'ru-19', type: 'match', rule: 'cases', asksRule: true, theory: true,
+    prompt: '*ein* with a masculine noun: match each form with its case',
+    pairs: [['ein', 'Nominativ'], ['einen', 'Akkusativ'], ['einem', 'Dativ'], ['eines', 'Genitiv']],
+    explain: '***Ein** Mann kommt. Ich kenne **einen** Mann. Ich helfe **einem** Mann. Das Auto **eines** Mannes.* *kein* and *mein* work the same: *meinen, meinem, meines*.',
+  },
+  {
+    id: 'ru-20', type: 'mc', rule: 'genitiv', asksRule: true, theory: true,
+    prompt: 'What is the **Genitiv** of *mein Bruder* (the car of my brother)?',
+    correct: 'das Auto meines Bruders',
+    wrong: ['das Auto meinem Bruder', 'das Auto meinen Bruders', 'das Auto meines Bruder'],
+    explain: 'Masculine Genitiv: **meines** + noun + **-s**: *meines Bruder**s***. When speaking, people often say *das Auto **von meinem** Bruder* instead.',
+  },
+  {
+    id: 'ru-21', type: 'mc', rule: 'akkusativ', asksRule: true, theory: true,
+    prompt: 'In the **Akkusativ**, which articles change?',
+    correct: 'Only the masculine ones: der → den, ein → einen',
+    wrong: ['Only the feminine ones: die → der', 'All of them: der → den, die → der, das → dem', 'None — only the noun changes'],
+    explain: '*Ich habe **einen** Hund* (der Hund) — but *eine Katze, ein Fahrrad, keine Kinder* look the same as in the Nominativ.',
+  },
+  {
+    id: 'ru-22', type: 'mc', rule: 'akkusativ', asksRule: true, theory: true,
+    prompt: 'Which part of the sentence is in the **Akkusativ**?',
+    correct: 'The object: what you have, see, need …',
+    wrong: ['The subject: who does it', 'Everything after the verb', 'Only the words after a preposition'],
+    explain: '*Der Hund sieht **den Mann**.* Who sees? the dog (subject, Nominativ). Whom does it see? the man (object, **Akkusativ**). Ask *Wen?* or *Was?*.',
+  },
+  {
+    id: 'ru-23', type: 'mc', rule: 'dativ', asksRule: true, theory: true,
+    prompt: 'In *Ich gebe dem Kind ein Buch*, which case is *dem Kind*?',
+    correct: 'Dativ: the person who gets something',
+    wrong: ['Akkusativ: the thing you give', 'Nominativ: the subject', 'Genitiv: whose it is'],
+    explain: '*Wem* gebe ich das Buch? → **dem Kind** (Dativ). *Was* gebe ich? → **ein Buch** (Akkusativ). *Wer* gibt? → **ich** (Nominativ).',
+  },
+  {
+    id: 'ru-24', type: 'mc', rule: ['mit-dativ', 'dativ'], asksRule: true, theory: true,
+    prompt: 'Which prepositions always take the **Dativ**?',
+    correct: 'mit, bei, nach, aus, zu, seit, von',
+    wrong: ['für, ohne, durch, gegen, um', 'in, an, auf, unter, über', 'und, aber, oder, denn'],
+    explain: '*mit dem Zug, bei meiner Oma, nach dem Kurs, aus der Schweiz, zum Arzt, seit einem Jahr, von meinem Bruder.* **für, ohne, durch, gegen, um** take the Akkusativ. *in, an, auf* take both: Dativ for *Wo?* (*im Kino*), Akkusativ for *Wohin?* (*ins Kino*).',
+  },
+  {
+    id: 'ru-25', type: 'mc', rule: 'mit-dativ', asksRule: true, theory: true,
+    prompt: 'After *mit*, what happens to a **die** word (*die Bahn*)?',
+    correct: 'die → der: *mit der Bahn*',
+    wrong: ['die → den: *mit den Bahn*', 'die → dem: *mit dem Bahn*', 'It stays: *mit die Bahn*'],
+    explain: 'Dativ: der / das → **dem**, die → **der**, plural → **den** + n: *mit **dem** Zug, mit **der** Bahn, mit **den** Kindern*.',
+  },
+  {
+    id: 'ru-26', type: 'tf', rule: 'dativ', asksRule: true, theory: true,
+    statement: 'Some verbs always take the **Dativ**, for example *helfen, danken* and *gefallen*: *Ich helfe meiner Mutter.*',
+    answer: true,
+    explain: 'Ask **Wem?**: *Wem hilfst du?* → *Ich helfe **dir**.* Also: *Ich danke **Ihnen**. Das Bild gefällt **mir**.*',
+  },
+  {
+    id: 'ru-27', type: 'mc', rule: 'genitiv', asksRule: true, theory: true,
+    prompt: 'Which case says **whose** something is?',
+    correct: 'Genitiv', wrong: ['Dativ', 'Akkusativ', 'Nominativ'],
+    explain: '*Wessen Auto ist das?* → *das Auto **des Lehrers**, die Tasche **meiner Schwester***. With names just add -s: *Annas Auto*.',
+  },
+  {
+    id: 'ru-28', type: 'tf', rule: 'genitiv', asksRule: true, theory: true,
+    statement: 'In the Genitiv, masculine and neuter nouns get an extra **-s** or **-es**: *das Auto des Mannes*.',
+    answer: true,
+    explain: '*des Vater**s**, des Auto**s**, des Mann**es**, des Kind**es***. Feminine and plural nouns get nothing: *die Tasche der Frau, die Zimmer der Kinder*.',
+  },
+  {
+    id: 'ru-29', type: 'tf', rule: 'genitiv', asksRule: true, theory: true,
+    statement: 'When speaking, Germans often use **von + Dativ** instead of the Genitiv: *das Auto von meinem Bruder*.',
+    answer: true,
+    explain: '*das Auto **meines Bruders*** (written, formal) = *das Auto **von meinem Bruder*** (everyday speech). Both are correct.',
+  },
+  {
+    id: 'ru-30', type: 'mc', rule: 'gender', asksRule: true, theory: true,
+    prompt: 'Nouns with which endings are always **die**?',
+    correct: '-ung, -heit, -keit', wrong: ['-um, -chen', '-er, -ling', '-en, -el'],
+    explain: '*die Zeit**ung**, die Frei**heit**, die Möglich**keit***. And **-um, -chen** are *das*: *das Muse**um**, das Mäd**chen***.',
+  },
+]);
+
+Brezel.deck.addCards('prepositions', [
+  {
+    id: 'ru-31', type: 'mc', rule: 'im-ins', asksRule: true, theory: true,
+    prompt: 'When do you say **ins** instead of **im**?',
+    correct: 'For *Wohin?* (where to): *Ich gehe ins Kino.*',
+    wrong: ['For *Wo?* (where): *Ich bin ins Kino.*', 'With die words: *ins Stadt*', 'With plurals: *ins Kinos*'],
+    explain: '**ins** = in das, a movement → *Wohin?* (Akkusativ). **im** = in dem, a place → *Wo?* (Dativ): *Ich bin **im** Kino.*',
+  },
+  {
+    id: 'ru-32', type: 'mc', rule: 'prep-place', asksRule: true, theory: true,
+    prompt: 'Which preposition goes with the **company** you work for?',
+    correct: 'bei: *Er arbeitet bei Siemens.*',
+    wrong: ['in: *Er arbeitet in Siemens.*', 'aus: *Er arbeitet aus Siemens.*', 'zu: *Er arbeitet zu Siemens.*'],
+    explain: '**bei** + a company or a person = at: *bei Siemens, bei Uniqa, bei meiner Oma*. For the job itself use **als**: *Er arbeitet **als** Ingenieur.*',
+  },
+  {
+    id: 'ru-33', type: 'mc', rule: 'prep-time', asksRule: true, theory: true,
+    prompt: 'How does a **year** go into a German sentence?',
+    correct: 'On its own (*2019 bin ich …*) or with *im Jahr*',
+    wrong: ['With *in*: *in 2019*', 'With *am*: *am 2019*', 'With *um*: *um 2019*'],
+    explain: '*2019 bin ich nach Wien umgezogen* — or *Im Jahr 2019 …*. Never *in 2019*: that is English.',
+  },
+  {
+    id: 'ru-34', type: 'match', rule: 'prep-time', asksRule: true, theory: true,
+    prompt: 'Which preposition goes with which time?',
+    pairs: [['a day: Montag', 'am'], ['a clock time: acht Uhr', 'um'], ['still going on: drei Wochen', 'seit'], ['a month: Juli', 'im']],
+    explain: '***am** Montag, **um** acht Uhr, **seit** drei Wochen* (+ Präsens), ***im** Juli*. A year stands alone: *2019 …*',
+  },
+  {
+    id: 'ru-35', type: 'tf', rule: 'seit', asksRule: true, theory: true,
+    statement: 'For something that started in the past and is **still true**, German uses *seit* + **Perfekt**: *Ich habe seit 2016 hier gewohnt.*',
+    answer: false,
+    explain: 'Still true → **seit + Präsens**: *Ich **wohne** seit 2016 hier* — exactly like Polish *Mieszkam tu od 2016*. The Perfekt would mean it is over.',
+  },
+]);
+
+Brezel.deck.addCards('gender', [
+  {
+    id: 'ru-36', type: 'mc', rule: 'female-forms', asksRule: true, theory: true,
+    prompt: 'How do you make most **female** job titles?',
+    correct: 'Add -in and use die: *der Lehrer → die Lehrerin*',
+    wrong: ['Add -e: *die Lehrere*', 'Add -frau: *die Lehrerfrau*', 'Only change the article: *die Lehrer*'],
+    explain: '**-in**, always with **die**: *die Lehrerin, die Ärztin, die Köchin* (some add an umlaut). **-mann** becomes **-frau**: *Kaufmann → Kauffrau*. Plural: **-innen**.',
+  },
+]);
+
+Brezel.deck.addCards('possessive', [
+  {
+    id: 'ru-37', type: 'mc', rule: 'possessive-dativ', asksRule: true, theory: true,
+    prompt: 'After *mit* (Dativ), what does *meine* become with a **die** word?',
+    correct: 'meiner: *mit meiner Frau*',
+    wrong: ['meine: *mit meine Frau*', 'meinem: *mit meinem Frau*', 'meinen: *mit meinen Frau*'],
+    explain: 'Possessives take the endings of the article: die → d**er** → mein**er**. der / das → d**em** → mein**em**. Plural → d**en** → mein**en** + n: *mit meinen Freunden*.',
+  },
+  {
+    id: 'ru-38', type: 'mc', rule: 'possessive', asksRule: true, theory: true,
+    prompt: '**sein** or **ihr** (his / her) — what decides it?',
+    correct: 'The owner: a man → sein, a woman → ihr',
+    wrong: ['The thing owned: a der word → sein, a die word → ihr', 'sein for people, ihr for things', 'Nothing: they mean the same'],
+    explain: '*Tom und **sein** Hund, Lisa und **ihr** Hund.* The thing owned only decides the **ending**: *Lisa und ihr**e** Katze*.',
+  },
+]);
+
+Brezel.deck.addCards('questions', [
+  {
+    id: 'ru-39', type: 'mc', rule: 'nicht-kein', asksRule: true, theory: true,
+    prompt: 'When do you use **kein** instead of **nicht**?',
+    correct: 'To negate a noun that would have ein or no article: *kein Auto*',
+    wrong: ['To negate a verb: *Ich kein komme.*', 'To negate an adjective: *Das ist kein teuer.*', 'Only in questions'],
+    explain: '*Ich habe **ein** Auto → Ich habe **kein** Auto. Wir haben Kinder → Wir haben **keine** Kinder.* Everything else takes **nicht**: *Ich komme **nicht**. Das ist **nicht** teuer.*',
+  },
+  {
+    id: 'ru-40', type: 'tf', rule: 'nicht-kein', asksRule: true, theory: true,
+    statement: '**kein** takes the same endings as **ein**: *Ich habe einen Hund → Ich habe keinen Hund*.',
+    answer: true,
+    explain: '*kein* is the negative of *ein*, so it changes the same way: *kein**en** Hund* (Akkusativ), *kein**e** Zeit*, *mit kein**em** Auto*. In the plural: *keine Kinder*.',
+  },
+  {
+    id: 'ru-41', type: 'mc', rule: ['w-words', 'prep-place'], asksRule: true, theory: true,
+    prompt: 'The answer is *aus* + a country (*aus Polen*). Which question word was asked?',
+    correct: 'Woher?', wrong: ['Wo?', 'Wohin?', 'Wann?'],
+    explain: '**Woher?** (where from) → *aus*: *Woher kommst du? — Aus Polen.* **Wo?** (where) → *in*: *in Wien*. **Wohin?** (where to) → *nach*: *nach Wien*.',
+  },
+]);
+
+Brezel.deck.addCards('verbs', [
+  {
+    id: 'ru-42', type: 'mc', rule: 'gern', asksRule: true, theory: true,
+    prompt: 'Which word turns *Ich tanze* into “I like dancing”?',
+    correct: 'gern', wrong: ['mag', 'gefällt', 'lieber'],
+    explain: 'To like **doing** something: verb + **gern** — *Ich tanze **gern**.* To like a **thing**: *mögen* — *Ich **mag** Musik.* (*lieber* = rather: *Ich tanze lieber.*)',
+  },
+  {
+    id: 'ru-43', type: 'mc', rule: 'modal', asksRule: true, theory: true,
+    prompt: 'Which forms of a **modal verb** (*müssen, können*) have no ending?',
+    correct: 'ich and er / sie / es: *ich muss, er muss*',
+    wrong: ['du and ihr: *du muss, ihr müss*', 'wir and sie: *wir muss, sie muss*', 'None — modal verbs are regular'],
+    explain: '*ich **kann**, du kann**st**, er **kann***: ich and er/sie/es are the same, with no ending. *müssen* and *können* also lose the umlaut in the singular: *ich muss, du musst*.',
+  },
+]);
+
+Brezel.deck.addCards('prefix', [
+  {
+    id: 'ru-44', type: 'mc', rule: 'gefallen', asksRule: true, theory: true,
+    prompt: 'In *Der Film gefällt mir* (I like the film), what is the **subject**?',
+    correct: 'der Film', wrong: ['mir', 'gefällt', 'There is no subject'],
+    explain: '*gefallen* works the other way round: the thing you like is the **subject** (*der Film gefällt*), the person is in the **Dativ** (*mir*). Plural thing → plural verb: *Die Schuhe gefallen mir.*',
+  },
+]);
+
+Brezel.deck.addCards('reflexive', [
+  {
+    id: 'ru-45', type: 'mc', rule: 'reflexive-position', asksRule: true, theory: true,
+    prompt: 'Where does the reflexive pronoun go in *Ich ziehe mich an*?',
+    correct: 'Right after the conjugated verb',
+    wrong: ['At the very end, after the prefix', 'Before the verb', 'In position 1'],
+    explain: '*Ich **ziehe mich** an. Er **wäscht sich**.* After inversion it follows the subject pronoun: *Morgens **dusche ich mich***. A separable prefix still goes last.',
+  },
+]);
+
+Brezel.deck.addCards('pastq', [
+  {
+    id: 'ru-46', type: 'mc', rule: 'perfekt-answer', asksRule: true, theory: true,
+    prompt: 'The question has *schon einmal* (ever). How does a **no** answer go?',
+    correct: 'Nein, ich habe noch nie …',
+    wrong: ['Nein, ich habe schon nie …', 'Nein, ich habe kein einmal …', 'Nein, ich habe nicht schon …'],
+    explain: '*Hast du **schon einmal** Tango getanzt? — Nein, ich habe **noch nie** Tango getanzt.* **noch nie** (never) goes where *schon einmal* was.',
+  },
+]);
+
+Brezel.deck.addCards('vocab', [
+  {
+    id: 'ru-47', type: 'mc', rule: 'vocab-nouns', asksRule: true, theory: true,
+    prompt: 'Which words start with a **capital letter** in German?',
+    correct: 'Every noun, also in the middle of a sentence',
+    wrong: ['Only names of people and places', 'Nouns and adjectives', 'Only the first word of a sentence'],
+    explain: '*Ich habe einen **H**und und eine **K**atze.* Names, the first word and formal **Sie** have one too — but adjectives stay small: *schön, groß*.',
+  },
+  {
+    id: 'ru-48', type: 'mc', rule: 'compounds', asksRule: true, theory: true,
+    prompt: 'In a compound noun like *Küchenschrank*, which part decides the article?',
+    correct: 'The last part: der Schrank → der Küchenschrank',
+    wrong: ['The first part: die Küche → die Küchenschrank', 'The longer part', 'None — compounds are always das'],
+    explain: 'The last part is the main word; the first one describes it. A *Küchenschrank* is a kind of *Schrank*, so it is **der**. *das Haus + die Tür → **die** Haustür*.',
+  },
+  {
+    id: 'ru-49', type: 'mc', rule: 'vocab', asksRule: true, theory: true,
+    prompt: 'Which ending makes a **person** out of a verb (*backen* → someone who bakes)?',
+    correct: '-er / -erin: *der Bäcker, die Bäckerin*',
+    wrong: ['-ung: *die Backung*', '-heit: *die Backheit*', '-chen: *das Bäckchen*'],
+    explain: '*backen → der Bäck**er** / die Bäck**erin***, *spielen → der Spiel**er***. **-ung** makes a thing or an action, always *die*: *üben → die Übung*.',
+  },
+  {
+    id: 'ru-50', type: 'mc', rule: 'false-friends', asksRule: true, theory: true,
+    prompt: 'What is a **false friend**?',
+    correct: 'A word that looks like an English word but means something else',
+    wrong: ['A word with two genders', 'A verb that is irregular in German but regular in English', 'A word that only exists in Austria'],
+    explain: '*bekommen* = to **get**, not *to become* (that is *werden*). Some German words also look like each other: *Freunde* (friends) ≠ *Freude* (joy).',
   },
 ]);
 
@@ -11867,10 +12389,19 @@ Brezel.deck.addCards('pastq', [
           r.base ? h('span', { class: 'gl-base', lang: 'de', title: 'Dictionary form' }, r.base) : null))));
   }
 
+  /** A rule's table (the articles of a case): the first column is a row label. */
+  function table({ head, rows }) {
+    return h('div', { class: 'table-scroll gl-table-wrap' },
+      h('table', { class: 'data-table gl-table', lang: 'de' },
+        head ? h('thead', {}, h('tr', {}, head.map((c) => h('th', { scope: 'col', html: md(c) })))) : null,
+        h('tbody', {}, rows.map((r) => h('tr', {}, r.map((c, i) => h(i ? 'td' : 'th', { scope: i ? null : 'row', html: md(c) })))))));
+  }
+
   function rule(r) {
     return h('div', { class: 'gl-rule' },
       h('h4', { class: 'gl-rule-title', html: md(r.title) }),
       r.text ? h('p', { class: 'gl-rule-text', html: md(r.text) }) : null,
+      r.table ? table(r.table) : null,
       r.points ? h('ul', { class: 'gl-points' }, r.points.map((p) => h('li', { html: md(p) }))) : null);
   }
 
@@ -12572,7 +13103,8 @@ Brezel.deck.addCards('pastq', [
     }));
     main.append(B.charts.card({
       title: 'Mastery by topic',
-      sub: `How each card was mastered. Badges: first-try accuracy — Strong ≥ ${B.stats.STRONG}%, Getting there ≥ ${B.stats.OKAY}%, below that Needs work.`,
+      sub: `How each card was mastered. Badges: first-try accuracy — Strong ≥ ${B.stats.STRONG}%, Getting there ≥ ${B.stats.OKAY}%, below that Needs work.` +
+        (topics.some((t) => t.topic.collects) ? ' Rules repeats the rule questions of the other topics.' : ''),
       legend: SERIES.concat({ label: 'Not mastered yet', cls: 'rest' }),
       body: B.charts.stacked(topicRows, SERIES),
       table: {
@@ -12630,11 +13162,12 @@ Brezel.deck.addCards('pastq', [
         h('ol', { class: 'miss-list' }, missed.map(({ card, state }) => B.ui.cardLine(card, { count: state.w, given: state.lw, done: state.done })))));
     }
 
-    // --- rule reminders for weak topics -----------------------------------------------------------------------------
-    if (weak.length) {
+    // --- rule reminders for weak topics (Rules has no tip of its own: its cards' topics do) -------------------------
+    const revise = weak.filter((t) => !t.topic.collects);
+    if (revise.length) {
       main.append(h('section', { class: 'card tips' },
         h('h2', { class: 'section-title' }, h('span', { 'aria-hidden': 'true' }, '📖 '), 'Rules to revise'),
-        weak.map((t) => h('div', { class: 'tip-block' },
+        revise.map((t) => h('div', { class: 'tip-block' },
           h('h3', {}, h('span', { 'aria-hidden': 'true' }, t.topic.icon + ' '), t.topic.name, h('span', { class: 'muted' }, ' · ' + t.topic.de)),
           h('p', { html: md(t.topic.tip || '') })))));
     }

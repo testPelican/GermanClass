@@ -49,7 +49,7 @@ Brezel.deck.addCards('possessive', [
     explain: 'das Studium → **mein** Studium.',
   },
   {
-    id: 'po-09', type: 'tf', rule: 'possessive', asksRule: true,
+    id: 'po-09', type: 'tf', rule: 'possessive', asksRule: true, theory: true,
     statement: '**mein** is used for *der* and *das* words; **meine** for *die* words and plurals.',
     answer: true,
     explain: 'mein Nachbar, mein Studium · meine Nachbarin, meine Freunde.',

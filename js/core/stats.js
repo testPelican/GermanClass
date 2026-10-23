@@ -108,7 +108,7 @@
   }
 
   const pending = (topic) =>
-    B.deck.cards.filter((c) => (topic === 'all' || !topic || c.topic === topic) && !B.store.isDone(c.id));
+    B.deck.cards.filter((c) => (topic === 'all' || !topic || B.deck.inTopic(c, topic)) && !B.store.isDone(c.id));
 
   B.stats = { STRONG, OKAY, MIN_CARDS, status, summarize, overview, byTopic, byType, sessions, missed, mistakeCards, pending };
 })();

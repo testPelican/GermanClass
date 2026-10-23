@@ -4,6 +4,8 @@
  *   Brezel.deck.addVerbs({...}), addFamilies([...]), addProperNouns([...])
  *   Brezel.deck.addCards('topicId', [...])
  *   Brezel.deck.addRules([...])   (the rule a card practises, shown in the Glossary)
+ * A card belongs to one topic. A topic with collects: 'theory' (Rules) also holds every card
+ * marked theory: true: a question about a rule itself, never a translation.
  * finalize() then validates everything; broken cards are skipped and reported
  * in the console (and by tools/validate.js), so one typo never breaks the app.
  */
@@ -53,7 +55,7 @@
       for (const w of list) this.properNouns.add(w);
     },
 
-    /** rules: [{ id, title, text, points?: [...], examples?: [...] }] — markdown-lite like card text. */
+    /** rules: [{ id, title, text, table?: { head, rows }, points?: [...] }] — markdown-lite like card text. */
     addRules(list) {
       for (const r of list) {
         this.rules.push(r);
@@ -134,8 +136,15 @@
       return this;
     },
 
+    /** Is the card in this topic? A collecting topic (Rules) holds every card with its flag. */
+    inTopic(card, topicId) {
+      if (card.topic === topicId) return true;
+      const t = this.topicMap[topicId];
+      return !!(t && t.collects && card[t.collects]);
+    },
+
     byTopic(topicId) {
-      return this.cards.filter((c) => c.topic === topicId);
+      return this.cards.filter((c) => this.inTopic(c, topicId));
     },
   };
 

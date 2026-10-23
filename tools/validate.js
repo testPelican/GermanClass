@@ -3,6 +3,7 @@
  * Checks the deck without a browser:  node tools/validate.js
  *  - loads the core, exercise types and all data files (same order as index.html)
  *  - reports cards that failed validation, duplicate ids, counts per topic / type
+ *  - checks the Glossary (rules, translations) and that the Rules topic covers every rule
  *  - runs a few sanity tests of the typed-answer checker
  * Exit code 1 if anything is wrong.
  */
@@ -59,10 +60,8 @@ if (deck.problems.length) {
   for (const p of deck.problems) fail(`${p.id}: ${p.errors.join('; ')}`);
 }
 
-const byTopic = {};
 const byType = {};
 for (const c of deck.cards) {
-  byTopic[c.topic] = (byTopic[c.topic] || 0) + 1;
   byType[c.type] = (byType[c.type] || 0) + 1;
   if (!c.explain) fail(`${c.id}: no "explain" text`);
   try {
@@ -73,7 +72,7 @@ for (const c of deck.cards) {
   }
 }
 console.log('\nBy topic:');
-for (const t of deck.topics) console.log(`  ${t.icon}  ${t.name.padEnd(28)} ${byTopic[t.id] || 0}`);
+for (const t of deck.topics) console.log(`  ${t.icon}  ${t.name.padEnd(28)} ${deck.byTopic(t.id).length}${t.collects ? '  (gathered from the other topics)' : ''}`);
 console.log('\nBy exercise type:');
 for (const [k, v] of Object.entries(byType).sort((a, b) => b[1] - a[1])) console.log(`  ${B.ex.label(k).padEnd(30)} ${v}`);
 
@@ -109,7 +108,7 @@ for (const c of deck.cards) {
 
   // The rule must not contain an answer sentence of the card — unless it stays folded (asksRule: true).
   if (!c.asksRule) {
-    const rule = deck.rulesFor(c).map((r) => words([r.title, r.text, ...(r.points || [])].join(' . '))).join(' ');
+    const rule = deck.rulesFor(c).map((r) => words([r.title, r.text, ...(r.points || []), ...(r.table ? r.table.rows.flat() : [])].join(' . '))).join(' ');
     const filled = (a) => (c.q && B.ex.BLANK.test(c.q) ? c.q.replace(B.ex.BLANK, a) : null);
     const answers = [
       ...B.ex.choices(c).filter((a) => c.type !== 'mc' || a === c.correct),
@@ -127,6 +126,24 @@ const folded = deck.cards.filter((c) => c.asksRule).length;
 const hidden = deck.cards.filter((c) => c.gloss === false).length;
 if (!glossErrors) console.log(`  ✓ every card has a rule (${deck.rules.length} rules; ${folded} cards keep it folded)`);
 if (!glossErrors) console.log(`  ✓ every question word has a translation (${hidden} meaning cards hide them)`);
+for (const r of deck.rules) {
+  if (r.table && !(Array.isArray(r.table.rows) && r.table.rows.length && r.table.rows.every((row) => Array.isArray(row) && row.length === (r.table.head || r.table.rows[0]).length))) {
+    gfail(`rule ${r.id}: every table row needs as many cells as the head`);
+  }
+}
+
+// --- Rules topic: questions about the rules themselves, one for every rule --------------------
+console.log('\nRules topic:');
+const theory = deck.cards.filter((c) => c.theory);
+let theoryErrors = 0;
+for (const c of theory) {
+  // a card that asks what words mean is a translation question, which the Rules topic leaves out
+  if (c.gloss === false) theoryErrors++, fail(`${c.id}: a meaning card (gloss: false) can't be a theory card`);
+}
+const asked = new Set(theory.flatMap((c) => [].concat(c.rule || [])));
+const unasked = deck.rules.filter((r) => !asked.has(r.id)).map((r) => r.id);
+if (unasked.length) theoryErrors++, fail(`no Rules question (theory: true) for: ${unasked.join(', ')}`);
+if (!theoryErrors) console.log(`  ✓ ${theory.length} rule questions, at least one for each of the ${deck.rules.length} rules`);
 
 // --- typed-answer checker -------------------------------------------------------
 console.log('\nChecker:');
@@ -188,6 +205,6 @@ for (const c of deck.cards) {
   }
 }
 
-if (deck.cards.length < 450) fail(`expected at least 450 cards, found ${deck.cards.length}`);
+if (deck.cards.length < 500) fail(`expected at least 500 cards, found ${deck.cards.length}`);
 console.log(failed ? '\n✗ Validation failed\n' : '\n✓ All good\n');
 process.exit(failed ? 1 : 0);

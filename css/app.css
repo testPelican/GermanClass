@@ -3572,6 +3572,7 @@ body.is-dragging * {
 .modal.sheet {
   display: flex;
   flex-direction: column;
+  min-width: 0; /* a wide rule table scrolls inside instead of widening the sheet */
   max-width: 520px;
   max-height: min(86vh, 760px);
   max-height: min(86dvh, 760px);
@@ -3711,6 +3712,33 @@ body.is-dragging * {
 
 .gl-points li + li {
   margin-top: 4px;
+}
+
+.gl-table-wrap {
+  margin-top: 8px;
+}
+
+.gl-table {
+  font-size: 14px;
+}
+
+.gl-table th,
+.gl-table td {
+  padding: 5px 6px;
+  border-bottom-color: var(--border);
+}
+
+.gl-table thead th {
+  font-size: 11px;
+}
+
+.gl-table tbody th {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.gl-table tr:last-child > * {
+  border-bottom: 0;
 }
 
 .gl-rule em {

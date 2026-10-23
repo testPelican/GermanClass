@@ -17,7 +17,7 @@ Brezel.deck.addCards('praet', [
     explain: 'Stem **hatt-** + -e, -est, -e, -en, -et, -en. Again **ich = er**: *ich hatte, sie hatte*.',
   },
   {
-    id: 'pt-03', type: 'mc', rule: ['praet-regular', 'praet-irregular'], asksRule: true,
+    id: 'pt-03', type: 'mc', rule: ['praet-regular', 'praet-irregular'], asksRule: true, theory: true,
     prompt: 'In the Präteritum, which two forms are always the same?',
     correct: 'ich and er/sie/es (ich war – er war)',
     wrong: ['du and ihr (du warst – ihr wart)', 'ich and du (ich war – du warst)', 'er and ihr (er war – ihr wart)'],
@@ -59,14 +59,14 @@ Brezel.deck.addCards('praet', [
     explain: '*haben → hatte*, *sein → war*. These two are the Präteritum forms you also use when speaking.',
   },
   {
-    id: 'pt-09', type: 'mc', rule: 'praet-regular', asksRule: true,
+    id: 'pt-09', type: 'mc', rule: 'praet-regular', asksRule: true, theory: true,
     prompt: 'How do **regular** verbs build the Präteritum?',
     correct: 'stem + -te: kaufen → kaufte',
     wrong: ['ge + stem + t: kaufen → gekauft', 'a new vowel: kaufen → kief', 'stem + -en: kaufen → kaufen'],
     explain: '**-te** is the sign of the regular Präteritum: *kauf**te**, frag**te**, ärger**te** sich, dusch**te** sich*. It works like English *-ed*: ask → ask**ed**, fragen → frag**te**.',
   },
   {
-    id: 'pt-10', type: 'mc', rule: 'praet-irregular', asksRule: true,
+    id: 'pt-10', type: 'mc', rule: 'praet-irregular', asksRule: true, theory: true,
     prompt: 'How do **irregular** verbs build the Präteritum?',
     correct: 'The vowel changes, no -te: stehen → stand, essen → aß',
     wrong: ['They add -te: stehen → stehte', 'They use haben + participle', 'They have no Präteritum'],
@@ -156,7 +156,7 @@ Brezel.deck.addCards('praet', [
     explain: '*backen* is a **mixed** verb: the Präteritum is regular (*back**te***), the participle is irregular (*geback**en***).',
   },
   {
-    id: 'pt-22', type: 'mc', rule: 'praet-regular', asksRule: true,
+    id: 'pt-22', type: 'mc', rule: 'praet-regular', asksRule: true, theory: true,
     prompt: 'Why is it *erkältete sich* and not *erkältte sich*?',
     correct: 'The stem ends in -t, so an extra e is added (like arbeitete)',
     wrong: ['Because erkälten is irregular', 'Because it is reflexive', 'Because of the prefix er-'],
@@ -196,7 +196,7 @@ Brezel.deck.addCards('praet', [
     explain: 'Correct: *war* is the Präteritum of *sein* and perfectly normal in speech. (*Ich bin ins Kino gegangen* says you went; *Ich war im Kino* says where you were.)',
   },
   {
-    id: 'pt-28', type: 'tf', rule: 'praet-irregular', asksRule: true,
+    id: 'pt-28', type: 'tf', rule: 'praet-irregular', asksRule: true, theory: true,
     statement: 'In the Präteritum, the er/sie/es form ends in **-t**: *er standt, sie bekamt*.',
     answer: false,
     explain: 'No -t in the Präteritum: *er stand, sie bekam, es war*. The -t is only in the present: *er steht, sie bekommt*.',

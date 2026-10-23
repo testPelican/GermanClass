@@ -5,7 +5,8 @@
  * (a card that asks about the rule, a table of exactly these forms), add asksRule: true and the
  * Glossary keeps the rule folded until the learner asks for it.
  *
- *   { id, title, text?, points?: [...] }   — **bold** and *italic* work as in card text.
+ *   { id, title, text?, table?: { head?: [...], rows: [[...], …] }, points?: [...] }
+ * **bold** and *italic* work as in card text, also in table cells. A table row starts with its label.
  * Examples here are deliberately not the sentences from the cards (tools/validate.js checks).
  */
 Brezel.deck.addRules([
@@ -180,6 +181,46 @@ Brezel.deck.addRules([
 
   // --- cases, articles -----------------------------------------------------------------------
   {
+    id: 'cases',
+    title: 'The four cases',
+    text: 'The **article** shows what a noun does in the sentence. The table shows a **masculine** noun (*der Hund*); the rule of each case has all the forms.',
+    table: {
+      head: ['', 'the', 'a', 'my'],
+      rows: [
+        ['Nominativ', 'der', 'ein', 'mein'],
+        ['Akkusativ', 'den', 'einen', 'meinen'],
+        ['Dativ', 'dem', 'einem', 'meinem'],
+        ['Genitiv', 'des', 'eines', 'meines'],
+      ],
+    },
+    points: [
+      '**Nominativ** (*Wer? Was?*) — the subject, who does it: ***Der Hund** schläft.*',
+      '**Akkusativ** (*Wen? Was?*) — the object of most verbs: *Ich sehe **den Hund**.*',
+      '**Dativ** (*Wem?*) — the person who gets something, and after *mit, bei, zu …*: *Ich gebe **dem Hund** Wasser.*',
+      '**Genitiv** (*Wessen?*) — whose? The noun adds **-s**: *der Ball **des Hundes***',
+      '*kein, dein, sein, ihr, unser …* take the same endings as *ein* and *mein*.',
+    ],
+  },
+  {
+    id: 'nominativ',
+    title: 'Nominativ: der, ein, mein',
+    text: 'The **Nominativ** is the **subject**: the person or thing that does something (*Wer? Was?*). It is the form in the dictionary.',
+    table: {
+      head: ['', 'masc.', 'fem.', 'neut.', 'plural'],
+      rows: [
+        ['the', 'der', 'die', 'das', 'die'],
+        ['a', 'ein', 'eine', 'ein', '—'],
+        ['no', 'kein', 'keine', 'kein', 'keine'],
+        ['my', 'mein', 'meine', 'mein', 'meine'],
+      ],
+    },
+    points: [
+      '***Mein Bruder** wohnt in Graz.* Who lives in Graz? → my brother = the subject.',
+      'The subject isn’t always first: *Heute kommt **mein Bruder**.*',
+      'After **sein** the noun is Nominativ too: *Tom ist **mein Freund**.*',
+    ],
+  },
+  {
     id: 'mit-dativ',
     title: 'mit + Dativ',
     text: 'After **mit** (and *bei, nach, aus, zu, seit*) comes the **Dativ**. The article changes:',
@@ -193,12 +234,64 @@ Brezel.deck.addRules([
   },
   {
     id: 'akkusativ',
-    title: 'Akkusativ: den, einen, keinen',
-    text: 'The **object** of most verbs (what you have, read, need, see …) is in the Akkusativ. Only **masculine** words change:',
+    title: 'Akkusativ: den, einen, meinen',
+    text: 'The **object** of most verbs (what you have, read, need, see …) is in the Akkusativ (*Wen? Was?*). Only **masculine** words change:',
+    table: {
+      head: ['', 'masc.', 'fem.', 'neut.', 'plural'],
+      rows: [
+        ['the', '**den**', 'die', 'das', 'die'],
+        ['a', '**einen**', 'eine', 'ein', '—'],
+        ['no', '**keinen**', 'keine', 'kein', 'keine'],
+        ['my', '**meinen**', 'meine', 'mein', 'meine'],
+      ],
+    },
     points: [
       'der → **den**, ein → **einen**, kein → **keinen**, mein → **meinen**',
       'die, das and plural stay the same: *eine Katze, ein Fahrrad, keine Zeit*',
       'The subject (who does it) stays in the Nominativ: ***Der** Hund sieht **den** Mann.*',
+      'Always Akkusativ after **für, ohne, durch, gegen, um**: *ein Geschenk für meinen Vater*',
+    ],
+  },
+  {
+    id: 'dativ',
+    title: 'Dativ: dem, einem, meinem',
+    text: 'The **Dativ** is usually the **person** who gets something or is helped (*Wem?* = to whom?). It also comes after **mit, bei, nach, aus, zu, seit, von**.',
+    table: {
+      head: ['', 'masc.', 'fem.', 'neut.', 'plural'],
+      rows: [
+        ['the', 'dem', 'der', 'dem', 'den'],
+        ['a', 'einem', 'einer', 'einem', '—'],
+        ['no', 'keinem', 'keiner', 'keinem', 'keinen'],
+        ['my', 'meinem', 'meiner', 'meinem', 'meinen'],
+        ['noun', '—', '—', '—', '**+ -n**'],
+      ],
+    },
+    points: [
+      '*Ich gebe **dem Kind** einen Apfel.* Who gets the apple? → the child = Dativ (the apple = Akkusativ).',
+      'Some verbs always take the Dativ: **helfen, danken, gefallen, gehören**: *Das Buch gehört **meinem** Bruder.*',
+      'Pronouns: mir, dir, ihm, ihr, uns, euch, ihnen / Ihnen',
+      'Plural: **den**, and the noun gets an extra **-n**: *mit den Kindern*',
+    ],
+  },
+  {
+    id: 'genitiv',
+    title: 'Genitiv: des, eines, meines',
+    text: 'The **Genitiv** says **whose** something is (*Wessen?* = whose?). It comes **after** the thing: *das Auto des Lehrers*. Masculine and neuter nouns add **-s**, short ones often **-es**.',
+    table: {
+      head: ['', 'masc.', 'fem.', 'neut.', 'plural'],
+      rows: [
+        ['the', 'des', 'der', 'des', 'der'],
+        ['a', 'eines', 'einer', 'eines', '—'],
+        ['no', 'keines', 'keiner', 'keines', 'keiner'],
+        ['my', 'meines', 'meiner', 'meines', 'meiner'],
+        ['noun', '**+ -(e)s**', '—', '**+ -(e)s**', '—'],
+      ],
+    },
+    points: [
+      '*das Zimmer **des** Kind**es***, *die Tasche **meiner** Schwester*, *die Spielsachen **der** Kinder*',
+      'Names just add **-s**, with no apostrophe: *Annas Auto, Toms Hund*',
+      'When **speaking**, people often say **von + Dativ** instead: *das Auto von meinem Vater*',
+      'Some prepositions take the Genitiv in writing, e.g. **wegen** (because of): *wegen des Wetters*',
     ],
   },
   {

@@ -98,7 +98,8 @@
     }));
     main.append(B.charts.card({
       title: 'Mastery by topic',
-      sub: `How each card was mastered. Badges: first-try accuracy — Strong ≥ ${B.stats.STRONG}%, Getting there ≥ ${B.stats.OKAY}%, below that Needs work.`,
+      sub: `How each card was mastered. Badges: first-try accuracy — Strong ≥ ${B.stats.STRONG}%, Getting there ≥ ${B.stats.OKAY}%, below that Needs work.` +
+        (topics.some((t) => t.topic.collects) ? ' Rules repeats the rule questions of the other topics.' : ''),
       legend: SERIES.concat({ label: 'Not mastered yet', cls: 'rest' }),
       body: B.charts.stacked(topicRows, SERIES),
       table: {
@@ -156,11 +157,12 @@
         h('ol', { class: 'miss-list' }, missed.map(({ card, state }) => B.ui.cardLine(card, { count: state.w, given: state.lw, done: state.done })))));
     }
 
-    // --- rule reminders for weak topics -----------------------------------------------------------------------------
-    if (weak.length) {
+    // --- rule reminders for weak topics (Rules has no tip of its own: its cards' topics do) -------------------------
+    const revise = weak.filter((t) => !t.topic.collects);
+    if (revise.length) {
       main.append(h('section', { class: 'card tips' },
         h('h2', { class: 'section-title' }, h('span', { 'aria-hidden': 'true' }, '📖 '), 'Rules to revise'),
-        weak.map((t) => h('div', { class: 'tip-block' },
+        revise.map((t) => h('div', { class: 'tip-block' },
           h('h3', {}, h('span', { 'aria-hidden': 'true' }, t.topic.icon + ' '), t.topic.name, h('span', { class: 'muted' }, ' · ' + t.topic.de)),
           h('p', { html: md(t.topic.tip || '') })))));
     }
