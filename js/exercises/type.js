@@ -3,6 +3,7 @@
  *   { type: 'type', prompt, q?: 'Julia ___ in Salzburg.', hint?: 'wohnen',
  *     answer: 'wohnt' | ['alt 1', 'alt 2'], reject?: [...], strict?: true, noun?: true }
  * If q has a ___ the typed text appears live inside the sentence.
+ * 💡 Help me: 1. the first letter of each word and how many letters ("l _ _ _ _"), 2. half of each word.
  */
 (function () {
   'use strict';
@@ -49,8 +50,14 @@
       root.append(head, h('div', { class: 'type-box' }, input), B.ex.umlautBar(() => input));
 
       let res = null;
+      const first = show(answers[0]);
       return {
         focus: () => input.focus({ preventScroll: true }),
+        hints: first.replace(/\s/g, '').length > 3 ? 2 : 1,
+        hint(step) {
+          const pattern = B.ex.letterHint(first, step);
+          return { html: (step === 1 ? 'It starts like this: ' : 'Half of it: ') + `<span class="hint-letters">${B.util.esc(pattern)}</span>` };
+        },
         check() {
           const given = input.value.trim();
           res = B.check.typed(given, answers, { reject: card.reject, strict: card.strict, nounHint: card.noun });

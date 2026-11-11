@@ -1,8 +1,10 @@
 # 🥨 Brezel — German grammar flashcards
 
-A Duolingo-style flashcard app built from your class notes: 500 cards across
-15 topics, plus a 📏 **Rules** topic, in 9 exercise types. It runs offline in
-any modern browser; nothing to install.
+A Duolingo-style flashcard app built from your class notes: 698 cards across
+16 topics, plus a 📏 **Rules** topic, in 9 exercise types, and 106 easier copies
+of typed cards (804 in all). Three difficulty levels, 💡 hints, German speech,
+achievements and minigames. It runs offline in any modern browser; nothing to
+install.
 
 ## Open it
 
@@ -23,18 +25,112 @@ keeps its own progress.
 
 ## How a session works
 
-- The start screen shows how far you are, e.g. **23/500**. A card only counts
+- The start screen shows how far you are, e.g. **23/804**. A card only counts
   once you answer it correctly. Then it comes back for reviews (see below).
-- **Start** first takes the reviews that are due, then new cards, up to the
-  session size, and mixes them. Cards and answer options are shuffled every
-  session.
+- Choose the **cards** per session (5, 10, 20, 50 or all), the **topic** and
+  the **difficulty**, then press **▶ Start Learning**, or **🎮 Start Gaming**
+  for minigames (see below).
+- **Start Learning** first takes the reviews that are due, then new cards, up
+  to the session size, and mixes them. Cards and answer options are shuffled
+  every session.
 - If you get a card wrong, the correct answer and the reason are shown, and the
   card goes back into the pile at a random later spot in the same session.
 - **Practise mistakes** replays every card you have ever got wrong. It is extra
   training only and doesn't change your progress.
-- When all 500 are done, **Review** shows your strong and weak topics, mastery
+- When all 804 are done, **Review** shows your strong and weak topics, mastery
   per topic, first-try accuracy per exercise type and accuracy per session.
   Every chart can be switched to a table.
+
+### 🎮 Minigames
+
+**🎮 Start Gaming** plays minigames for the topic you picked (*All topics* = every
+game). Each one starts with a short how-to and a 3-2-1 countdown. At the end
+you see your score, your best, your mistakes with the right answers, and the
+question **Noch ein Spiel?** — play the next game, the same one again, or stop.
+Topics with games show **💻** and how many; a topic without games says so.
+The difficulty slider sets the game level too (*Mixed* picks one per game).
+Games earn XP but never change your card progress or reviews.
+
+| Game | What you do | Topics |
+|---|---|---|
+| ⚖️ Haben oder sein? | swipe each verb to its Perfekt helper (*sich umziehen* → haben!) | Past, Talking about the past, Tenses, Verb list, Reflexive, Separable |
+| 🚪 Der Türsteher | be the bouncer: let in only sentences with the right word order | Word order and every topic with enough sentences |
+| 🚫 Nicht oder kein? | swipe to *nicht* or *kein…* | Questions & negation |
+| 🏠 Im oder ins? | Wo? → *im*, Wohin? → *ins* | Prepositions |
+| ⚡ Partizip-Blitz | infinitive → Partizip II, against the clock | Past, Separable, Verb list, Tenses … |
+| 🪞 Spiegel | the right reflexive pronoun: *mich, dich, sich, uns, euch* | Reflexive, Verb list |
+| 🕰️ Zeitmaschine | Präsens, Präteritum or Perfekt? | Tenses, Simple past, Past, Verb list |
+| 👂 Hör genau | listen and tap the word you heard (*schon / schön*, *fährt / fahrt*) | Present, Simple past, Cases, Possessives, Reflexive, Verb list |
+| 🎰 Verb-Automat | pull the lever: person + verb + tense, then give the form | Present, Simple past, Modal verbs, Verb list, Reflexive, Tenses |
+| 🃏 Memory | flip cards to find pairs (*gehen · ging*, *Lehrer · Lehrerin* …) | most topics |
+| ✂️ Die Schere | cut a separable verb (*steht … auf*) or keep it together (*beantwortet*) | Separable, Verb list, Word order |
+| 🐉 Bossfight | beat the topic's monster with real cards (*Der Spiegel-Geist* …) | every topic |
+| 🌧️ Artikel-Regen | nouns rain down: *der, die* or *das* before they land | Cases, Female & male forms, Vocabulary |
+
+Level changes the game: more time and fewer options on Low; typing instead of
+choosing, more traps and a clock per card on High. Game time pauses when you
+switch apps.
+
+### Difficulty
+
+The slider on the start screen has four stops: **Low**, **Medium**, **High**
+and the purple **Mixed** (every level, shuffled). Drag it, tap a stop, or use
+the arrow keys. Each card shows its level next to its topic.
+
+| Level | What you do | Cards |
+|---|---|---|
+| 🌱 Low | Recognise: true/false, multiple choice, small match | 270 |
+| ⛰️ Medium | Build: fill gaps, sort, spot the mistake, short sentences | 288 |
+| 🏔️ High | Produce: type answers, tables, long sentences | 246 |
+
+- A card's level comes from what it asks you to do, unless the card sets
+  `level` itself. The 📒 Verb list does: Präsens = Low, Präteritum = Medium,
+  Perfekt = High.
+- Many typed cards also have an **easier copy**, so the same question exists
+  at more than one level:
+  - a typed one-word answer gets a Low multiple-choice copy. Its wrong options
+    are other real forms of the same word: *liest* → *lese, lest, lesen*;
+  - a typed full sentence gets a Medium sentence-builder copy.
+- A copy is a card of its own, with its own progress and reviews. A session
+  never shows a card and its copy together.
+- The topic and the difficulty filter both the reviews and the new cards.
+- **Practise mistakes** ignores the difficulty.
+
+### 💡 Help me
+
+**Help me** (or `H`), next to *I don't know*, gives a hint in steps. Each hint
+costs 3 XP of the card's 10 (it never drops below 2); a right answer still
+counts in full for your progress.
+
+| Card | Hints |
+|---|---|
+| Multiple choice | wrong options disappear until two are left |
+| Typed answer | the first letter and length (*l _ _ _ _*), then half of the word |
+| Table | the first letter of every blank, then one blank at a time |
+| Sentence builder | the extra tiles disappear, then the words are placed from the start |
+| Fill the gaps | half of the wrong chips disappear, then the gaps are filled one by one |
+| Match pairs | one right pair at a time (two always stay open) |
+| Sort | one word into its right group at a time (up to half) |
+| Spot the mistake | words that are right are greyed out |
+| True / false | none: the hint would be the answer |
+
+The dots on the button show how many hints are left. A hint never gives away
+the whole answer.
+
+### 🔊 Speech
+
+- The **🔊** in the speech bubble (and in fill-the-gaps cards) reads the German
+  question; a blank is read as a short pause. True/false and spot-the-mistake
+  sentences may be wrong, so they get no 🔊 before you answer.
+- A **German answer option is read aloud the moment you pick it**: multiple
+  choice, gap chips, sentence tiles, match pairs, sort chips and words in
+  spot the mistake. English and Polish options are not read. Turn the sound
+  off (🔇) to stop this.
+- Tap a dotted word: its bubble has a 🔊 too.
+- After you answer, the 🔊 next to *Richtig!* reads the whole correct sentence.
+- Speech uses your device's German voice. For a nicer one on a Mac: System
+  Settings → Accessibility → Spoken Content → System voice → Manage Voices →
+  German (Enhanced or Premium).
 
 ### Reviews (spaced repetition)
 
@@ -65,25 +161,49 @@ it right:
 
 ### The Rule book
 
-- **📖 Rule book** on the start screen lists all 53 grammar rules, grouped by
+- **📖 Rule book** on the start screen lists all 59 grammar rules, grouped by
   topic, with their tables (e.g. the four cases). Tap a rule to open it.
 - The search box finds rules by any word in them. Case and umlauts don't
   matter: *dativ* finds *Dativ*, *madchen* finds *Mädchen*.
 - **All rules of this topic →** in a topic's 📖 Rule tip opens the Rule book
   at that topic.
 
+### 📒 The Verb list
+
+- **📒 Verb list** (*Kleines Wörterbuch der Verben*, Begegnungen A2+ Kapitel 1,
+  p. 32–33) has the whole list from the book: 31 irregular verbs and 20
+  reflexive or partly reflexive verbs, in the three columns Präsens,
+  Präteritum and Perfekt (*er fährt · er fuhr · er ist gefahren*).
+- Every verb has a card for every column, 168 cards in all. The columns are
+  the difficulty: Präsens = Low, Präteritum = Medium, Perfekt = High.
+- You don't need to type *er*: *fuhr* is right, and so is *er fuhr*.
+- The whole list is also in the 📖 Rule book, as three tables.
+- The cards are generated from one table in `data/cards/17-verb-list.js`, which
+  also makes the Rule book tables, so the two always match.
+
+### 🏅 Achievements
+
+The start screen ends with 32 badges. They stay grey with a 🔒 until you earn
+them, then they turn colourful and show the date. Tap one to see how to get it
+and how far you are (e.g. *37 / 100*). They cover learning (first card, 25,
+100, 250, half, everything), streaks (3, 7 and 30 days), skill (10 and 25 in a
+row, a session without a mistake, a session without help, High difficulty, a
+5-card snack, before 8 am, after 10 pm, 50 reviews, a card reaching step 6,
+fixing mistakes), topics (a whole topic, the Verb list, reflexive verbs,
+Rules, 1,000 XP) and the minigames. *Reset progress* resets them too.
+
 ### The Rules topic
 
 - **📏 Rules** asks only about the grammar rules themselves, such as *What is a
   Hilfsverb?*, *Perfekt or Präteritum?*, *Where does the verb go?* and *Which
   case is dem?*. It never asks you to translate a word.
-- Its 97 questions come from every topic, and every rule in the Glossary has
+- Its 104 questions come from every topic, and every rule in the Glossary has
   at least one. That includes the four cases: Nominativ, Akkusativ, Dativ and
   Genitiv (*der, ein, mein · den, einen, meinen · dem, einem, meinem · des,
   eines, meines*).
 - Each question also belongs to its own topic, e.g. the case questions are in
   *Articles & cases*. Mastering it in Rules counts there too, and the total
-  stays 500.
+  stays 804.
 
 ### Word translations and the Glossary
 
@@ -129,6 +249,8 @@ The typo allowance never lets wrong grammar through, so these are marked wrong:
 | `1`/`T`, `2`/`F` | True / False |
 | `Backspace` | Sentence builder: take back the last word |
 | `G` | Open the Glossary (`Enter` or `Esc` closes it) |
+| `H` | 💡 Help me (the next hint) |
+| `←` `→` | Home: move the difficulty slider (when it has focus) |
 | `/` | Rule book: search |
 | `Esc` | Close a word bubble, or quit the session |
 
@@ -168,6 +290,14 @@ Each exercise type takes these fields:
 
 Each file in `js/exercises/` starts with a comment documenting its fields.
 
+- **Difficulty fields** (on any card):
+  - `level: 1 | 2 | 3`: Low, Medium or High. Without it, the level comes from
+    the exercise type and size (see `js/core/level.js`).
+  - `split: false`: never make an easier copy of this typed card.
+- **Speech fields** (on any card):
+  - `say`: what the bubble's 🔊 reads (default: the German question).
+  - `sayChoices: true | false`: read the options aloud when picked (default:
+    when they are German).
 - **Glossary fields** (on any card):
   - `rule`: the id of a rule in `data/rules.js`, or a list of up to two ids.
     Write a new rule there if none fits, in the `addRules('<topic>', …)` list
@@ -195,7 +325,12 @@ Each file in `js/exercises/` starts with a comment documenting its fields.
 - **A new exercise type:** add a file to `js/exercises/` that calls
   `Brezel.ex.register(name, { label, validate, describe, render })`, and add
   its script tag. The contract is documented at the top of
-  `js/exercises/base.js`.
+  `js/exercises/base.js`; give the controller `hints` + `hint(step)` for
+  💡 Help me, and call `api.say(word)` when the learner picks a German word.
+- **A new minigame:** add a file to `js/games/` that calls
+  `Brezel.games.register(id, { name, icon, art, color, blurb, how, topics,
+  ready, time, lives, play })`, and add its script tag. The contract is at the
+  top of `js/games/engine.js`.
 
 A card with a mistake (such as a missing field or duplicate id) is skipped with
 a console warning, so it never breaks a session.
@@ -208,9 +343,11 @@ With Node.js installed:
 node tools/validate.js
 ```
 
-This lists any invalid cards and duplicate ids, prints the counts per topic
-and per type, and runs the typo-rule and review-schedule tests. It also checks
-the Glossary:
+This lists any invalid cards and duplicate ids, prints the counts per topic,
+type and difficulty, lists the minigames of each topic, and runs the typo-rule
+and review-schedule tests. It checks that no wrong option of an easier copy
+would be accepted by the typed card it comes from. It also checks the
+Glossary:
 
 - every card has a known rule;
 - every question word has a translation;
@@ -232,16 +369,23 @@ node tools/build.js
 ```
 Brezel.html           the whole app in one file (generated: node tools/build.js)
 index.html            entry point for the source files (script order matters)
-css/app.css           all styles, light + dark theme
-js/core/              utilities, deck registry, answer checker, review schedule (srs.js), storage,
-                      stats, sound, drag & drop, word translations (gloss.js)
-js/exercises/         one file per exercise type
-js/ui/                screens: home, session, summary, review, Rule book, charts; the Glossary dialog
+css/app.css           all styles, light + dark theme (incl. the difficulty slider and Help me)
+css/achievements.css  the badges
+css/games*.css        the game screen (games.css) and the minigames (games-quick, games-play)
+js/core/              utilities, deck registry, answer checker, review schedule (srs.js),
+                      difficulty + easier copies (level.js), storage, stats, achievements,
+                      sound + speech, drag & drop, word translations (gloss.js)
+js/exercises/         one file per exercise type (each with its Help me hints)
+js/games/             minigames: engine.js (registry + contract) and one file per game family
+js/ui/                screens: home, session, summary, review, Rule book, charts, achievements,
+                      the game screen (arcade.js); the Glossary dialog
 data/topics.js        topics + the rule tip shown for each
 data/lexicon.js       verb forms, word families, proper nouns
 data/glossary.js      English meanings of the words in the questions
 data/rules.js         the grammar rules, by topic: shown in the Glossary and the Rule book
-data/cards/           the cards, one file per topic; 16-rules.js has rule questions for several topics
+data/cards/           the cards, one file per topic; 16-rules.js has rule questions for several topics,
+                      17-verb-list.js builds the Verb list from one table
+data/games-*.js       content of the minigames (sentences, nouns with articles, monsters …)
 tools/validate.js     deck checker
 tools/build.js        builds Brezel.html
 backup/               earlier versions, complete and working (see backup/README.md)

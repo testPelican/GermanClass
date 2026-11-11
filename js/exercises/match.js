@@ -2,6 +2,7 @@
  * Match pairs: tap an item on the left, then its partner on the right.
  *   { type: 'match', prompt, pairs: [['wohnen', 'to live'], ['kommen', 'to come'], …] }
  * Pairs are only marked right/wrong after pressing Check. Tap a paired item to undo it.
+ * A German item is read aloud when tapped. 💡 Help me joins one right pair per step (two always stay open).
  */
 (function () {
   'use strict';
@@ -32,6 +33,8 @@
       const colorOf = new Map(); // left index -> colour slot
       let sel = null; // {side, i}
       let locked = false;
+      const fixed = new Set(); // left indices joined by Help me
+      const german = { L: B.ex.germanChoices({}, card.pairs.map((p) => p[0])), R: B.ex.germanChoices({}, card.pairs.map((p) => p[1])) };
 
       const mk = (side, i) => {
         const text = card.pairs[i][side === 'L' ? 0 : 1];
@@ -61,8 +64,10 @@
 
       function tap(side, i) {
         if (locked) return;
-        api.sfx('tap');
         const p = partnerOf(side, i);
+        if (fixed.has(side === 'L' ? i : p)) return;
+        api.sfx('tap');
+        if (api.say && german[side]) api.say(card.pairs[i][side === 'L' ? 0 : 1]);
         if (p !== null) {
           unpair(side === 'L' ? i : p);
           sel = { side, i };
@@ -108,6 +113,27 @@
       );
 
       return {
+        hints: Math.max(0, n - 2),
+        hint() {
+          if (fixed.size >= n - 2) return null;
+          const l = shuffle([...Array(n).keys()].filter((i) => !fixed.has(i) && link.get(i) !== i))[0];
+          if (l == null) return null;
+          // free both items, then join the right pair
+          unpair(l);
+          const other = partnerOf('R', l);
+          if (other !== null) unpair(other);
+          link.set(l, l);
+          colorOf.set(l, freeColor());
+          fixed.add(l);
+          elOf('L', l).classList.add('hinted');
+          elOf('R', l).classList.add('hinted');
+          if (sel && (sel.i === l)) sel = null;
+          paint();
+          B.util.pulse(elOf('L', l), 'pop');
+          B.util.pulse(elOf('R', l), 'pop');
+          api.changed(link.size === n);
+          return { note: `Joined for you: **${show(card.pairs[l][0])} = ${show(card.pairs[l][1])}**.` };
+        },
         check() {
           const wrong = [...link].filter(([l, r]) => l !== r);
           return {

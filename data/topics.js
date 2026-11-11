@@ -16,6 +16,14 @@ Brezel.deck.addTopics([
       'Only questions **about the rules**: what the Perfekt is, Präsens or past, when to use *sein*, where the verb goes, the four cases — no translations. They come from every topic, so a rule you master here also counts in its own topic. The 📖 Glossary on each card has the full rule.',
   },
   {
+    id: 'verblist',
+    name: 'Verb list',
+    de: 'Kleines Wörterbuch der Verben',
+    icon: '📒',
+    tip:
+      'The 51 verbs of the list (Begegnungen A2+, p. 32–33), learnt by heart in three columns — leave out *er*: **Präsens** *fährt* (easy) · **Präteritum** *fuhr*, the written past (medium) · **Perfekt** *ist gefahren*, the spoken past (hard). Watch the vowel change in the Präsens (*fährt, nimmt, liest*), the new vowel and no -te in the irregular Präteritum (*fuhr, nahm, las*), **ist** for a change of place or state (*ist gefahren, ist aufgestanden*, also *ist gewesen, ist geblieben*), and **hat sich** for every reflexive verb (*hat sich umgezogen* ≠ *ist umgezogen*).',
+  },
+  {
     id: 'order',
     name: 'Word order',
     de: 'Satzbau',

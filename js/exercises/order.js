@@ -7,6 +7,8 @@
  *     keepCase?: true }               // keep the first word capitalised (nouns)
  * Words joined with "_" stay together on one tile: "St._Pölten".
  * The first tile is shown in lower case so capitals don't give the start away.
+ * A tile is read aloud when it goes into the sentence. 💡 Help me: the extra tiles disappear, then the
+ * right words are placed one by one from the start (never the whole sentence).
  */
 (function () {
   'use strict';
@@ -58,10 +60,12 @@
       const placed = () => Array.from(answerEl.querySelectorAll('.tile:not(.locked)'));
       const moveAll = (mutate) => flip(all, mutate);
       const update = () => api.changed(placed().length > 0);
+      const fixedCount = () => all.filter((el) => el._fixed).length; // words placed by Help me
 
       function toAnswer(el) {
         moveAll(() => answerEl.append(el));
         el.setAttribute('aria-label', `${el.textContent} (tap to remove)`);
+        if (api.say) api.say(el._t.w);
       }
       function toBank(el) {
         moveAll(() => el._slot.append(el));
@@ -78,7 +82,7 @@
         bankEl.append(slot);
 
         el.addEventListener('click', () => {
-          if (locked) return;
+          if (locked || el._fixed) return;
           if (el.parentNode === answerEl) toBank(el);
           else toAnswer(el);
           api.sfx('tap');
@@ -87,7 +91,7 @@
 
         let lastMove = 0;
         B.drag.attach(el, {
-          enabled: () => !locked,
+          enabled: () => !locked && !el._fixed,
           onMove(ctx) {
             const now = performance.now();
             if (now - lastMove < 60) return; // don't thrash while tiles are still gliding
@@ -95,7 +99,8 @@
             const inside = ctx.x > r.left - 16 && ctx.x < r.right + 16 && ctx.y > r.top - 20 && ctx.y < r.bottom + 20;
             if (inside) {
               const others = placed().filter((k) => k !== el);
-              const idx = B.drag.insertIndex(answerEl, ctx.x, ctx.y, el, '.tile:not(.locked)');
+              // never in front of the words Help me placed
+              const idx = Math.max(fixedCount(), B.drag.insertIndex(answerEl, ctx.x, ctx.y, el, '.tile:not(.locked)'));
               const cur = el.parentNode === answerEl ? others.filter((k) => k.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING).length : -1;
               if (cur !== idx) {
                 lastMove = now;
@@ -128,7 +133,39 @@
         return list.length ? sentenceCase(show(list.join(' '))) + punct : '—';
       }
 
+      const extras = all.filter((el) => el._t.extra);
+      let extrasGone = false;
       return {
+        hints: (extras.length ? 1 : 0) + Math.max(0, body.length - 1),
+        hint() {
+          if (extras.length && !extrasGone) {
+            extrasGone = true;
+            moveAll(() => extras.forEach((el) => {
+              if (el.parentNode === answerEl) el._slot.append(el);
+              el._slot.classList.add('gone');
+              el.disabled = true;
+            }));
+            update();
+            return { note: extras.length === 1 ? 'The tile that doesn’t belong is gone.' : `The ${extras.length} tiles that don’t belong are gone.` };
+          }
+          const k = fixedCount();
+          if (k >= body.length - 1) return null;
+          // the next word of the sentence: a free tile with that word
+          const want = body[k];
+          const el = all.find((x) => !x._fixed && !x._t.extra && x._t.w === want);
+          if (!el) return null;
+          moveAll(() => {
+            // take back what doesn't fit behind the fixed words, then put the word in its place
+            placed().filter((x) => !x._fixed).forEach((x) => x._slot.append(x));
+            const fixedEls = placed().filter((x) => x._fixed);
+            answerEl.insertBefore(el, fixedEls.length ? fixedEls[fixedEls.length - 1].nextSibling : answerEl.querySelector('.tile:not(.locked)'));
+          });
+          el._fixed = true;
+          el.classList.add('hinted');
+          el.setAttribute('aria-label', `${el.textContent} (placed by Help me)`);
+          update();
+          return { note: k === 0 ? `The sentence starts with **${el.textContent}**.` : `Word ${k + 1} is **${el.textContent}**.` };
+        },
         check() {
           const got = norm(built().join(' '));
           const ok = [card.answer, ...(card.answers || [])].some((a) => norm(a) === got);
@@ -143,7 +180,7 @@
         key(e) {
           if (e.key === 'Backspace' && !locked) {
             const last = placed().pop();
-            if (last) {
+            if (last && !last._fixed) {
               toBank(last);
               update();
             }

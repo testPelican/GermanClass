@@ -131,6 +131,19 @@
         this.cards.push(c);
         this.cardMap[c.id] = c;
       }
+      // easier copies of some cards, one per difficulty level (js/core/level.js)
+      if (B.level) {
+        for (const v of B.level.variants(this.cards.slice(), this)) {
+          const errs = seen.has(v.id) ? ['duplicate id'] : B.ex.get(v.type).validate(v, this);
+          if (errs.length) {
+            this.problems.push({ id: v.id, errors: errs.map((e) => 'copy: ' + e) });
+            continue;
+          }
+          seen.add(v.id);
+          this.cards.push(v);
+          this.cardMap[v.id] = v;
+        }
+      }
       if (this.problems.length && typeof console !== 'undefined') {
         console.warn(`[Brezel] ${this.problems.length} card(s) skipped:`, this.problems);
       }

@@ -4,8 +4,12 @@
  *    size and shuffled. Reviews come first, so a mastered card never waits past its day (js/core/srs.js).
  *  - A wrong answer shows the correct one and puts the card back at a random later position.
  *  - Only correct answers count as mastered (practice mode never changes mastery).
+ *  - opts.level (low | medium | high | mixed) keeps only cards of that difficulty (js/core/level.js);
+ *    a card and its easier copy are never in the same session.
  * The 📖 Glossary button (or G) shows the question's words in English and the card's rule.
- * Keys: Enter = check / continue, 1–6 = choose, G = Glossary, Esc = quit.
+ * 💡 Help me (or H) gives a hint, step by step (the exercise decides what: a first letter, two wrong
+ * options gone, a word placed …). Each hint costs XP; the answer still counts when it is right.
+ * Keys: Enter = check / continue, 1–6 = choose, G = Glossary, H = Help me, Esc = quit.
  */
 (function () {
   'use strict';
@@ -17,9 +21,18 @@
   const COMBOS = { 3: '3 in a row!', 5: '5 in a row! +5 XP per card', 10: '10 in a row — unstoppable!', 15: '15 in a row!', 20: '20 in a row — Wahnsinn!', 30: '30 in a row!!' };
   const XP_CORRECT = 10;
   const XP_COMBO = 5; // bonus per card while on a streak of 5+
+  const XP_HINT = 3; // each Help me hint costs this much of the card's XP (never below XP_MIN)
+  const XP_MIN = 2;
 
-  function buildQueue({ topic, size, practice }) {
-    const list = practice ? shuffle(B.stats.mistakeCards()) : shuffle(B.stats.due(topic)).concat(shuffle(B.stats.fresh(topic)));
+  function buildQueue({ topic, size, practice, level }) {
+    const lv = practice ? null : level;
+    let list = practice ? shuffle(B.stats.mistakeCards()) : shuffle(B.stats.due(topic, lv)).concat(shuffle(B.stats.fresh(topic, lv)));
+    // a card and its easier copy never come in the same session (reviews win: they come first)
+    const seen = new Set();
+    list = list.filter((c) => {
+      const k = B.level.base(c);
+      return !seen.has(k) && seen.add(k);
+    });
     return shuffle(size ? list.slice(0, size) : list);
   }
 
@@ -41,6 +54,7 @@
 
     const total = queue.length;
     const deckTotal = B.deck.cards.length;
+    const level = practice ? 'mixed' : opts.level || 'mixed';
     const reviews = new Set(practice ? [] : queue.filter((c) => B.store.isDone(c.id)).map((c) => c.id));
     const cleared = new Set(); // answered correctly in this session
     const missed = new Set(); // answered wrong at least once in this session
@@ -60,8 +74,10 @@
     let comeBackGap = 0;
     let introEl = null;
     let introTimer = 0;
+    let hintsUsed = 0; // on the card on screen
+    let hintEl = null;
     const startedAt = Date.now();
-    B.store.beginSession(practice);
+    B.store.beginSession(practice, { level, size: opts.size || 0, total });
 
     const doneCount = () => B.deck.cards.reduce((n, c) => n + (B.store.isDone(c.id) ? 1 : 0), 0);
 
@@ -77,13 +93,16 @@
     const stage = h('main', { class: 's-stage' });
     const skipBtn = h('button', { class: 'btn btn-ghost skip-btn', type: 'button' }, 'I don’t know');
     skipBtn.addEventListener('click', () => check(true));
-    const glossBtn = h('button', { class: 'btn btn-outline gloss-btn', type: 'button', title: 'Words and rule (G)' },
+    const helpBtn = h('button', { class: 'btn btn-outline help-btn', type: 'button', 'aria-label': 'Help me', title: 'A hint, step by step (H) — costs a little XP' },
+      h('span', { class: 'help-icon', 'aria-hidden': 'true' }, '💡'), h('span', { class: 'help-btn-label' }, 'Help me'), h('span', { class: 'help-dots', 'aria-hidden': 'true' }));
+    helpBtn.addEventListener('click', () => useHint());
+    const glossBtn = h('button', { class: 'btn btn-outline gloss-btn', type: 'button', 'aria-label': 'Glossary', title: 'Words and rule (G)' },
       h('span', { 'aria-hidden': 'true' }, '📖'), h('span', { class: 'gloss-btn-label' }, 'Glossary'));
     glossBtn.addEventListener('click', () => openGlossary());
     const mainBtn = h('button', { class: 'btn btn-primary main-btn', type: 'button' }, 'Check');
     mainBtn.addEventListener('click', () => (phase === 'feedback' ? next() : check(false)));
     const feedback = h('div', { class: 'feedback', 'aria-live': 'polite' });
-    const foot = h('footer', { class: 's-foot' }, feedback, h('div', { class: 's-foot-inner' }, skipBtn, glossBtn, mainBtn));
+    const foot = h('footer', { class: 's-foot' }, feedback, h('div', { class: 's-foot-inner' }, skipBtn, helpBtn, glossBtn, mainBtn));
 
     root.append(h('div', { class: 'session' + (practice ? ' is-practice' : '') },
       h('header', { class: 's-top' }, quitBtn, bar, totalPill),
@@ -102,6 +121,10 @@
       },
       sfx: (name) => B.audio.play(name),
       speak: (text) => B.audio.speak(text),
+      /** Speak a German word the learner just picked (a choice, chip or tile) — only with sound on. */
+      say(text) {
+        if (text && B.store.setting('sound')) B.audio.speak(show(text));
+      },
       get card() {
         return card;
       },
@@ -122,9 +145,15 @@
             ? h('span', { class: 'again-tag old' }, '↻ Missed before')
             : null;
       const exRoot = h('div', { class: 'ex ex-' + card.type });
+      const lv = B.level.of(card);
+      hintEl = h('div', { class: 'hint-note', 'aria-live': 'polite', hidden: true });
       const wrap = h('div', { class: 's-card' + (animate ? ' enter' : '') },
-        h('div', { class: 'card-meta' }, h('span', { class: 'topic-tag' }, h('span', { 'aria-hidden': 'true' }, topic.icon + ' '), topic.name), tag),
-        exRoot);
+        h('div', { class: 'card-meta' },
+          h('span', { class: 'topic-tag' }, h('span', { 'aria-hidden': 'true' }, topic.icon + ' '), topic.name),
+          h('span', { class: 'level-tag lv-' + lv, title: 'Difficulty' }, B.level.name(lv)),
+          tag),
+        exRoot,
+        hintEl);
       // Drop the entrance class once it has played, otherwise removing a later
       // .shake would let card-in run a second time.
       if (animate) {
@@ -136,6 +165,7 @@
       }
       ready = false;
       phase = 'answer';
+      hintsUsed = 0;
       setFooter('check');
       stage.replaceChildren(wrap);
       stage.scrollTop = 0;
@@ -149,7 +179,44 @@
         return showCard(animate);
       }
       shownAt = performance.now();
+      paintHelp();
       if (!introEl) focusCard();
+    }
+
+    // --- 💡 Help me ------------------------------------------------------------------------------
+    const hintMax = () => (ctrl && ctrl.hint && ctrl.hints ? ctrl.hints : 0);
+
+    function paintHelp() {
+      const max = hintMax();
+      const left = Math.max(0, max - hintsUsed);
+      helpBtn.disabled = !left;
+      helpBtn.title = !max ? 'No hints for this kind of card' : left ? `A hint, step by step (H) — ${left} left, each costs ${XP_HINT} XP` : 'No more hints for this card';
+      helpBtn.querySelector('.help-dots').textContent = max > 1 ? '●'.repeat(left) + '○'.repeat(max - left) : '';
+    }
+
+    function useHint() {
+      if (phase !== 'answer' || introEl || hintsUsed >= hintMax()) return;
+      let res = null;
+      try {
+        res = ctrl.hint(hintsUsed + 1);
+      } catch (err) {
+        console.error('[Brezel] hint failed', card.id, err);
+      }
+      if (!res) {
+        hintsUsed = hintMax();
+        return paintHelp();
+      }
+      hintsUsed++;
+      B.audio.play('tap');
+      if (res.note || res.html) {
+        hintEl.hidden = false;
+        // res.html: markup built by the exercise itself (already escaped)
+        hintEl.replaceChildren(h('span', { class: 'hint-icon', 'aria-hidden': 'true' }, '💡'), h('span', { html: res.html || md(res.note) }));
+        pulse(hintEl, 'reveal');
+      }
+      paintHelp();
+      if (B.achievements) B.achievements.evaluate();
+      focusCard();
     }
 
     function focusCard() {
@@ -183,7 +250,7 @@
         correct++;
         combo++;
         bestCombo = Math.max(bestCombo, combo);
-        gained = XP_CORRECT + (combo >= 5 ? XP_COMBO : 0);
+        gained = Math.max(XP_MIN, XP_CORRECT - hintsUsed * XP_HINT) + (combo >= 5 ? XP_COMBO : 0);
         cleared.add(card.id);
         if (firstSeen) firstTry++;
       } else {
@@ -192,7 +259,7 @@
         requeue();
       }
       xp += gained;
-      const { newlyDone, due } = B.store.record(card, ok, res.skipped ? '(skipped)' : res.given, ms, { practice, xp: gained });
+      const { newlyDone, due } = B.store.record(card, ok, res.skipped ? '(skipped)' : res.given, ms, { practice, xp: gained, hints: hintsUsed, skipped: !!res.skipped });
       if (newlyDone) {
         mastered++;
         doneNum.textContent = String(doneCount());
@@ -205,6 +272,7 @@
       if (!ok) pulse(stage.firstElementChild, 'shake');
       renderFeedback(res, ok, gained, due);
       setFooter(ok ? 'good' : 'bad');
+      if (B.achievements) B.achievements.evaluate();
     }
 
     /** Wrong → back into the pile, at a random later spot (at least two cards later when possible). */
@@ -260,7 +328,7 @@
         h('div', { class: 'fb-head' },
           h('span', { class: 'fb-icon', 'aria-hidden': 'true' }, ok ? '✓' : '✗'),
           h('h3', { class: 'fb-title' }, title),
-          gained ? h('span', { class: 'fb-xp' }, `+${gained} XP`) : null,
+          gained ? h('span', { class: 'fb-xp', title: hintsUsed ? `${hintsUsed} hint${hintsUsed > 1 ? 's' : ''} used` : null }, `+${gained} XP` + (hintsUsed ? ' · 💡' + hintsUsed : '')) : null,
           speak),
         h('div', { class: 'fb-body' }, body)));
     }
@@ -273,6 +341,7 @@
         mainBtn.className = 'btn btn-primary main-btn';
         mainBtn.disabled = !ready;
         skipBtn.hidden = false;
+        helpBtn.hidden = false;
         glossBtn.hidden = false;
         return;
       }
@@ -281,6 +350,7 @@
       mainBtn.className = 'btn main-btn ' + (mode === 'good' ? 'btn-primary' : 'btn-danger');
       mainBtn.disabled = false;
       skipBtn.hidden = true;
+      helpBtn.hidden = true;
       glossBtn.hidden = true;
       mainBtn.focus({ preventScroll: true });
     }
@@ -304,7 +374,8 @@
     function finish(quitEarly) {
       if (phase === 'done') return;
       phase = 'done';
-      B.store.endSession({ bestCombo, quit: !!quitEarly });
+      B.store.endSession({ bestCombo, quit: !!quitEarly, fixed: practice ? cleared.size : 0 });
+      if (B.achievements) B.achievements.evaluate();
       B.app.go('summary', {
         practice,
         opts,
@@ -321,6 +392,7 @@
         bestCombo,
         ms: Date.now() - startedAt,
         quit: !!quitEarly,
+        level,
       });
     }
 
@@ -355,7 +427,7 @@
           h('div', { class: 'intro-bar', 'aria-hidden': 'true' }, barFill),
           h('div', { class: 'intro-session' }, practice
             ? `Practising ${total} card${total === 1 ? '' : 's'} you got wrong before`
-            : `This session: ${total} card${total === 1 ? '' : 's'}${reviews.size ? ` (${reviews.size} to review)` : ''}${topicName}`),
+            : `This session: ${total} card${total === 1 ? '' : 's'}${reviews.size ? ` (${reviews.size} to review)` : ''}${topicName}` + (level !== 'mixed' ? ` · ${B.level.SETTINGS.find((x) => x.key === level).name}` : '')),
           h('div', { class: 'intro-tap' }, 'Tap anywhere to start')));
       introEl.addEventListener('click', dismissIntro);
       root.append(introEl);
@@ -420,6 +492,11 @@
         if ((e.key === 'g' || e.key === 'G') && !/^(INPUT|TEXTAREA)$/.test(e.target.tagName)) {
           e.preventDefault();
           openGlossary();
+          return;
+        }
+        if ((e.key === 'h' || e.key === 'H') && !/^(INPUT|TEXTAREA)$/.test(e.target.tagName)) {
+          e.preventDefault();
+          useHint();
           return;
         }
         if (ctrl && ctrl.key && ctrl.key(e)) {

@@ -9,3 +9,4 @@ Earlier versions of the app, kept as complete, working copies. Don't edit them.
 | `v3-450-cards/` | The app before the Glossary update on 2026-10-20 (dotted word translations, 📖 Glossary button): 450 cards, 15 topics. Open `v3-450-cards/Brezel.html`. |
 | `v4-450-cards-glossary/` | The app before the Rules update on 2026-10-23 (📏 Rules topic, the four cases): 450 cards with the Glossary, 15 topics. Open `v4-450-cards-glossary/Brezel.html`. |
 | `v5-500-cards-rules/` | The app before the reviews update on 2026-10-23 (spaced repetition, 📖 Rule book): 500 cards, 15 topics + Rules. Open `v5-500-cards-rules/Brezel.html`. |
+| `v6-500-cards-reviews/` | The app before the difficulty & games update on 2026-11-11 (difficulty slider, Help me hints, speech on every card, Verb list topic, achievements, minigames): 500 cards, 15 topics + Rules, with spaced repetition and the Rule book. Open `v6-500-cards-reviews/Brezel.html`. |

@@ -2,6 +2,7 @@
  * Multiple choice.
  *   { type: 'mc', prompt, q?, correct: 'gearbeitet', wrong: ['arbeitet', 'arbeite'] }
  * Options are shuffled every time the card is shown. Keys 1–4 pick an option.
+ * A German option is read aloud the moment it is picked. 💡 Help me removes wrong options until two are left.
  */
 (function () {
   'use strict';
@@ -27,6 +28,8 @@
     render(card, root, api) {
       const opts = shuffle([card.correct, ...card.wrong]);
       const long = opts.some((o) => show(o).length > 16);
+      const german = B.ex.germanChoices(card, opts);
+      const gone = new Set(); // options removed by Help me
       let sel = -1;
       let locked = false;
 
@@ -47,13 +50,15 @@
       });
 
       function choose(i) {
-        if (locked) return;
+        if (locked || gone.has(i)) return;
+        const again = sel === i;
         sel = i;
         btns.forEach((b, j) => {
           b.classList.toggle('sel', j === i);
           b.setAttribute('aria-checked', String(j === i));
         });
         api.sfx('tap');
+        if (german && api.say && !again) api.say(opts[i]);
         api.changed(true);
       }
 
@@ -62,6 +67,24 @@
       return {
         check: () => ({ ok: opts[sel] === card.correct, given: show(opts[sel]) }),
         solution: () => ({ html: md(show(card.correct)), say: B.ex.filled(card, card.correct) }),
+        hints: opts.length > 2 ? 1 : 0,
+        hint() {
+          if (gone.size || opts.length <= 2) return null;
+          // leave the right answer and one wrong one
+          const wrong = shuffle(opts.map((_, i) => i).filter((i) => opts[i] !== card.correct));
+          wrong.slice(0, opts.length - 2).forEach((i) => {
+            gone.add(i);
+            btns[i].disabled = true;
+            btns[i].classList.add('gone');
+            btns[i].classList.remove('sel');
+          });
+          if (gone.has(sel)) {
+            sel = -1;
+            api.changed(false);
+          }
+          const n = gone.size;
+          return { note: n === 1 ? 'One wrong answer is gone.' : `${n === 2 ? 'Two' : n} wrong answers are gone — it’s one of these two.` };
+        },
         lock(res) {
           locked = true;
           btns.forEach((b, j) => {

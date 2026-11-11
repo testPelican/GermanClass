@@ -79,8 +79,25 @@
       root.append(B.ex.header(Object.assign({}, card, { prompt: title }), ''), h('div', { class: 'table-wrap' }, table), B.ex.umlautBar(() => active || inputs[0].el));
 
       let results = [];
+      const hinted = new Set(); // inputs filled in by Help me
       return {
         focus: () => inputs[0] && inputs[0].el.focus({ preventScroll: true }),
+        // 1. the first letter of every blank, then one blank filled in at a time (never the last one)
+        hints: inputs.length > 1 ? inputs.length : 1,
+        hint(step) {
+          if (step === 1) {
+            inputs.forEach((x) => (x.el.placeholder = B.ex.letterHint(x.answer, 1).replace(/ (?=_)|(?<=_) /g, '')));
+            return { note: 'Each blank now shows its first letter.' };
+          }
+          const next = inputs.find((x) => !hinted.has(x) && B.util.norm(x.el.value) !== B.util.norm(x.answer));
+          if (!next || hinted.size >= inputs.length - 1) return null;
+          hinted.add(next);
+          next.el.value = show(next.answer);
+          next.el.readOnly = true;
+          next.el.classList.add('hinted');
+          api.changed(inputs.every((x) => x.el.value.trim()));
+          return { note: `Filled in for you: **${show(rows[next.row][0])} → ${show(next.answer)}**.` };
+        },
         glossTexts: () => B.ex.questionTexts(card).concat(
           card.verb ? [{ text: card.verb }] : [],
           rows.flatMap((r, i) => [{ text: show(r[0]) }].concat(blanks.has(i) ? [] : [{ text: show(r[1]) }]))),

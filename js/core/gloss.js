@@ -153,6 +153,37 @@
 
   const known = (t) => t.en || t.hidden;
 
+  // --- is this German? (for reading answer choices aloud) -------------------------------------------
+  const POLISH = /[ąćęłńśźżĄĆĘŁŃŚŹŻ]/;
+  let germanWords = null;
+  /** Every German word the app knows: glossary, lexicon forms, word families, names. */
+  function germanIndex() {
+    if (germanWords) return germanWords;
+    prepare();
+    germanWords = new Set();
+    const add = (w) => String(w || '').split(/[\s…]+/).forEach((x) => x && germanWords.add(lower(x)));
+    Object.keys(words).forEach(add);
+    Object.keys(phrases).forEach(add);
+    Object.keys(splits).forEach(add);
+    Object.keys(baseOf).forEach(add);
+    for (const v of Object.values(B.deck.verbs)) [v.inf, v.pp, ...(v.forms || []), ...(v.prt || [])].forEach(add);
+    B.deck.families.flat().forEach(add);
+    names.forEach(add);
+    return germanWords;
+  }
+
+  /** True when most words of the text are German (an umlaut or ß is enough; Polish letters are not). */
+  function isGerman(text) {
+    const s = String(text == null ? '' : text).replace(/_/g, ' ');
+    if (!s.trim() || POLISH.test(s)) return false;
+    const toks = [...s.matchAll(WORD)].map((m) => m[0]);
+    if (!toks.length) return false;
+    if (/[äöüßÄÖÜ]/.test(s)) return true;
+    const idx = germanIndex();
+    const hits = toks.filter((w) => idx.has(lower(w))).length;
+    return hits * 2 > toks.length;
+  }
+
   /**
    * Glossary rows for a card: [{de, en, base, hidden}] in reading order, without repeats.
    * texts: [{text, loose?}]; a loose text (from the instructions) is used only if every word is known,
@@ -239,7 +270,9 @@
     });
     el.addEventListener('pointerout', (e) => {
       if (e.pointerType !== 'mouse' || pinned || !tipWord) return;
-      const to = e.relatedTarget && e.relatedTarget.closest ? e.relatedTarget.closest('.gw') : null;
+      const rel = e.relatedTarget && e.relatedTarget.closest ? e.relatedTarget : null;
+      if (rel && rel.closest('.gloss-tip')) return; // moving onto the tip (its 🔊 button)
+      const to = rel ? rel.closest('.gw') : null;
       if (!to || to.dataset.t !== tipWord.dataset.t) hideTip();
     });
     el.addEventListener('click', (e) => {
@@ -261,6 +294,9 @@
     if (!t) return;
     if (!tip) {
       tip = h('div', { class: 'gloss-tip', role: 'tooltip', id: 'gloss-tip', hidden: true });
+      tip.addEventListener('pointerleave', (e) => {
+        if (e.pointerType === 'mouse' && !pinned) hideTip();
+      });
       document.body.append(tip);
       document.addEventListener('pointerdown', (e) => {
         if (tip.hidden || (e.target.closest && (e.target.closest('.gw') || e.target.closest('.gloss-tip')))) return;
@@ -274,9 +310,20 @@
     // light up the whole phrase or split verb, and both halves of a word split by **bold** markup
     root.querySelectorAll(t.group ? `.gw[data-g="${t.group}"]` : `.gw[data-t="${w.dataset.t}"]`).forEach((x) => x.classList.add('on'));
     w.setAttribute('aria-describedby', 'gloss-tip');
+    const say = (t.label || t.text).replace(/ … /g, ' ');
+    const sayBtn = B.audio && B.audio.canSpeak
+      ? h('button', { type: 'button', class: 'gloss-tip-say', 'aria-label': 'Listen to ' + say, title: 'Listen' }, '🔊')
+      : null;
+    if (sayBtn) {
+      sayBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        B.audio.speak(say);
+      });
+    }
     tip.replaceChildren(...[
       t.group && !t.name && t.label.includes(' ') ? h('span', { class: 'gloss-tip-de' }, t.label) : null,
       t.hidden ? h('span', { class: 'gloss-tip-en is-hidden' }, '🤫 That’s what this card asks!') : h('span', { class: 'gloss-tip-en' }, t.en),
+      sayBtn,
     ].filter(Boolean));
     tip.hidden = false;
     place(w);
@@ -320,6 +367,7 @@
     missing,
     decorate,
     hideTip,
+    isGerman,
     tipOpen: () => !!(tip && !tip.hidden),
   };
 })();

@@ -6,7 +6,11 @@
  *               lw: last wrong answer given, d: time it was mastered,
  *               lv, due, bad: the review schedule (js/core/srs.js) }
  * log      = every answer: { id, ok, t, ms, s: session id, p: practice?1:0 }
- * sessions = { id, start, end, answered, correct, wrong, mastered, xp, practice }
+ * sessions = { id, start, end, answered, correct, wrong, mastered, xp, practice,
+ *              level (low|medium|high|mixed), size, total, hints, skips, reviewed, fixed, bestCombo, quit }
+ *            log entries also carry h (Help me hints used) and r (1 = a review of a mastered card)
+ * games    = every finished minigame: { game, topic, level (1–3), score, correct, wrong, won, perfect, ms, xp, bestCombo, at }
+ * ach      = achievements earned: { id: time } (js/core/achievements.js)
  */
 (function () {
   'use strict';
@@ -22,7 +26,9 @@
     xp: 0,
     streak: { count: 0, last: null, best: 0 },
     bestCombo: 0,
-    settings: { sound: true, size: 20, topic: 'all', theme: 'auto' },
+    games: [],
+    ach: {},
+    settings: { sound: true, size: 20, topic: 'all', theme: 'auto', level: 'mixed' },
   });
 
   let state = fresh();
@@ -71,8 +77,9 @@
     s.best = Math.max(s.best || 0, s.count);
   }
 
-  function beginSession(practice) {
-    const rec = {
+  /** extra: { level, size, total } of the new session. */
+  function beginSession(practice, extra) {
+    const rec = Object.assign({
       id: (state.sessions.length ? state.sessions[state.sessions.length - 1].id : 0) + 1,
       start: Date.now(),
       end: null,
@@ -82,7 +89,11 @@
       mastered: 0,
       xp: 0,
       practice: !!practice,
-    };
+      hints: 0,
+      skips: 0,
+      reviewed: 0,
+      fixed: 0,
+    }, extra || {});
     state.sessions.push(rec);
     save();
     return rec;
@@ -93,15 +104,23 @@
   }
 
   /** Record one answer. Returns {newlyDone, due?} — due: the next review day, if the schedule changed. */
-  function record(card, ok, given, ms, { practice = false, xp = 0 } = {}) {
+  function record(card, ok, given, ms, { practice = false, xp = 0, hints = 0, skipped = false } = {}) {
     const sess = currentSession();
-    state.log.push({ id: card.id, ok: ok ? 1 : 0, t: Date.now(), ms: Math.round(ms || 0), s: sess ? sess.id : 0, p: practice ? 1 : 0 });
+    const before = state.cards[card.id];
+    const review = !practice && !!(before && before.done);
+    const entry = { id: card.id, ok: ok ? 1 : 0, t: Date.now(), ms: Math.round(ms || 0), s: sess ? sess.id : 0, p: practice ? 1 : 0 };
+    if (hints) entry.h = hints;
+    if (review) entry.r = 1;
+    state.log.push(entry);
     touchStreak();
     state.xp += xp;
     if (sess) {
       sess.answered++;
       sess[ok ? 'correct' : 'wrong']++;
       sess.xp += xp;
+      sess.hints = (sess.hints || 0) + (hints || 0);
+      if (skipped) sess.skips = (sess.skips || 0) + 1;
+      if (review && ok) sess.reviewed = (sess.reviewed || 0) + 1;
       sess.end = Date.now();
     }
     let newlyDone = false;
@@ -144,6 +163,16 @@
     save();
   }
 
+  /** A finished minigame: saved with its XP. Games never change card progress. */
+  function recordGame(rec) {
+    const g = Object.assign({ at: Date.now() }, rec);
+    (state.games = state.games || []).push(g);
+    state.xp += g.xp || 0;
+    touchStreak();
+    save();
+    return g;
+  }
+
   function setBestCombo(n) {
     if (n > (state.bestCombo || 0)) {
       state.bestCombo = n;
@@ -166,7 +195,7 @@
   }
 
   B.store = {
-    load, save, reset, cardState, isDone, beginSession, record, endSession, setBestCombo, setting,
+    load, save, reset, cardState, isDone, beginSession, record, recordGame, endSession, setBestCombo, setting,
     get state() { return state; },
     get storageOk() { return storageOk; },
   };

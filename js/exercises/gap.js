@@ -3,6 +3,8 @@
  *   { type: 'gap', q: 'Ich {bin} 1990 in Polen {geboren}.', options: ['habe', 'gebären'] }
  * {…} marks a gap; "{ins|in das}" accepts either. options = extra wrong chips.
  * Tap a chip to drop it into the highlighted gap; tap a filled gap to empty it.
+ * A chip is read aloud when it goes into a gap. 💡 Help me: half of the wrong chips disappear, then the
+ * gaps are filled one by one (never the last one).
  */
 (function () {
   'use strict';
@@ -79,13 +81,15 @@
       }
 
       function tapChip(c) {
-        if (locked) return;
+        if (locked || c.gone) return;
         api.sfx('tap');
         if (c.gap) return tapGap(c.gap);
+        if (api.say) api.say(c.w);
         let g = gaps[active] && !gaps[active].chip ? gaps[active] : gaps.find((x) => !x.chip);
         if (!g) {
-          // every gap is full: swap with the active gap's chip
-          g = gaps[active] || gaps[0];
+          // every gap is full: swap with the active gap's chip (not one placed by Help me)
+          g = gaps[active] && !gaps[active].fixed ? gaps[active] : gaps.find((x) => !x.fixed);
+          if (!g) return;
           unplace(g);
         }
         flip(allEls(), () => {
@@ -107,7 +111,7 @@
       }
 
       function tapGap(g) {
-        if (locked) return;
+        if (locked || g.fixed) return;
         if (g.chip) {
           api.sfx('tap');
           flip(allEls(), () => unplace(g));
@@ -117,7 +121,8 @@
       }
 
       B.gloss.decorate(sentence, card);
-      root.append(B.ex.header(card, 'Fill in the gaps', { noBubble: true }), h('div', { class: 'gap-card' }, h('span', { class: 'mascot mini', 'aria-hidden': 'true' }, '🥨'), sentence), bank);
+      const speak = B.ex.speakButton(B.ex.questionSay(card));
+      root.append(B.ex.header(card, 'Fill in the gaps', { noBubble: true }), h('div', { class: 'gap-card' }, h('span', { class: 'mascot mini', 'aria-hidden': 'true' }, '🥨'), sentence, speak), bank);
       paint();
 
       const filledWith = () => fill(card, (p, i) => {
@@ -125,7 +130,42 @@
         return g.chip ? g.chip.w : '___';
       });
 
+      const wrongChips = chips.filter((c) => !gaps.some((g) => g.answers.some((a) => norm(a) === norm(c.w))));
+      let trimmed = false;
+      const fits = (g, c) => g.answers.some((a) => norm(a) === norm(c.w));
       return {
+        hints: (wrongChips.length ? 1 : 0) + Math.max(0, gaps.length - 1),
+        hint() {
+          if (wrongChips.length && !trimmed) {
+            trimmed = true;
+            const out = shuffle(wrongChips).slice(0, Math.max(1, Math.ceil(wrongChips.length / 2)));
+            flip(allEls(), () => out.forEach((c) => {
+              if (c.gap) unplace(c.gap);
+              c.gone = true;
+              c.el.disabled = true;
+              c.slot.classList.add('gone');
+            }));
+            paint();
+            return { note: out.length === 1 ? 'One wrong chip is gone.' : `${out.length} wrong chips are gone.` };
+          }
+          const open = gaps.filter((g) => !g.fixed);
+          if (open.length <= 1) return null;
+          const g = open[0];
+          const c = chips.find((x) => !x.gone && !(x.gap && x.gap.fixed) && fits(g, x));
+          if (!c) return null;
+          flip(allEls(), () => {
+            if (g.chip && g.chip !== c) unplace(g);
+            if (c.gap && c.gap !== g) unplace(c.gap);
+            g.el.append(c.el);
+            g.chip = c;
+            c.gap = g;
+          });
+          g.fixed = true;
+          g.el.classList.add('hinted');
+          active = Math.max(0, gaps.findIndex((x) => !x.chip));
+          paint();
+          return { note: `Gap ${gaps.indexOf(g) + 1}: **${show(c.w)}**.` };
+        },
         check() {
           const ok = gaps.every((g) => g.chip && g.answers.some((a) => norm(a) === norm(g.chip.w)));
           return { ok, given: show(filledWith()) };
@@ -146,7 +186,7 @@
         },
         key(e) {
           const n = parseInt(e.key, 10);
-          const free = chips.filter((c) => !c.gap);
+          const free = chips.filter((c) => !c.gap && !c.gone);
           if (n >= 1 && n <= free.length) {
             tapChip(free[n - 1]);
             return true;

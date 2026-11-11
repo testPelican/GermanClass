@@ -15,15 +15,23 @@
  *   key?(e)    -> true if the key was handled
  *   focus?()   -> focus the main input
  *   glossTexts?() -> question text for the Glossary, if more than questionTexts(card) is shown
+ *   hints?     -> how many 💡 Help me steps this card offers (0 or missing = none)
+ *   hint?(step) -> give hint number `step` (1, 2 …): change the card (remove options, place a
+ *                  word …) and return { note? } (markdown-lite shown under the card) or { html? }
+ *                  (ready, escaped markup), or null when there is nothing more to give
  * }
- * api = { changed(ready), submit(), sfx(name), speak(text), card }
+ * api = { changed(ready), submit(), sfx(name), speak(text), say?(text), card }
+ *   say(text): read a German word aloud the moment the learner picks it (only with sound on);
+ *   other screens (games) may leave it out, so call it as api.say && api.say(x).
  *
  * Common card fields: id, type, prompt (instruction), q (German text shown in the
  * speech bubble, "___" marks a blank), say (text for the speaker button),
  * en (English meaning, shown small), explain (the "why", shown after answering),
  * rule (id from data/rules.js, shown in the Glossary), asksRule (the rule gives the answer away),
  * theory (a question about the rule itself, so it is in the Rules topic too),
- * gloss (word translations: see js/core/gloss.js).
+ * gloss (word translations: see js/core/gloss.js), say (what the bubble's 🔊 reads; default: the
+ * German question with blanks as pauses), sayChoices (true/false: read the options aloud when picked;
+ * default: when they are German).
  */
 (function () {
   'use strict';
@@ -70,12 +78,39 @@
     );
   }
 
+  /**
+   * What the bubble's 🔊 reads: card.say, or the German question with blanks and gaps as pauses.
+   * Not for true/false and spot-the-mistake: their sentence may be wrong, and hearing it would teach it.
+   */
+  function questionSay(card) {
+    if (card.say) return card.say;
+    if (!card.q || card.type === 'tf' || card.type === 'spot') return null;
+    const text = show(String(card.q).replace(/\{[^}]*\}/g, ' … ').replace(new RegExp(BLANK.source, 'g'), ' … '));
+    return B.gloss.isGerman(text) ? text : null;
+  }
+
+  /** Are these answer choices German (so they are read aloud when picked)? */
+  function germanChoices(card, list) {
+    if (card.sayChoices != null) return !!card.sayChoices;
+    if (card.q && BLANK.test(card.q) && B.gloss.isGerman(card.q.replace(BLANK, ' '))) return true;
+    if (card.correct && B.gloss.isGerman(card.correct)) return true;
+    return list.filter((x) => B.gloss.isGerman(x)).length * 2 > list.length;
+  }
+
+  /** "l _ _ _ _" (step 1: first letters) or "li e _ _" (step 2: half of each word), for typed hints. */
+  function letterHint(answer, step) {
+    return show(answer).split(/\s+/).map((w) => {
+      const keep = step <= 1 ? 1 : Math.ceil(w.length / 2);
+      return Array.from(w).map((ch, i) => (i < keep || /[^\p{L}]/u.test(ch) ? ch : '_')).join(' ');
+    }).join('   ');
+  }
+
   /** Title + optional bubble — the standard top of every exercise. */
   function header(card, fallback, opts = {}) {
     const wrap = h('div', { class: 'ex-head' });
     wrap.append(h('h2', { class: 'ex-title', html: md(card.prompt || fallback) }));
     if (card.q && !opts.noBubble) {
-      const b = bubble(card.q, { say: card.say, big: opts.big });
+      const b = bubble(card.q, { say: questionSay(card), big: opts.big });
       B.gloss.decorate(b.querySelector('.bubble-text'), card);
       wrap.append(b);
     }
@@ -188,6 +223,9 @@
     BLANK,
     richText,
     speakButton,
+    questionSay,
+    germanChoices,
+    letterHint,
     bubble,
     header,
     filled,

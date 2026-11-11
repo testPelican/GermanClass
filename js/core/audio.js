@@ -45,6 +45,19 @@
     },
     combo: () => [659, 784, 988, 1319].forEach((f, i) => tone(f, i * 0.06, 0.14, { type: 'triangle', gain: 0.1 })),
     complete: () => [523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, i * 0.11, 0.32, { type: 'triangle', gain: 0.13 })),
+    // games
+    tick: () => tone(1046, 0, 0.05, { type: 'square', gain: 0.03 }),
+    go: () => {
+      tone(784, 0, 0.1, { type: 'triangle', gain: 0.14 });
+      tone(1568, 0.08, 0.22, { type: 'triangle', gain: 0.12 });
+    },
+    flip: () => tone(520, 0, 0.08, { type: 'triangle', gain: 0.06, slideTo: 880 }),
+    whoosh: () => tone(300, 0, 0.18, { type: 'sine', gain: 0.07, slideTo: 1200 }),
+    boom: () => {
+      tone(140, 0, 0.3, { type: 'sawtooth', gain: 0.09, slideTo: 50 });
+      tone(90, 0.02, 0.35, { type: 'square', gain: 0.05, slideTo: 40 });
+    },
+    levelup: () => [523, 784, 1047, 1568].forEach((f, i) => tone(f, i * 0.07, 0.2, { type: 'square', gain: 0.05 })),
   };
 
   function play(name) {
@@ -78,15 +91,17 @@
       window.speechSynthesis.addEventListener('voiceschanged', () => (voice = pickVoice()));
   }
 
-  function speak(text) {
+  /** Speak German text. rate: 0.9 by default (a little slower than normal speech). */
+  function speak(text, { rate = 0.9 } = {}) {
     if (!canSpeak || !text) return;
-    const clean = String(text).replace(/_/g, ' ').replace(/\//g, ', ').replace(/\s*…\s*/g, ' ');
+    // "…" (a blank or a split verb) becomes a short pause
+    const clean = String(text).replace(/_/g, ' ').replace(/\//g, ', ').replace(/\s*…\s*/g, ', ').replace(/^[,\s]+|[,\s]+$/g, '');
     // Safari can drop an utterance queued straight after cancel(), so only cancel when needed
     if (window.speechSynthesis.speaking || window.speechSynthesis.pending) window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(clean);
     u.lang = 'de-DE';
     if (voice) u.voice = voice;
-    u.rate = 0.9;
+    u.rate = rate;
     window.speechSynthesis.speak(u);
   }
 

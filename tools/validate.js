@@ -146,6 +146,52 @@ const unasked = deck.rules.filter((r) => !asked.has(r.id)).map((r) => r.id);
 if (unasked.length) theoryErrors++, fail(`no Rules question (theory: true) for: ${unasked.join(', ')}`);
 if (!theoryErrors) console.log(`  ✓ ${theory.length} rule questions, at least one for each of the ${deck.rules.length} rules`);
 
+// --- difficulty (js/core/level.js) ----------------------------------------------------------
+console.log('\nDifficulty:');
+const lvCount = { 1: 0, 2: 0, 3: 0 };
+let lvErrors = 0;
+for (const c of deck.rawCards) {
+  if (c.level != null && ![1, 2, 3].includes(c.level)) lvErrors++, fail(`${c.id}: "level" must be 1, 2 or 3`);
+}
+for (const c of deck.cards) lvCount[B.level.of(c)]++;
+const copies = deck.cards.filter((c) => c.variantOf);
+for (const c of copies) {
+  const o = deck.cardMap[c.variantOf];
+  if (!o) {
+    lvErrors++, fail(`${c.id}: copy of a missing card`);
+    continue;
+  }
+  // a wrong option must never be something the typed card itself would accept
+  for (const w of c.type === 'mc' ? c.wrong : []) {
+    if (B.check.typed(w, B.ex.asList(o.answer), o).ok) lvErrors++, fail(`${c.id}: wrong option "${w}" is accepted by ${o.id}`);
+  }
+}
+if (!lvErrors) {
+  console.log(`  ✓ Low ${lvCount[1]} · Medium ${lvCount[2]} · High ${lvCount[3]}`);
+  console.log(`  ✓ ${copies.length} easier copies (${copies.filter((c) => c.type === 'mc').length} multiple choice, ${copies.filter((c) => c.type === 'order').length} sentence builders); no wrong option is accepted by its original`);
+}
+
+// --- minigames (js/games/) -------------------------------------------------------------------------
+console.log('\nMinigames:');
+const gameList = B.games ? B.games.list : [];
+const noGames = [];
+for (const t of [{ id: 'all', name: 'All topics' }].concat(deck.topics)) {
+  const names = [];
+  for (const g of gameList) {
+    if (!B.games.covers(g, t.id)) continue;
+    let ok = false;
+    try {
+      ok = !g.ready || g.ready(t.id, 2);
+    } catch (e) {
+      fail(`game ${g.id}: ready("${t.id}") threw ${e.message}`);
+    }
+    if (ok) names.push(g.name + (g.speech ? ' (speech)' : ''));
+  }
+  if (!names.length) noGames.push(t.name);
+  else console.log(`  ${t.id.padEnd(13)} ${names.length}: ${names.join(', ')}`);
+}
+console.log(`  ✓ ${gameList.length} games` + (noGames.length ? ` · no games yet for: ${noGames.join(', ')}` : ''));
+
 // --- typed-answer checker -------------------------------------------------------
 console.log('\nChecker:');
 const cases = [

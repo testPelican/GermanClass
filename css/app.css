@@ -1428,14 +1428,27 @@ b {
   .gloss-btn {
     margin-left: 0;
   }
+  .help-btn {
+    min-width: 0;
+    flex: 0 0 auto;
+    padding: 0 12px;
+  }
+  .help-btn-label,
+  .gloss-btn-label {
+    display: none;
+  }
+  .help-icon,
+  .gloss-btn > [aria-hidden='true'] {
+    font-size: 20px;
+  }
+  .help-dots {
+    display: none;
+  }
 }
 
 @media (max-width: 400px) {
   .s-foot-inner .btn {
     padding: 0 10px;
-  }
-  .gloss-btn > [aria-hidden] {
-    display: none;
   }
 }
 
@@ -3998,6 +4011,486 @@ body.is-dragging * {
   top: 0;
   display: block;
   will-change: transform;
+}
+
+
+/* === Difficulty slider (home) ===================================================================== */
+.field-level {
+  --lv: #a560e8;
+}
+
+.lv-slider {
+  --lv: #a560e8;
+  --lv-shadow: #8441c4;
+  --lv-pos: 100%;
+  padding: 10px 6px 14px;
+  border: 2px solid var(--border);
+  border-radius: 18px;
+  background:
+    radial-gradient(120% 90% at var(--lv-pos) 0%, color-mix(in srgb, var(--lv) 14%, transparent), transparent 70%),
+    var(--surface);
+  transition: border-color 0.3s ease;
+  outline: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.lv-slider:focus-visible {
+  border-color: var(--lv);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--lv) 35%, transparent);
+}
+
+.lv-stops {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: 8px;
+}
+
+.lv-stop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 0;
+  border: 0;
+  border-radius: 12px;
+  background: none;
+  color: var(--muted);
+  font-weight: 800;
+  font-size: 14px;
+  transition: color 0.25s ease;
+}
+
+.lv-art {
+  display: block;
+  width: 46px;
+  height: 46px;
+  filter: grayscale(0.85);
+  opacity: 0.55;
+  transform: scale(0.86);
+  transition: filter 0.3s ease, opacity 0.3s ease, transform 0.35s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+.lv-art svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.lv-stop.is-active .lv-art {
+  filter: none;
+  opacity: 1;
+  transform: scale(1.12);
+}
+
+.lv-stop.is-active {
+  color: var(--text);
+}
+
+.lv-stop.lv-low.is-active .lv-name {
+  color: #46a302;
+}
+.lv-stop.lv-medium.is-active .lv-name {
+  color: #d97f00;
+}
+.lv-stop.lv-high.is-active .lv-name {
+  color: #d93636;
+}
+.lv-stop.lv-mixed.is-active .lv-name {
+  color: #8441c4;
+}
+[data-theme='dark'] .lv-stop.lv-low.is-active .lv-name {
+  color: #93d333;
+}
+[data-theme='dark'] .lv-stop.lv-medium.is-active .lv-name {
+  color: #ffb449;
+}
+[data-theme='dark'] .lv-stop.lv-high.is-active .lv-name {
+  color: #ff8a80;
+}
+[data-theme='dark'] .lv-stop.lv-mixed.is-active .lv-name {
+  color: #d9a8ff;
+}
+
+/* the little pictures move while their stop is chosen */
+.lv-art g {
+  transform-box: fill-box;
+}
+.lv-stop.is-active .lv-flag {
+  transform-origin: left center;
+  animation: lv-wave 1.4s ease-in-out infinite;
+}
+.lv-stop.is-active .lv-sun {
+  transform-origin: center;
+  animation: lv-spin 9s linear infinite;
+}
+.lv-stop.is-active .lv-cloud {
+  animation: lv-drift 3.2s ease-in-out infinite alternate;
+}
+.lv-stop.is-active .lv-stars {
+  transform-origin: center;
+  animation: lv-twinkle 1.6s ease-in-out infinite;
+}
+.lv-stop.is-active .lv-die-a {
+  transform-origin: center;
+  animation: lv-roll 2.4s cubic-bezier(0.5, 0, 0.3, 1) infinite;
+}
+.lv-stop.is-active .lv-die-b {
+  transform-origin: center;
+  animation: lv-roll 2.4s 0.3s cubic-bezier(0.5, 0, 0.3, 1) infinite reverse;
+}
+
+.lv-art.lv-bounce {
+  animation: lv-bounce 0.55s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+/* the rail runs from the middle of the first stop to the middle of the last */
+.lv-rail {
+  padding: 8px 12.5%;
+  cursor: pointer;
+}
+
+.lv-track {
+  position: relative;
+  height: 12px;
+  border-radius: 999px;
+  background: var(--track);
+  touch-action: none;
+}
+
+.lv-track::before {
+  /* a bigger hit area for fingers */
+  content: '';
+  position: absolute;
+  inset: -16px -14px;
+}
+
+.lv-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--lv-pos);
+  border-radius: 999px;
+  background: linear-gradient(90deg, #58cc02, #ff9600 40%, #ff4b4b 70%, #a560e8);
+  background-size: calc(100% * 100 / max(1, var(--lv-pos-n, 100))) 100%;
+  transition: width 0.45s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+
+.lv-tick {
+  position: absolute;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+}
+
+.lv-thumb {
+  position: absolute;
+  top: 50%;
+  left: var(--lv-pos);
+  width: 32px;
+  height: 32px;
+  margin: -16px 0 0 -16px;
+  border: 4px solid var(--surface);
+  border-radius: 50%;
+  background: var(--lv);
+  box-shadow: 0 3px 0 var(--lv-shadow), 0 4px 14px color-mix(in srgb, var(--lv) 45%, transparent);
+  transition: left 0.45s cubic-bezier(0.3, 1.4, 0.5, 1), background-color 0.3s ease;
+  cursor: grab;
+}
+
+.lv-thumb-dot {
+  position: absolute;
+  inset: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.lv-slider.dragging .lv-thumb,
+.lv-slider.dragging .lv-fill {
+  transition: none;
+}
+
+.lv-slider.dragging .lv-thumb {
+  cursor: grabbing;
+  transform: scale(1.12);
+}
+
+.lv-thumb.lv-pop {
+  animation: lv-pop 0.5s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+.lv-info {
+  margin-top: 8px;
+  font-size: 14px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.lv-info b {
+  color: var(--lv);
+  font-weight: 900;
+}
+
+/* Start Learning · Start Gaming */
+.start-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.start-row .btn {
+  flex: 1 1 200px;
+  width: auto;
+  padding: 0 14px;
+  white-space: nowrap; /* too narrow for both? then they stack */
+}
+
+.game-btn {
+  --btn-bg: #a560e8;
+  --btn-border: #a560e8;
+  --btn-shadow: #8441c4;
+  --btn-fg: #ffffff;
+}
+
+.game-btn.no-games {
+  --btn-bg: var(--surface-2);
+  --btn-border: var(--border);
+  --btn-shadow: var(--border);
+  --btn-fg: var(--muted);
+}
+
+.game-btn-icon {
+  display: inline-block;
+  font-size: 20px;
+  transform-origin: 50% 60%;
+}
+
+@media (hover: hover) {
+  .game-btn:not(.no-games):hover .game-btn-icon {
+    animation: wobble 0.8s ease-in-out;
+  }
+}
+
+/* 💻 on topic cards that have minigames */
+.game-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  flex: none;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, #a560e8 16%, var(--surface));
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.game-pill-n {
+  color: color-mix(in srgb, #a560e8 70%, var(--text));
+  font-variant-numeric: tabular-nums;
+}
+
+.home .home-ach {
+  grid-column: 1 / -1;
+}
+
+/* === Session: level tag, 💡 Help me, hints =========================================================== */
+.level-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.level-tag.lv-1 {
+  background: color-mix(in srgb, #58cc02 16%, var(--surface));
+  color: color-mix(in srgb, #58cc02 55%, var(--text));
+}
+.level-tag.lv-2 {
+  background: color-mix(in srgb, #ff9600 16%, var(--surface));
+  color: color-mix(in srgb, #ff9600 60%, var(--text));
+}
+.level-tag.lv-3 {
+  background: color-mix(in srgb, #ff4b4b 16%, var(--surface));
+  color: color-mix(in srgb, #ff4b4b 65%, var(--text));
+}
+
+@media (min-width: 600px) {
+  .help-btn {
+    min-width: 140px;
+  }
+}
+
+.help-dots {
+  margin-left: 2px;
+  font-size: 8px;
+  letter-spacing: 1px;
+  color: var(--gold);
+}
+
+.help-dots:empty {
+  display: none;
+}
+
+.hint-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 10px 14px;
+  border: 2px dashed color-mix(in srgb, var(--gold) 60%, transparent);
+  border-radius: 14px;
+  background: var(--hint-bg);
+  color: var(--hint-ink);
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.hint-note.reveal {
+  animation: reveal 0.3s ease both;
+}
+
+.hint-letters {
+  display: inline-block;
+  font-size: 19px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  white-space: pre-wrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* what Help me changed */
+.choice.gone {
+  opacity: 0.28;
+  transform: scale(0.96);
+  text-decoration: line-through;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.slot.gone {
+  opacity: 0;
+  transform: scale(0.5);
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.tile.hinted,
+.gap-slot.hinted,
+.m-item.hinted,
+.sort-chip.hinted,
+.cell-input.hinted {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 70%, transparent);
+}
+
+.spot-word.cleared {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* 🔊 in the gap card and the word bubble */
+.gap-card > .speak-btn {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  margin-left: auto;
+  align-self: flex-start;
+  font-size: 18px;
+}
+
+.gloss-tip-say {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  margin: -4px -4px -4px 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--tip-text) 18%, transparent);
+  font-size: 14px;
+  vertical-align: middle;
+  pointer-events: auto;
+}
+
+@keyframes lv-wave {
+  0%,
+  100% {
+    transform: skewY(0deg) scaleX(1);
+  }
+  50% {
+    transform: skewY(-8deg) scaleX(0.9);
+  }
+}
+@keyframes lv-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes lv-drift {
+  from {
+    transform: translateX(-3px);
+  }
+  to {
+    transform: translateX(5px);
+  }
+}
+@keyframes lv-twinkle {
+  50% {
+    opacity: 0.4;
+    transform: scale(0.8);
+  }
+}
+@keyframes lv-roll {
+  0%,
+  60%,
+  100% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(-14deg) translateY(-3px);
+  }
+  88% {
+    transform: rotate(10deg);
+  }
+}
+@keyframes lv-bounce {
+  0% {
+    transform: scale(1.12) translateY(0);
+  }
+  40% {
+    transform: scale(1.3) translateY(-8px);
+  }
+  100% {
+    transform: scale(1.12) translateY(0);
+  }
+}
+@keyframes lv-pop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 420px) {
+  .lv-art {
+    width: 40px;
+    height: 40px;
+  }
+  .lv-stop {
+    font-size: 13px;
+  }
 }
 
 /* === Small screens ============================================================================ */

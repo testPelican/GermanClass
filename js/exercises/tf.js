@@ -61,6 +61,7 @@
       const answerLabel = card.answer ? labels[0] : labels[1];
       return {
         check: () => ({ ok: sel === card.answer, given: sel ? labels[0] : labels[1] }),
+        hints: 0, // two buttons: a hint would be the answer
         solution: () => ({
           html: md(answerLabel) + (card.fix ? `<div class="sol-fix">✔ ${md(show(card.fix))}</div>` : ''),
           say: card.fix || (card.answer ? card.say || card.q : null),

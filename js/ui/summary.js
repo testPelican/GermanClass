@@ -86,7 +86,7 @@
 
     const primary = h('button', { class: 'btn btn-primary btn-big', type: 'button' }, complete ? 'See my detailed review' : 'Continue');
     primary.addEventListener('click', () => B.app.go(complete ? 'review' : 'home'));
-    const pendingLeft = r.practice ? B.stats.mistakeCards().length : B.stats.pending(r.opts.topic).length;
+    const pendingLeft = r.practice ? B.stats.mistakeCards().length : B.stats.pending(r.opts.topic, r.opts.level).length;
     const again = !complete && pendingLeft
       ? h('button', { class: 'btn btn-outline', type: 'button' }, h('span', { 'aria-hidden': 'true' }, '▶ '), r.practice ? 'Practise again' : 'Keep going')
       : null;

@@ -110,26 +110,27 @@
       .slice(0, limit);
   }
 
-  const inTopic = (c, topic) => topic === 'all' || !topic || B.deck.inTopic(c, topic);
+  /** Topic ('all' = every topic) and difficulty setting (low | medium | high | mixed; none = every level). */
+  const inTopic = (c, topic, level) => (topic === 'all' || !topic || B.deck.inTopic(c, topic)) && (!level || B.level.fits(c, level));
 
   /** Cards never mastered. */
-  const fresh = (topic) => B.deck.cards.filter((c) => inTopic(c, topic) && !B.store.isDone(c.id));
+  const fresh = (topic, level) => B.deck.cards.filter((c) => inTopic(c, topic, level) && !B.store.isDone(c.id));
 
   /** Mastered cards due for review today (or overdue). */
-  function due(topic) {
+  function due(topic, level) {
     const today = B.srs.day();
-    return B.deck.cards.filter((c) => inTopic(c, topic) && B.srs.isDue(B.store.cardState(c.id), today));
+    return B.deck.cards.filter((c) => inTopic(c, topic, level) && B.srs.isDue(B.store.cardState(c.id), today));
   }
 
   /** Everything a session can show now: reviews that are due, then new cards. */
-  const pending = (topic) => due(topic).concat(fresh(topic));
+  const pending = (topic, level) => due(topic, level).concat(fresh(topic, level));
 
   /** The earliest review day of the topic's mastered cards, or null if none is mastered. */
-  function nextDue(topic) {
+  function nextDue(topic, level) {
     let min = null;
     for (const c of B.deck.cards) {
       const s = B.store.cardState(c.id);
-      if (inTopic(c, topic) && s && s.done && s.due != null && (min === null || s.due < min)) min = s.due;
+      if (inTopic(c, topic, level) && s && s.done && s.due != null && (min === null || s.due < min)) min = s.due;
     }
     return min;
   }

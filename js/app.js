@@ -141,6 +141,21 @@
     });
   }
 
+  /** A message with one button ("Sorry, there are no games …"). */
+  function alert({ title, text, ok = 'OK', icon = '🥨' }) {
+    return new Promise((resolve) => {
+      const id = 'dlg-' + ++dialogSeq;
+      const okBtn = h('button', { type: 'button', class: 'btn btn-primary' }, ok);
+      const box = h('div', { class: 'modal', role: 'alertdialog', 'aria-modal': 'true', 'aria-labelledby': id },
+        h('div', { class: 'modal-mascot', 'aria-hidden': 'true' }, icon),
+        h('h2', { id, class: 'modal-title' }, title),
+        text ? h('p', { class: 'modal-text' }, text) : null,
+        h('div', { class: 'modal-actions' }, okBtn));
+      const close = modal(box, { initial: okBtn, onClose: () => resolve() });
+      okBtn.addEventListener('click', () => close(true));
+    });
+  }
+
   /** A dialog with any content (the Glossary): build(close) returns the .modal box. Resolves when it closes. */
   function sheet(build) {
     return new Promise((resolve) => {
@@ -178,6 +193,7 @@
     go,
     toast,
     confirm,
+    alert,
     sheet,
     confetti,
     applyTheme,
@@ -191,6 +207,8 @@
   applyTheme();
   if (darkQuery && darkQuery.addEventListener) darkQuery.addEventListener('change', applyTheme);
   history.replaceState({ depth: 0 }, '');
+  // achievements first, so badges earned with older progress already show on the home screen
+  if (B.achievements && B.achievements.init) B.achievements.init();
   render('home');
   if (!B.store.storageOk) toast('⚠️ This browser is blocking storage — progress won’t be saved.', { kind: 'warn', ms: 6000 });
 })();

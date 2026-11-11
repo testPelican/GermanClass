@@ -1,7 +1,8 @@
 /*
  * Sort words into groups (der / die / das, haben / sein, present / past …).
  *   { type: 'sort', prompt, buckets: [{ label: 'der', sub: 'masculine', items: ['Zug', 'Bus'] }, …] }
- * Tap a word, then tap a group — or drag the word onto the group.
+ * Tap a word, then tap a group — or drag the word onto the group. A German word is read aloud when picked.
+ * 💡 Help me puts one word in its right group per step (half of the words at most).
  */
 (function () {
   'use strict';
@@ -43,17 +44,19 @@
       });
 
       const chips = shuffle(card.buckets.flatMap((b, bi) => b.items.map((text) => ({ text, correct: bi, where: -1 }))));
+      const german = B.ex.germanChoices(card, chips.map((c) => c.text));
       chips.forEach((c) => {
         c.el = h('button', { type: 'button', class: 'chip sort-chip' }, show(c.text));
         c.el.addEventListener('click', (e) => {
           e.stopPropagation();
-          if (locked) return;
+          if (locked || c.fixed) return;
           api.sfx('tap');
           sel = sel === c ? null : c;
+          if (sel && german && api.say) api.say(c.text);
           paint();
         });
         B.drag.attach(c.el, {
-          enabled: () => !locked,
+          enabled: () => !locked && !c.fixed,
           onStart: () => {
             sel = null;
             paint();
@@ -121,6 +124,18 @@
       paint();
 
       return {
+        hints: Math.floor(chips.length / 2),
+        hint() {
+          const todo = chips.filter((c) => !c.fixed && c.where !== c.correct);
+          if (!todo.length || chips.filter((c) => c.fixed).length >= Math.floor(chips.length / 2)) return null;
+          const c = shuffle(todo)[0];
+          if (sel === c) sel = null;
+          place(c, c.correct);
+          c.fixed = true;
+          c.el.classList.add('hinted');
+          paint();
+          return { note: `**${show(c.text)}** → ${show(card.buckets[c.correct].label)}.` };
+        },
         check() {
           const wrong = chips.filter((c) => c.where !== c.correct);
           return {

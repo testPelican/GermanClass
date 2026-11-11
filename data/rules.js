@@ -541,6 +541,22 @@ Brezel.deck.addRules('praet', [
   },
 ]);
 
+// --- the verb list (Kleines Wörterbuch der Verben) ---------------------------------------
+// The three tables of the list itself (vl-list-1 … vl-list-3) are built in data/cards/17-verb-list.js
+// from the same table as the cards, so the Rule book and the cards can never disagree.
+Brezel.deck.addRules('verblist', [
+  {
+    id: 'vl-columns',
+    title: 'The verb list: three columns to learn',
+    text: 'For every verb, learn the **er / sie / es** form in three tenses. Leave out *er* — the verb form is what counts.',
+    points: [
+      '**Präsens** (now): watch the vowel change with du and er (*tragen → trägt*) and the separable prefix at the end (*macht … auf*).',
+      '**Präteritum** (the **written** past): irregular verbs get a new stem and no -te (*finden → fand*), regular ones add **-te** (*spielte*). The ich-form is the same as the er-form.',
+      '**Perfekt** (the **spoken** past): *hat* or *ist* + Partizip II. **ist** for a change of place or state and for *sein / bleiben*; **hat sich** for every reflexive verb.',
+    ],
+  },
+]);
+
 // --- reflexive verbs ---------------------------------------------------------------------
 Brezel.deck.addRules('reflexive', [
   {
@@ -561,6 +577,24 @@ Brezel.deck.addRules('reflexive', [
       'After inversion it follows the subject pronoun: *Morgen **treffe ich mich** mit Tom.*',
       'A separable prefix still goes last: *Ich ziehe mich schnell um.*',
       'If the subject is a noun after the verb, *sich* may come before it: *Heute hat sich Tom verspätet.*',
+    ],
+  },
+  {
+    id: 'reflexive-question',
+    title: 'Questions: where does sich go?',
+    points: [
+      'The subject is a **pronoun** → the pronoun comes first, then the reflexive pronoun: *Hast **du dich** schon angemeldet?*',
+      'The subject is a **noun or a name** → both orders are fine: *Hat **sich Tom** verspätet?* = *Hat **Tom sich** verspätet?*',
+      'In a statement *sich* stands right after the conjugated verb: *Tom hat sich verspätet.*',
+    ],
+  },
+  {
+    id: 'reflexive-case',
+    title: 'Subject in the Nominativ, reflexive pronoun in the Akkusativ',
+    text: '“Das Verb regiert im Satz” — the verb decides. The subject is in the **Nominativ**; the reflexive pronoun is the object, in the **Akkusativ**, and it points back to the same person.',
+    points: [
+      '*Wir* (Nominativ) *waschen* **uns** (Akkusativ).',
+      'The Akkusativ forms: mich, dich, sich, uns, euch, sich — like the normal object pronouns, except **sich**.',
     ],
   },
   {
