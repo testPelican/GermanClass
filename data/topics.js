@@ -2,12 +2,14 @@
  * Topics (skill areas). The review screen groups results by these.
  * To add a topic: add an entry here and a card file in data/cards/ that calls
  * Brezel.deck.addCards('<id>', [...]), then add a <script> tag in index.html.
+ * short: the name on the small topic tiles of the start screen.
  * A topic with collects: 'theory' has no cards of its own: it gathers every card marked
  * theory: true, from all topics (the card still counts in its own topic too).
  */
 Brezel.deck.addTopics([
   {
     id: 'rules',
+    short: 'Rules',
     name: 'Rules',
     de: 'Grammatikregeln',
     icon: '📏',
@@ -17,6 +19,7 @@ Brezel.deck.addTopics([
   },
   {
     id: 'verblist',
+    short: 'Verb list',
     name: 'Verb list',
     de: 'Kleines Wörterbuch der Verben',
     icon: '📒',
@@ -25,6 +28,7 @@ Brezel.deck.addTopics([
   },
   {
     id: 'order',
+    short: 'Word order',
     name: 'Word order',
     de: 'Satzbau',
     icon: '🧩',
@@ -33,6 +37,7 @@ Brezel.deck.addTopics([
   },
   {
     id: 'present',
+    short: 'Present',
     name: 'Present tense',
     de: 'Präsens',
     icon: '⏱️',
@@ -41,6 +46,7 @@ Brezel.deck.addTopics([
   },
   {
     id: 'past',
+    short: 'Perfekt',
     name: 'Past tense',
     de: 'Perfekt',
     icon: '⏪',
@@ -49,6 +55,7 @@ Brezel.deck.addTopics([
   },
   {
     id: 'cases',
+    short: 'Cases',
     name: 'Articles & cases',
     de: 'der, die, das',
     icon: '🎯',
@@ -57,6 +64,7 @@ Brezel.deck.addTopics([
   },
   {
     id: 'prepositions',
+    short: 'Prepositions',
     name: 'Prepositions',
     de: 'Präpositionen',
     icon: '📍',
@@ -65,6 +73,7 @@ Brezel.deck.addTopics([
   },
   {
     id: 'gender',
+    short: 'Jobs m / f',
     name: 'Female & male forms',
     de: 'Berufe: er / sie',
     icon: '👩‍🏫',
@@ -73,6 +82,7 @@ Brezel.deck.addTopics([
   },
   {
     id: 'possessive',
+    short: 'Possessives',
     name: 'Possessives',
     de: 'mein, meine …',
     icon: '🏠',
@@ -81,6 +91,7 @@ Brezel.deck.addTopics([
   },
   {
     id: 'questions',
+    short: 'Questions',
     name: 'Questions & negation',
     de: 'W-Fragen, nicht / kein',
     icon: '❓',
@@ -89,6 +100,7 @@ Brezel.deck.addTopics([
   },
   {
     id: 'verbs',
+    short: 'Modal verbs',
     name: 'Modal verbs & gern',
     de: 'müssen, können, gern',
     icon: '🔗',
@@ -97,6 +109,7 @@ Brezel.deck.addTopics([
   },
   {
     id: 'prefix',
+    short: 'Separable',
     name: 'Separable & inseparable verbs',
     de: 'trennbar / nicht trennbar',
     icon: '✂️',
@@ -105,6 +118,7 @@ Brezel.deck.addTopics([
   },
   {
     id: 'tenses',
+    short: 'Tenses',
     name: 'Tenses & grammar terms',
     de: 'Präsens, Perfekt, Präteritum',
     icon: '🧠',
@@ -113,6 +127,7 @@ Brezel.deck.addTopics([
   },
   {
     id: 'praet',
+    short: 'Präteritum',
     name: 'Simple past',
     de: 'Präteritum',
     icon: '📜',
@@ -121,6 +136,7 @@ Brezel.deck.addTopics([
   },
   {
     id: 'reflexive',
+    short: 'Reflexive',
     name: 'Reflexive verbs',
     de: 'sich freuen, sich anziehen',
     icon: '🪞',
@@ -129,6 +145,7 @@ Brezel.deck.addTopics([
   },
   {
     id: 'pastq',
+    short: 'Past talk',
     name: 'Talking about the past',
     de: 'Haben Sie schon einmal …?',
     icon: '💬',
@@ -137,6 +154,7 @@ Brezel.deck.addTopics([
   },
   {
     id: 'vocab',
+    short: 'Vocabulary',
     name: 'Vocabulary',
     de: 'Wortschatz',
     icon: '📚',

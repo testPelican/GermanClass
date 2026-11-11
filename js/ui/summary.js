@@ -18,7 +18,7 @@
     const showPrompt = card.prompt && d.q !== card.prompt;
     return h('li', { class: 'miss-item' },
       h('div', { class: 'miss-top' },
-        h('span', { class: 'topic-tag' }, h('span', { 'aria-hidden': 'true' }, topic.icon + ' '), topic.name),
+        h('span', { class: 'topic-tag' }, h('span', { class: 'tag-art', 'aria-hidden': 'true', html: B.art.topic(card.topic) }), topic.name),
         h('span', { class: 'type-tag' }, B.ex.label(card.type)),
         extra && extra.count ? h('span', { class: 'miss-count', title: 'Times answered wrong' }, `✗ ${extra.count}×`) : null,
         extra && extra.done != null ? h('span', { class: 'miss-state ' + (extra.done ? 'ok' : 'todo') }, extra.done ? '✓ mastered' : '… not yet') : null),

@@ -254,6 +254,33 @@ The typo allowance never lets wrong grammar through, so these are marked wrong:
 | `/` | Rule book: search |
 | `Esc` | Close a word bubble, or quit the session |
 
+## Look and feel
+
+- **Topic tiles.** Every topic has its own animated picture. On the start
+  screen the topics are tiles with a progress ring and 💻 when there are
+  games. The chosen tile lifts and its picture moves; a tapped picture says
+  hello. The same pictures appear on the topic cards, in the Rule book and on
+  topic tags.
+- **The view above the greeting** follows the clock:
+  - morning (5–11): a sunrise with birds;
+  - day (11–18): sunshine and drifting clouds;
+  - evening (18–22): a sunset, the first stars and a lit chalet;
+  - night: the moon, twinkling stars and the odd shooting star.
+- **Topic progress.** The bars fill up when the screen opens and shimmer now
+  and then. A topic with every card mastered gets a gold medal.
+- **Answering.**
+  - The ✓ or ✗ draws itself.
+  - A right answer sends stars out of the button, and its XP flies up to the
+    ⚡ counter in the top bar.
+  - The flame next to it grows with every right answer in a row: orange from
+    2, blue from 5, purple from 10. A mistake blows it out.
+- **Rule book and Glossary.**
+  - The book turns its pages, and topics rise into view as you scroll.
+  - A rule unfolds like paper, its points one by one.
+  - A rule that would give the answer away is a sealed letter that opens.
+  - In the Glossary, every word has a 🔊.
+- All of this switches off when the device asks for reduced motion.
+
 ## Adding cards
 
 Cards live in `data/cards/*.js`. Each file adds cards to one topic (`16-rules.js` adds rule questions to several):
@@ -371,6 +398,7 @@ Brezel.html           the whole app in one file (generated: node tools/build.js)
 index.html            entry point for the source files (script order matters)
 css/app.css           all styles, light + dark theme (incl. the difficulty slider and Help me)
 css/achievements.css  the badges
+css/art.css           the topic pictures' animations
 css/games*.css        the game screen (games.css) and the minigames (games-quick, games-play)
 js/core/              utilities, deck registry, answer checker, review schedule (srs.js),
                       difficulty + easier copies (level.js), storage, stats, achievements,
@@ -378,7 +406,8 @@ js/core/              utilities, deck registry, answer checker, review schedule 
 js/exercises/         one file per exercise type (each with its Help me hints)
 js/games/             minigames: engine.js (registry + contract) and one file per game family
 js/ui/                screens: home, session, summary, review, Rule book, charts, achievements,
-                      the game screen (arcade.js); the Glossary dialog
+                      the game screen (arcade.js); the Glossary dialog; topic pictures (art.js),
+                      the time-of-day view (scenery.js)
 data/topics.js        topics + the rule tip shown for each
 data/lexicon.js       verb forms, word families, proper nouns
 data/glossary.js      English meanings of the words in the questions

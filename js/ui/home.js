@@ -133,10 +133,27 @@
 
   function greeting() {
     const hr = new Date().getHours();
-    if (hr < 11) return 'Guten Morgen!';
-    if (hr < 18) return 'Guten Tag!';
+    if (hr >= 5 && hr < 11) return 'Guten Morgen!';
+    if (hr >= 11 && hr < 18) return 'Guten Tag!';
     return 'Guten Abend!';
   }
+
+  /** A small progress ring around a topic tile's picture. */
+  function tileRing(done, total) {
+    const r = 25;
+    const C = 2 * Math.PI * r;
+    const off = C * (1 - (total ? done / total : 0));
+    const el = h('span', { class: 'tt-ring', 'aria-hidden': 'true' });
+    el.innerHTML = `<svg viewBox="0 0 56 56"><circle class="tt-ring-track" cx="28" cy="28" r="${r}"/><circle class="tt-ring-fill" cx="28" cy="28" r="${r}" stroke-dasharray="${C.toFixed(2)}" stroke-dashoffset="${C.toFixed(2)}"/></svg>`;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const f = el.querySelector('.tt-ring-fill');
+      if (f) f.style.strokeDashoffset = off.toFixed(2);
+    }));
+    return el;
+  }
+
+  // a gold ribbon for a topic whose cards are all mastered
+  const RIBBON = '<svg viewBox="0 0 40 52" aria-hidden="true"><path d="M9 26l-6 22 9-5 6 8 5-21z" fill="#e0a800"/><path d="M31 26l6 22-9-5-6 8-5-21z" fill="#c78f00"/><circle cx="20" cy="18" r="15" fill="#ffc800"/><circle cx="20" cy="18" r="11" fill="none" stroke="#fff3b0" stroke-width="2"/><path d="M14 18.5l4 4 8-8.5" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
   /** Progress ring (a meter for one value — the number is printed inside it). */
   function ring(done, total) {
@@ -233,7 +250,11 @@
             ? `${ov.total - ov.done} to go` + (ov.stillWrong ? ` · ${ov.stillWrong} need another try` : '')
             : 'Grammar first: word order, verbs, tenses, articles and more.'),
         dueLine);
-    const hero = h('section', { class: 'card hero' }, ring(ov.done, ov.total), heroText);
+    const scene = B.scene ? B.scene.now() : null;
+    const hero = h('section', { class: 'card hero' + (scene ? ' has-scene scene-' + scene : '') },
+      // the greeting box spans the whole width on wide screens: a wider view, so nothing is cropped
+      scene ? h('div', { class: 'hero-scene', html: B.scene.svg(scene, { wide: window.innerWidth >= 880 }), style: { aspectRatio: window.innerWidth >= 880 ? '800 / 90' : '400 / 90' } }) : null,
+      ring(ov.done, ov.total), heroText);
 
     // --- session setup --------------------------------------------------------------
     const startBtn = h('button', { class: 'btn btn-primary btn-big start-btn', type: 'button' });
@@ -256,10 +277,21 @@
       return { n, b };
     });
 
-    const chipRow = h('div', { class: 'topic-chips', role: 'group', 'aria-label': 'Topic' });
-    const chipBtns = [{ id: 'all', icon: '✨', name: 'All topics' }].concat(B.deck.topics).map((t) => {
-      const b = h('button', { type: 'button', class: 'topic-chip' }, h('span', { 'aria-hidden': 'true' }, t.icon), ' ', t.name);
-      b.addEventListener('click', () => selectTopic(t.id));
+    // topic picker: a tile per topic with its animated picture, a progress ring and 💻 if it has games
+    const chipRow = h('div', { class: 'topic-tiles', role: 'group', 'aria-label': 'Topic' });
+    const chipBtns = [{ id: 'all', name: 'All topics', short: 'All topics' }].concat(B.deck.topics).map((t) => {
+      const cards = t.id === 'all' ? B.deck.cards : B.deck.byTopic(t.id);
+      const done = cards.reduce((n, c) => n + (B.store.isDone(c.id) ? 1 : 0), 0);
+      const games = B.games ? B.games.forTopic(t.id).length : 0;
+      const b = h('button', { type: 'button', class: 'topic-tile art-host', 'aria-label': `${t.name}: ${done} of ${cards.length} mastered${games ? `, ${games} games` : ''}` },
+        h('span', { class: 'tt-art' }, tileRing(done, cards.length), h('span', { class: 'tt-pic', html: B.art.topic(t.id) })),
+        h('span', { class: 'tt-name' }, t.short || t.name),
+        games ? h('span', { class: 'tt-game', 'aria-hidden': 'true', title: `${games} game${games === 1 ? '' : 's'}` }, '💻') : null);
+      b.style.setProperty('--t', B.art.color(t.id));
+      b.addEventListener('click', () => {
+        B.art.burst(b);
+        selectTopic(t.id);
+      });
       chipRow.append(b);
       return { id: t.id, b };
     });
@@ -287,7 +319,10 @@
       gameBtn.classList.toggle('no-games', !games.length);
       gameBtn.title = games.length ? `${games.length} game${games.length === 1 ? '' : 's'}: ${games.map((g) => g.name).join(', ')}` : 'No games for this topic yet';
       sizeBtns.forEach(({ n: k, b }) => b.setAttribute('aria-pressed', String(k === size)));
-      chipBtns.forEach(({ id, b }) => b.setAttribute('aria-pressed', String(id === topic)));
+      chipBtns.forEach(({ id, b }) => {
+        b.setAttribute('aria-pressed', String(id === topic));
+        b.classList.toggle('is-playing', id === topic);
+      });
       topicCards.forEach(({ id, el }) => el.classList.toggle('is-selected', id === topic));
       const tName = topic === 'all' ? 'all topics' : B.deck.topicMap[topic].name;
       const gamesLine = games.length ? ` · 💻 ${games.length} game${games.length === 1 ? '' : 's'}` : '';
@@ -348,21 +383,30 @@
         const open = tip.hidden;
         tip.hidden = !open;
         ruleBtn.setAttribute('aria-expanded', String(open));
-        if (open) B.util.pulse(tip, 'reveal');
+        if (open) B.glossary.unfold(tip);
       });
       const games = B.games ? B.games.forTopic(t.topic.id) : [];
       const main = h('button', { class: 'topic-main', type: 'button', 'aria-label': `${t.topic.name}: ${t.done} of ${t.total} mastered${t.due ? `, ${t.due} to review today` : ''}${games.length ? `, ${games.length} games` : ''}. Select topic.` },
-        h('span', { class: 'topic-icon', 'aria-hidden': 'true' }, t.topic.icon),
+        h('span', { class: 'topic-icon', 'aria-hidden': 'true', html: B.art.topic(t.topic.id) }),
         h('span', { class: 'topic-text' }, h('b', {}, t.topic.name), h('small', {}, t.topic.de)),
         games.length ? h('span', { class: 'game-pill', title: `Minigames: ${games.map((g) => g.name).join(', ')}` }, '💻', h('span', { class: 'game-pill-n' }, String(games.length))) : null,
         t.due ? h('span', { class: 'due-pill', title: `${t.due} to review today` }, `🔁 ${t.due}`) : null,
         h('span', { class: 'topic-count' }, t.done === t.total ? '✓' : `${t.done}/${t.total}`));
-      main.addEventListener('click', () => selectTopic(t.topic.id, true));
-      const bar = h('div', { class: 'mini-bar', 'aria-hidden': 'true' }, h('span', { style: { width: pct(t.done, t.total) + '%' } }));
-      const el = h('article', { class: 'topic-card' + (t.done === t.total ? ' is-complete' : '') },
+      const complete = t.total > 0 && t.done === t.total;
+      const fillEl = h('span', { style: { width: '0%' } });
+      const bar = h('div', { class: 'mini-bar' + (t.done ? ' has-progress' : ''), 'aria-hidden': 'true' }, fillEl);
+      // the bar fills up once the card is on screen (staggered by its place in the grid)
+      requestAnimationFrame(() => requestAnimationFrame(() => (fillEl.style.width = pct(t.done, t.total) + '%')));
+      const el = h('article', { class: 'topic-card art-host' + (complete ? ' is-complete' : '') },
+        complete ? h('span', { class: 'topic-ribbon', title: 'Every card mastered', html: RIBBON }) : null,
         main, bar,
         h('div', { class: 'topic-foot' }, statusBadge(t.status, t.attempted >= B.stats.MIN_CARDS ? `${t.firstPct}% first try` : '') || h('span', { class: 'muted small' }, t.attempted ? `${t.attempted} tried` : 'Not started'), ruleBtn),
         tip);
+      el.style.setProperty('--t', B.art.color(t.topic.id));
+      main.addEventListener('click', () => {
+        B.art.burst(el);
+        selectTopic(t.topic.id, true);
+      });
       return { id: t.topic.id, el };
     });
 
@@ -396,6 +440,13 @@
         h('footer', { class: 'home-foot' }, resetBtn, h('p', { class: 'muted small' }, 'Progress is saved in this browser on this device.')))
     );
     paintSetup();
+    // open the tile row at the chosen topic (sideways only: the page itself doesn't move)
+    requestAnimationFrame(() => {
+      const chip = chipBtns.find((c) => c.id === topic);
+      if (chip && chipRow.scrollWidth > chipRow.clientWidth) {
+        chipRow.scrollLeft = Math.max(0, chip.b.offsetLeft - chipRow.offsetLeft - (chipRow.clientWidth - chip.b.offsetWidth) / 2);
+      }
+    });
 
     return {
       onKey(e) {

@@ -36,6 +36,63 @@
     return shuffle(size ? list.slice(0, size) : list);
   }
 
+  // feedback marks that draw themselves (css: .fb-icon)
+  const MARK_OK = '<svg viewBox="0 0 40 40" aria-hidden="true"><circle class="fb-ring" cx="20" cy="20" r="16" pathLength="1"/><path class="fb-mark" d="M12.5 20.5l5 5 10-11" pathLength="1"/></svg>';
+  const MARK_BAD = '<svg viewBox="0 0 40 40" aria-hidden="true"><circle class="fb-ring" cx="20" cy="20" r="16" pathLength="1"/><path class="fb-mark" d="M14.5 14.5l11 11" pathLength="1"/><path class="fb-mark fb-mark-2" d="M25.5 14.5l-11 11" pathLength="1"/></svg>';
+  // the combo flame in the top bar: orange from 2 in a row, blue from 5, purple from 10
+  const FLAME = '<svg viewBox="0 0 32 40" aria-hidden="true"><path class="fl-outer" d="M16 1.5c1.6 6.4 10.5 10.6 10.5 21.3a10.5 10.5 0 0 1-21 0c0-6.2 3.2-9.6 5.4-12.4.2 3.8 1.8 6 4 6.4-1.4-5-1-10.4 1.1-15.3z"/><path class="fl-inner" d="M16 17c1 3.8 6 6 6 10.8a6 6 0 0 1-12 0c0-3.2 1.8-5.2 3.2-6.8.1 1.9.9 3 2 3.2-.5-2.6-.3-4.8.8-7.2z"/></svg>';
+
+  /** Little stars and dots flying out of an element (a right answer). */
+  function starBurst(el) {
+    if (!el || reducedMotion() || typeof Element.prototype.animate !== 'function') return;
+    const r = el.getBoundingClientRect();
+    const layer = h('div', { class: 'burst', 'aria-hidden': 'true', style: { left: r.left + r.width / 2 + 'px', top: r.top + r.height / 2 + 'px' } });
+    document.body.append(layer);
+    const colors = ['#ffc800', '#58cc02', '#1cb0f6', '#ff9600', '#ce82ff'];
+    for (let i = 0; i < 14; i++) {
+      const star = i % 3 === 0;
+      const p = h('i', { class: star ? 'burst-star' : 'burst-dot', style: { color: pick(colors) } });
+      if (star) p.innerHTML = '<svg viewBox="0 0 20 20"><path d="M10 1l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 14.5 4.6 17.5l1.2-6L1.3 7.3l6.1-.7z" fill="currentColor"/></svg>';
+      layer.append(p);
+      const a = (Math.PI * 2 * i) / 14 + Math.random() * 0.4;
+      const d = randInt(46, 96);
+      p.animate(
+        [
+          { transform: 'translate(-50%, -50%) scale(0.3) rotate(0deg)', opacity: 1 },
+          { transform: `translate(calc(-50% + ${Math.cos(a) * d}px), calc(-50% + ${Math.sin(a) * d - 18}px)) scale(1) rotate(${randInt(-160, 160)}deg)`, opacity: 1, offset: 0.7 },
+          { transform: `translate(calc(-50% + ${Math.cos(a) * d * 1.15}px), calc(-50% + ${Math.sin(a) * d * 1.15 + 6}px)) scale(0.6)`, opacity: 0 },
+        ],
+        { duration: randInt(620, 900), easing: 'cubic-bezier(.2,.8,.3,1)', fill: 'forwards' }
+      );
+    }
+    setTimeout(() => layer.remove(), 1000);
+  }
+
+  /** "+10 XP" flies from the feedback chip up to the XP counter; done() runs when it lands. */
+  function flyTo(from, to, text, done) {
+    if (!from || !to || reducedMotion() || typeof Element.prototype.animate !== 'function') return done();
+    const a = from.getBoundingClientRect();
+    const b = to.getBoundingClientRect();
+    const chip = h('div', { class: 'xp-fly', 'aria-hidden': 'true', style: { left: a.left + 'px', top: a.top + 'px', width: a.width + 'px', height: a.height + 'px' } }, text);
+    document.body.append(chip);
+    const dx = b.left + b.width / 2 - (a.left + a.width / 2);
+    const dy = b.top + b.height / 2 - (a.top + a.height / 2);
+    const anim = chip.animate(
+      [
+        { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+        { transform: `translate(${dx * 0.35}px, ${dy * 0.5 - 40}px) scale(1.15)`, opacity: 1, offset: 0.35 },
+        { transform: `translate(${dx}px, ${dy}px) scale(0.45)`, opacity: 0.2 },
+      ],
+      { duration: 760, delay: 280, easing: 'cubic-bezier(.45,0,.3,1)', fill: 'forwards' }
+    );
+    const finish = () => {
+      chip.remove();
+      done();
+    };
+    anim.onfinish = finish;
+    anim.oncancel = finish;
+  }
+
   /** ●●●○○○ — a review card's step. */
   function stepDots(lv) {
     return h('span', { class: 'step-dots', 'aria-hidden': 'true' }, '●'.repeat(lv) + '○'.repeat(B.srs.MAX - lv));
@@ -90,6 +147,11 @@
     const totalPill = h('div', { class: 'pill total-pill', title: practice ? 'Practice — mastery is not changed' : 'Cards mastered overall' },
       h('span', { 'aria-hidden': 'true' }, practice ? '🔁' : '⭐'), ' ', doneNum, h('span', { class: 'of' }, '/' + deckTotal));
     const comboEl = h('div', { class: 'combo-flag', 'aria-live': 'polite' });
+    const flameNum = h('b', { class: 'flame-n' });
+    const flameEl = h('div', { class: 'flame', title: 'Right answers in a row', 'aria-hidden': 'true' }, h('span', { class: 'flame-pic', html: FLAME }), flameNum);
+    const xpNum = h('b', {}, '0');
+    const xpPill = h('div', { class: 'pill xp-pill', title: 'XP this session' }, h('span', { 'aria-hidden': 'true' }, '⚡'), ' ', xpNum, h('span', { class: 'sr-only' }, ' XP'));
+    let xpShown = 0;
     const stage = h('main', { class: 's-stage' });
     const skipBtn = h('button', { class: 'btn btn-ghost skip-btn', type: 'button' }, 'I don’t know');
     skipBtn.addEventListener('click', () => check(true));
@@ -105,7 +167,7 @@
     const foot = h('footer', { class: 's-foot' }, feedback, h('div', { class: 's-foot-inner' }, skipBtn, helpBtn, glossBtn, mainBtn));
 
     root.append(h('div', { class: 'session' + (practice ? ' is-practice' : '') },
-      h('header', { class: 's-top' }, quitBtn, bar, totalPill),
+      h('header', { class: 's-top' }, quitBtn, bar, flameEl, xpPill, totalPill),
       comboEl,
       stage,
       foot));
@@ -149,7 +211,7 @@
       hintEl = h('div', { class: 'hint-note', 'aria-live': 'polite', hidden: true });
       const wrap = h('div', { class: 's-card' + (animate ? ' enter' : '') },
         h('div', { class: 'card-meta' },
-          h('span', { class: 'topic-tag' }, h('span', { 'aria-hidden': 'true' }, topic.icon + ' '), topic.name),
+          h('span', { class: 'topic-tag' }, h('span', { class: 'tag-art', 'aria-hidden': 'true', html: B.art.topic(card.topic) }), topic.name),
           h('span', { class: 'level-tag lv-' + lv, title: 'Difficulty' }, B.level.name(lv)),
           tag),
         exRoot,
@@ -270,8 +332,14 @@
       B.audio.play(ok ? 'correct' : 'wrong');
       if (ok && COMBOS[combo]) showCombo(combo);
       if (!ok) pulse(stage.firstElementChild, 'shake');
+      paintFlame(ok);
       renderFeedback(res, ok, gained, due);
       setFooter(ok ? 'good' : 'bad');
+      if (ok) starBurst(mainBtn);
+      if (gained) {
+        const target = xp;
+        flyTo(feedback.querySelector('.fb-xp'), xpPill, '+' + gained, () => countXP(target));
+      }
       if (B.achievements) B.achievements.evaluate();
     }
 
@@ -288,6 +356,36 @@
       fill.style.width = p + '%';
       bar.setAttribute('aria-valuenow', String(cleared.size));
       bar.classList.toggle('has-progress', cleared.size > 0);
+    }
+
+    /** The flame grows with the combo; a mistake blows it out. */
+    function paintFlame(ok) {
+      const lit = combo >= 2;
+      if (!ok && flameEl.classList.contains('lit')) {
+        flameEl.classList.remove('lit');
+        pulse(flameEl, 'puff');
+        return;
+      }
+      flameEl.classList.toggle('lit', lit);
+      flameEl.classList.toggle('t2', combo >= 5 && combo < 10);
+      flameEl.classList.toggle('t3', combo >= 10);
+      flameEl.style.setProperty('--fs', String(Math.min(1.35, 0.85 + combo * 0.035)));
+      flameNum.textContent = lit ? String(combo) : '';
+      if (lit) pulse(flameEl, 'grow');
+    }
+
+    function countXP(target) {
+      const from = xpShown;
+      xpShown = target;
+      pulse(xpPill, 'bump');
+      if (reducedMotion()) return (xpNum.textContent = String(target));
+      const t0 = performance.now();
+      const step = (t) => {
+        const k = Math.min(1, (t - t0) / 450);
+        xpNum.textContent = String(Math.round(from + (target - from) * k));
+        if (k < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
     }
 
     function showCombo(n) {
@@ -326,7 +424,7 @@
 
       feedback.replaceChildren(h('div', { class: 'fb-inner' },
         h('div', { class: 'fb-head' },
-          h('span', { class: 'fb-icon', 'aria-hidden': 'true' }, ok ? '✓' : '✗'),
+          h('span', { class: 'fb-icon', 'aria-hidden': 'true', html: ok ? MARK_OK : MARK_BAD }),
           h('h3', { class: 'fb-title' }, title),
           gained ? h('span', { class: 'fb-xp', title: hintsUsed ? `${hintsUsed} hint${hintsUsed > 1 ? 's' : ''} used` : null }, `+${gained} XP` + (hintsUsed ? ' · 💡' + hintsUsed : '')) : null,
           speak),
