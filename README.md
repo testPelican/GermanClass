@@ -51,8 +51,8 @@ keeps its own progress.
 game). Each one starts with a short how-to and a 3-2-1 countdown. At the end
 you see your score, your best, your mistakes with the right answers, and the
 question **Noch ein Spiel?** — play the next game, the same one again, or stop.
-The topic tiles under *New session* show **💻** when the topic has games; a
-topic without games says so.
+**Start Gaming** is greyed out for a topic without games, and says so when
+tapped.
 The difficulty slider sets the game level too (*Mixed* picks one per game).
 Games earn XP but never change your card progress or reviews.
 
@@ -264,10 +264,9 @@ The typo allowance never lets wrong grammar through, so these are marked wrong:
 ## Look and feel
 
 - **Topic tiles.** Every topic has its own animated picture. On the start
-  screen the topics are tiles with a progress ring and 💻 when there are
-  games. The chosen tile lifts and its picture moves; a tapped picture says
-  hello. The same pictures appear on the topic cards, in the Rule book and on
-  topic tags.
+  screen the topics are tiles with a progress ring. The chosen tile lifts and
+  its picture moves; a tapped picture says hello. The same pictures appear on
+  the topic cards, in the Rule book and on topic tags.
 - **The view above the greeting** follows the clock:
   - morning (5–11): a sunrise with birds;
   - day (11–18): sunshine and drifting clouds;

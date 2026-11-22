@@ -4606,14 +4606,6 @@ body.is-dragging * {
   color: color-mix(in srgb, var(--t) 62%, var(--text));
 }
 
-.tt-game {
-  position: absolute;
-  top: 5px;
-  right: 6px;
-  font-size: 11px;
-  line-height: 1;
-}
-
 @media (hover: hover) {
   .topic-tile:hover:not([aria-pressed='true']) {
     border-color: color-mix(in srgb, var(--t) 50%, var(--border));

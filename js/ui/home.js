@@ -1,7 +1,7 @@
 /*
  * Home screen: overall progress, session setup (cards, topic, difficulty slider, Start Learning /
  * Start Gaming, and what the chosen topic teaches: topic.learn in data/topics.js), topics with
- * their grammar rules, achievements. 💻 on a topic tile = the topic has minigames.
+ * their grammar rules, achievements.
  */
 (function () {
   'use strict';
@@ -274,7 +274,7 @@
       return { n, b };
     });
 
-    // topic picker: a tile per topic with its animated picture, a progress ring and 💻 if it has games
+    // topic picker: a tile per topic with its animated picture and a progress ring
     const chipRow = h('div', { class: 'topic-tiles', role: 'group', 'aria-label': 'Topic' });
     const chipBtns = [{ id: 'all', name: 'All topics', short: 'All topics' }].concat(B.deck.topics).map((t) => {
       const cards = t.id === 'all' ? B.deck.cards : B.deck.byTopic(t.id);
@@ -282,8 +282,7 @@
       const games = B.games ? B.games.forTopic(t.id).length : 0;
       const b = h('button', { type: 'button', class: 'topic-tile art-host', 'aria-label': `${t.name}: ${done} of ${cards.length} mastered${games ? `, ${games} games` : ''}` },
         h('span', { class: 'tt-art' }, tileRing(done, cards.length), h('span', { class: 'tt-pic', html: B.art.topic(t.id) })),
-        h('span', { class: 'tt-name' }, t.short || t.name),
-        games ? h('span', { class: 'tt-game', 'aria-hidden': 'true', title: `${games} game${games === 1 ? '' : 's'}` }, '💻') : null);
+        h('span', { class: 'tt-name' }, t.short || t.name));
       b.style.setProperty('--t', B.art.color(t.id));
       b.addEventListener('click', () => {
         B.art.burst(b);
@@ -344,7 +343,7 @@
     gameBtn.addEventListener('click', () => {
       if (!B.games || !B.games.has(topic)) {
         const tName = topic === 'all' ? 'all topics' : B.deck.topicMap[topic].name;
-        B.app.alert({ title: 'Sorry!', text: `There are no games for ${tName} yet. Pick another topic — the ones with 💻 have games.`, icon: '🙈' });
+        B.app.alert({ title: 'Sorry!', text: `There are no games for ${tName} yet. Pick another topic: Start Gaming lights up when a topic has games.`, icon: '🙈' });
         return;
       }
       B.app.go('arcade', { topic, level });
