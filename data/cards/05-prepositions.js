@@ -109,4 +109,38 @@ Brezel.deck.addCards('prepositions', [
     correct: 'seit', wrong: ['seid', 'vor', 'im'],
     explain: '**seit** (since / for) + present tense: I have lived in Vienna since 2020. Careful: **seid** is the ihr-form of *sein*.',
   },
+  // --- Wo? → Dativ, Wohin? → Akkusativ (Kathrin in the canteen, Begegnungen A2+ p. 20) ------------
+  {
+    id: 'pp-30', type: 'gap', rule: 'im-ins',
+    q: 'Ich gehe oft in {die} Kantine essen.',
+    options: ['der', 'dem'],
+    explain: '**Wohin** gehst du essen? → where to → Akkusativ: *in **die** Kantine* (a die word stays die). Compare *ins Kino*.',
+  },
+  {
+    id: 'pp-31', type: 'gap', rule: ['im-ins', 'genitiv'],
+    q: 'Das Brot meiner Kollegin schmeckt besser als das Essen in {der} Kantine.',
+    options: ['die', 'den'],
+    explain: '**Wo** schmeckt das Essen? → where → Dativ: *in **der** Kantine* (die → der). Compare *im Kino*.',
+  },
+  {
+    id: 'pp-32', type: 'mc', rule: 'im-ins', asksRule: true, theory: true,
+    prompt: 'A **Wohin?** question (*Wohin gehst du essen?*) is answered in the …',
+    correct: 'Akkusativ: in die Kantine', wrong: ['Dativ: in der Kantine', 'Genitiv: der Kantine', 'Nominativ: die Kantine'],
+    explain: '**Wohin?** (where to?) → Akkusativ: *in die Kantine, ins Kino*. **Wo?** (where?) → Dativ: *in der Kantine, im Kino*.',
+  },
+  {
+    id: 'pp-33', type: 'mc', rule: 'im-ins', asksRule: true, theory: true,
+    prompt: 'A **Wo?** question (*Wo schmeckt das Brot besser?*) is answered in the …',
+    correct: 'Dativ: in der Kantine', wrong: ['Akkusativ: in die Kantine', 'Genitiv: des Kantine', 'Nominativ: die Kantine'],
+    explain: '**Wo?** (where?) → Dativ: *in der Kantine, im Büro*. **Wohin?** (where to?) → Akkusativ: *in die Kantine, ins Büro*.',
+  },
+  {
+    id: 'pp-34', type: 'sort', rule: 'im-ins',
+    prompt: '**Wo?** (where) or **Wohin?** (where to)',
+    buckets: [
+      { label: 'Wo?', sub: 'Dativ', items: ['in der Kantine', 'in der Schule', 'im Restaurant', 'im Kino'] },
+      { label: 'Wohin?', sub: 'Akkusativ', items: ['in die Kantine', 'in die Schule', 'ins Restaurant', 'ins Kino'] },
+    ],
+    explain: 'Wo? → Dativ: die → **der**, der / das → **im**. Wohin? → Akkusativ: die stays **die**, das → **ins**.',
+  },
 ]);

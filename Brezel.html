@@ -642,17 +642,6 @@ b {
   margin-top: 4px;
 }
 
-.hero-text .due-line {
-  display: inline-block;
-  margin-top: 8px;
-  padding: 3px 10px;
-  border-radius: 999px;
-  background: var(--orange-soft);
-  color: var(--orange-ink);
-  font-size: 14px;
-  font-weight: 800;
-}
-
 .ring {
   position: relative;
   width: 120px;
@@ -789,11 +778,25 @@ b {
   margin-top: 4px;
 }
 
+/* what the chosen topic teaches (data/topics.js: learn) */
 .start-sub {
-  margin: 10px 0 14px;
+  max-width: 62ch;
+  margin: 10px auto 14px;
   text-align: center;
   font-size: 14px;
+  line-height: 1.55;
   color: var(--muted);
+}
+
+.start-sub strong,
+.start-sub em {
+  color: var(--text);
+}
+
+.start-sub .start-why {
+  display: block;
+  margin-top: 6px;
+  font-weight: 700;
 }
 
 .home-links {
@@ -831,6 +834,9 @@ b {
 
 .topic-card {
   display: grid;
+  /* one column that never grows past the card: long names wrap instead of pushing the count out */
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
   gap: 10px;
   align-content: start;
   padding: 12px 14px;
@@ -880,6 +886,13 @@ b {
   flex-direction: column;
   flex: 1;
   min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* only long words break (Grammatik-regeln), never short ones (Verben) */
+.topic-text small {
+  hyphens: auto;
+  hyphenate-limit-chars: 12 5 5;
 }
 
 .topic-text b {
@@ -4286,24 +4299,6 @@ body.is-dragging * {
   .game-btn:not(.no-games):hover .game-btn-icon {
     animation: wobble 0.8s ease-in-out;
   }
-}
-
-/* 💻 on topic cards that have minigames */
-.game-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  flex: none;
-  padding: 2px 7px;
-  border-radius: 999px;
-  background: color-mix(in srgb, #a560e8 16%, var(--surface));
-  font-size: 13px;
-  font-weight: 800;
-}
-
-.game-pill-n {
-  color: color-mix(in srgb, #a560e8 70%, var(--text));
-  font-variant-numeric: tabular-nums;
 }
 
 .home .home-ach {
@@ -13871,6 +13866,8 @@ body.is-dragging * {
  * To add a topic: add an entry here and a card file in data/cards/ that calls
  * Brezel.deck.addCards('<id>', [...]), then add a <script> tag in index.html.
  * short: the name on the small topic tiles of the start screen.
+ * learn: what the topic teaches, in plain words with examples: shown under the Start buttons.
+ * tip: the rule reminder behind 📖 Rule on the topic card.
  * A topic with collects: 'theory' has no cards of its own: it gathers every card marked
  * theory: true, from all topics (the card still counts in its own topic too).
  */
@@ -13882,6 +13879,7 @@ Brezel.deck.addTopics([
     de: 'Grammatikregeln',
     icon: '📏',
     collects: 'theory',
+    learn: 'Here you will learn the **grammar words themselves**: what a *Hilfsverb* or a *Partizip II* is, *Perfekt* or *Präteritum*, where the verb goes, and the four cases — *der, den, dem, des*.',
     tip:
       'Only questions **about the rules**: what the Perfekt is, Präsens or past, when to use *sein*, where the verb goes, the four cases — no translations. They come from every topic, so a rule you master here also counts in its own topic. The 📖 Glossary on each card has the full rule.',
   },
@@ -13891,6 +13889,7 @@ Brezel.deck.addTopics([
     name: 'Verb list',
     de: 'Kleines Wörterbuch der Verben',
     icon: '📒',
+    learn: 'Here you will learn the **51 verbs of the book’s list** in three forms: Präsens *er fährt* · Präteritum *er fuhr* · Perfekt *er ist gefahren*.',
     tip:
       'The 51 verbs of the list (Begegnungen A2+, p. 32–33), learnt by heart in three columns — leave out *er*: **Präsens** *fährt* (easy) · **Präteritum** *fuhr*, the written past (medium) · **Perfekt** *ist gefahren*, the spoken past (hard). Watch the vowel change in the Präsens (*fährt, nimmt, liest*), the new vowel and no -te in the irregular Präteritum (*fuhr, nahm, las*), **ist** for a change of place or state (*ist gefahren, ist aufgestanden*, also *ist gewesen, ist geblieben*), and **hat sich** for every reflexive verb (*hat sich umgezogen* ≠ *ist umgezogen*).',
   },
@@ -13900,6 +13899,7 @@ Brezel.deck.addTopics([
     name: 'Word order',
     de: 'Satzbau',
     icon: '🧩',
+    learn: 'Here you will learn **where the words go**: the verb is always **second** (*Heute **gehe** ich ins Kino*), and a participle or a second verb goes to the **end** (*Ich habe Tee **getrunken***).',
     tip:
       'The conjugated verb is always in **position 2**. If a sentence starts with something else (*Manchmal*, *2016*, *In meiner Freizeit*), the subject moves behind the verb: *Manchmal **gehe ich** ins Kino.* Participles (*gemacht*) and infinitives after modal verbs (*lesen*) go to the very **end**. Yes/no questions start with the verb.',
   },
@@ -13909,6 +13909,7 @@ Brezel.deck.addTopics([
     name: 'Present tense',
     de: 'Präsens',
     icon: '⏱️',
+    learn: 'Here you will learn the **present tense** (now, habits, plans): *ich wohn**e**, du wohn**st**, er wohn**t*** — and verbs that change their vowel: *fahren → er **fährt***, *lesen → er **liest***.',
     tip:
       'Endings: ich **-e**, du **-st**, er/sie/es **-t**, wir **-en**, ihr **-t**, sie/Sie **-en**. Stems ending in -t add an e (*arbeit**e**t, kost**e**t*). Some verbs change their vowel **only with du and er/sie/es**: **a → ä** (*fahren → fährt, schlafen → schläft*), **e → i** (*geben → gibt, essen → isst, helfen → hilft, sprechen → spricht*), **e → ie** (*lesen → liest, sehen → sieht*). **ihr** never changes: *ihr fahrt, ihr gebt*. Irregular: du **hast**, er **hat** · ihr **seid** (*seit* = since). **es gibt** = there is / there are.',
   },
@@ -13918,6 +13919,7 @@ Brezel.deck.addTopics([
     name: 'Past tense',
     de: 'Perfekt',
     icon: '⏪',
+    learn: 'Here you will learn the **Perfekt**, the spoken past: *haben* or *sein* + the participle at the end — *Ich **habe** Kaffee **getrunken***, *Ich **bin** nach Wien **gefahren***.',
     tip:
       'Perfekt = **Hilfsverb** (*haben/sein*) in position 2 + **Partizip II at the end**. Use **sein** for a change of place or state — *Wechsel von Ort oder Zustand* (*gegangen, gefahren, aufgestanden, umgezogen*) — and for *sein, bleiben, geboren*. **haben** for all other verbs. Regular: **ge…t** (*gefragt*); irregular: **ge…en**, often with a new vowel (*getrunken*). Verbs in **-ieren** and verbs starting with **be-/ver-/ent-** take no ge- (*studiert, besucht, vereinbart*). Separable verbs put ge in the middle (*ab**ge**schlossen*).',
   },
@@ -13927,8 +13929,9 @@ Brezel.deck.addTopics([
     name: 'Articles & cases',
     de: 'der, die, das',
     icon: '🎯',
+    learn: 'Here you will learn **der, die or das** (*-ung → die, -um → das*) and the four **cases**, the article’s form for its job in the sentence: *der* Mann (who?) · *den* Mann (whom?) · *dem* Mann (to whom? *mit dem*) · *des* Mann**es** (whose? *das Büro **des** Chefs*).',
     tip:
-      'Four cases, shown by the article: **Nominativ** = the subject (*der, ein, mein*), **Akkusativ** = the object (*den, einen, meinen*), **Dativ** = to whom? and after *mit* (*dem, einem, meinem*), **Genitiv** = whose? (*des, eines, meines* + -s). **mit** always takes the Dativ: der/das → **dem**, die → **der**, plural → **den** + n (*mit dem Zug, mit der Bahn, mit meinen Freunden*). The object of most verbs is Akkusativ: only masculine changes — *ein → **einen***, *kein → **keinen***. Nouns in **-ung** are *die*, nouns in **-um** are *das*.',
+      'Four cases, shown by the article: **Nominativ** = the subject (*der, ein, mein*), **Akkusativ** = the object (*den, einen, meinen*), **Dativ** = to whom? and after *mit* (*dem, einem, meinem*), **Genitiv** = whose? (*des, eines, meines* + -s). **mit** always takes the Dativ: der/das → **dem**, die → **der**, plural → **den** + n (*mit dem Zug, mit der Bahn, mit meinen Freunden*). The object of most verbs is Akkusativ: only masculine changes — *ein → **einen***, *kein → **keinen***. The Genitiv comes **after** the noun (*das Büro **des** Chefs*), except names (*Kathrins Tag*). **der**: people and devices in -er · **die**: -in, -ung, -e (often), -tät, -ion, -ie, -ik · **das**: -um, international words, verbs used as nouns (*das Lesen*).',
   },
   {
     id: 'prepositions',
@@ -13936,6 +13939,7 @@ Brezel.deck.addTopics([
     name: 'Prepositions',
     de: 'Präpositionen',
     icon: '📍',
+    learn: 'Here you will learn **prepositions**, the little words for where, where to and when: **Wo?** *im Kino, in der Kantine* (Dativ) · **Wohin?** *ins Kino, in die Kantine* (Akkusativ) · *am Sonntag, nach Wien, seit 2016*.',
     tip:
       '**im** (in dem) = where? *Ich bin im Kino.* **ins** (in das) = where to? *Ich gehe ins Kino.* Work at a company: **bei** Uniqa. From: **aus** Spanien. To a city: **nach** München. **zur** Schule (zu der). **am** Sonntag. **seit** + present tense. **No preposition** before a year: *2016 bin ich umgezogen.*',
   },
@@ -13945,6 +13949,7 @@ Brezel.deck.addTopics([
     name: 'Female & male forms',
     de: 'Berufe: er / sie',
     icon: '👩‍🏫',
+    learn: 'Here you will learn the **female form of a job**: *der Lehrer → **die** Lehrer**in***, *der Arzt → die **Ä**rzt**in***, *der Kaufmann → die Kauf**frau***.',
     tip:
       'Most female forms add **-in** and always take **die**: *der Lehrer → die Lehrerin*. Some add an umlaut: *Arzt → Ärztin*, *Koch → Köchin*. **-mann → -frau**: *Kaufmann → Kauffrau*. Plural female: **-innen** (*Kolleginnen*).',
   },
@@ -13954,6 +13959,7 @@ Brezel.deck.addTopics([
     name: 'Possessives',
     de: 'mein, meine …',
     icon: '🏠',
+    learn: 'Here you will learn **mein, dein, sein, ihr …** (my, your, his, her): ***mein** Bruder, **meine** Schwester* — and after *mit* or *in*: *mit **meiner** Frau, mit **meinen** Freunden*.',
     tip:
       '**mein** for der/das words, **meine** for die words and plurals. After *in/mit* (Dativ): die → **meiner** (*in meiner Freizeit, mit meiner Frau*), plural → **meinen** (*mit meinen Freunden*). *his* = **sein**, *her* = **ihr**, formal *your* = **Ihr**.',
   },
@@ -13963,6 +13969,7 @@ Brezel.deck.addTopics([
     name: 'Questions & negation',
     de: 'W-Fragen, nicht / kein',
     icon: '❓',
+    learn: 'Here you will learn **questions and saying no**: the W-words (*wo, wer, wann, wie, was*), and **nicht** or **kein** — *Ich bin **nicht** verheiratet* · *Ich habe **kein** Auto*.',
     tip:
       '**Wo** = where, **Woher** = where from, **Wer** = who, **Wann** = when, **Wie** = how, **Was** = what. W-question: W-word + verb + subject. **nicht** negates verbs and adjectives (*nicht verheiratet*); **kein** negates nouns (*kein Auto, keine Kinder*).',
   },
@@ -13972,6 +13979,7 @@ Brezel.deck.addTopics([
     name: 'Modal verbs & gern',
     de: 'müssen, können, gern',
     icon: '🔗',
+    learn: 'Here you will learn **modal verbs** with the second verb at the end — *Ich **muss** heute **arbeiten***, *Ich **kann** gut **kochen*** — and **gern** for things you like doing: *Ich spiele **gern** Tennis*.',
     tip:
       'Modal verb (**muss, kann, möchte**) in position 2, second verb as infinitive at the **end**: *Pedro muss Patente **lesen**.* To like *doing* something: verb + **gern** (*Ich spiele gern Fußball*); to like a *thing*: **mögen** (*Ich mag Fußball*).',
   },
@@ -13981,6 +13989,7 @@ Brezel.deck.addTopics([
     name: 'Separable & inseparable verbs',
     de: 'trennbar / nicht trennbar',
     icon: '✂️',
+    learn: 'Here you will learn **verbs with a prefix**: separable ones split up (*aufstehen → Ich **stehe** um 7 Uhr **auf***), inseparable ones never do (*be-, ver-, er-: Ich **beantworte** die E-Mail*).',
     tip:
       '**Separable**: the prefix is a real word (*an, auf, aus, ein, fern, um*). In the present it goes to the **end**: *Helga **steht** jeden Tag um sieben Uhr **auf**.* Perfekt: **ge** in the middle (*an**ge**rufen, auf**ge**standen*). **Inseparable**: the prefix can’t stand alone (*be-, er-, ver-, ge-*), so the verb stays one word (*Die Bluse **gefällt** mir*) and the participle has **no ge-** (*beantwortet*). **unter- / über-** are usually inseparable: *ich unterrichte, ich übersetze*.',
   },
@@ -13990,6 +13999,7 @@ Brezel.deck.addTopics([
     name: 'Tenses & grammar terms',
     de: 'Präsens, Perfekt, Präteritum',
     icon: '🧠',
+    learn: 'Here you will learn the **tenses** and when to use each: Präsens *ich trinke* (now) · Perfekt *ich habe getrunken* (the spoken past) · Präteritum *ich trank* (the written past).',
     tip:
       '**Präsens** = now, habits and plans (*Morgen fahre ich nach Wien*). With **seit** it means *have been … since*, exactly like Polish *od*: *Ich wohne seit 2016 hier* = *Mieszkam tu od 2016*. **Perfekt** = the past, mostly **spoken**: **Hilfsverb** (*haben/sein*) + **Partizip II**. **Präteritum** = the same past, mostly **written**, one word: *ich trank, ich ging*. German has no *-ing* form: *ich trinke* = I drink / I am drinking (Polish *piję*).',
   },
@@ -13999,6 +14009,7 @@ Brezel.deck.addTopics([
     name: 'Simple past',
     de: 'Präteritum',
     icon: '📜',
+    learn: 'Here you will learn the **Präteritum**, the written past of stories and reports: *ich **war**, ich **hatte**, er **kaufte**, sie **ging**, der Kurs **fing** um acht **an***.',
     tip:
       'The **written** past (stories, reports, news). When speaking, use the Perfekt — except **war** and **hatte**, which are normal in speech too. Regular verbs add **-te** (*kaufte, ärgerte sich*; after -t/-d: *arbeit**ete**, erkält**ete***). Irregular verbs change the vowel and add nothing: *stand, fing, aß, bot, blieb*. **ich = er/sie/es**: *ich war, er war*. Endings: –, -st, –, -en, -t, -en. A separable prefix goes to the end: *Der Unterricht **fing** um acht **an**.*',
   },
@@ -14008,6 +14019,7 @@ Brezel.deck.addTopics([
     name: 'Reflexive verbs',
     de: 'sich freuen, sich anziehen',
     icon: '🪞',
+    learn: 'Here you will learn **reflexive verbs**: the action goes back to the person, like Polish *się* — *ich freue **mich**, du ziehst **dich** um, er erinnert **sich**, wir treffen **uns**, ihr beeilt **euch***.',
     tip:
       'The action goes back to the subject, like Polish **się**. But Polish says *się* for everyone; German changes it: ich **mich**, du **dich**, er/sie/es **sich**, wir **uns**, ihr **euch**, sie/Sie **sich**. It comes right after the conjugated verb (*Ich **ziehe mich** an*); after inversion it follows the pronoun (*Morgens dusche **ich mich***). Perfekt always with **haben**: *Ich **habe mich** umgezogen* (changed clothes) ≠ *Ich **bin** umgezogen* (moved house).',
   },
@@ -14017,6 +14029,7 @@ Brezel.deck.addTopics([
     name: 'Talking about the past',
     de: 'Haben Sie schon einmal …?',
     icon: '💬',
+    learn: 'Here you will learn to **ask and answer about the past**: *Hast du schon einmal Brot gebacken?* — *Ja, schon oft.* / *Nein, **noch nie**.* · *Wann **bist** du **aufgestanden**?*',
     tip:
       'Yes/no question: **Hilfsverb first**, participle at the end: *Hast du schon einmal Brot gebacken?* W-question: W-word + Hilfsverb + subject … participle: *Wann **sind** Sie **aufgestanden**?* Answer with the same Hilfsverb: *Ja, ich habe schon einmal / oft …* · *Nein, ich habe **noch nie** …* Present → past: *Heute trinke ich Tee.* → *Was **hast** du gestern **getrunken**?* → *Gestern **habe** ich Kaffee **getrunken**.*',
   },
@@ -14026,8 +14039,9 @@ Brezel.deck.addTopics([
     name: 'Vocabulary',
     de: 'Wortschatz',
     icon: '📚',
+    learn: 'Here you will learn **words from the book**: Kathrin’s day (*der Tagesablauf, danach, meistens, der Feierabend*), work words, long words split into parts, and false friends (*bekommen* = to get).',
     tip:
-      'Break long words into parts: *Fach + Zeitschriften*, *Geburt + s + Ort*, *Unter + stütz + ung*. Watch the false friend **bekommen** = to get (not *to become*), and **Freunde** (friends) vs **Freude** (joy).',
+      'Break long words into parts: *Fach + Zeitschriften*, *Geburt + s + Ort*, *Unter + stütz + ung*. Watch the false friend **bekommen** = to get (not *to become*), and **Freunde** (friends) vs **Freude** (joy). Your day in order: *normalerweise, danach, gegen 8 Uhr, mittags, nachmittags, abends* — and the verb stays second: *Danach **frühstücke** ich.*',
   },
 ]);
 
@@ -14211,6 +14225,8 @@ Brezel.deck.addProperNouns([
   'Bremen', 'New_York', 'New York', 'Frankreich', 'Griechenland',
   // Kapitel 1, A20–A22 (p. 18–19)
   'Knut', 'Luise', 'Sabine', 'Felix', 'Leon', 'Kathrin', 'Alexandra', 'Weber', 'Schneider', 'Huber', 'Mia', 'Julian', 'Sebastian', 'Peter',
+  // Kapitel 1, A25 and C11 (p. 21, 29)
+  'BETA', 'Susanne', 'Matthias', 'Sonja', 'Müller',
 ]);
 
 </script>
@@ -14844,10 +14860,109 @@ Brezel.gloss.addWords({
   Kunst: 'art',
   Kollegen: 'colleagues',
   Arbeitszeiten: 'working hours',
+
+  // --- Kapitel 1: Genitiv, der / die / das, Kathrins Tagesablauf, C11 (p. 20–31) ----------------
+  // little words, adjectives
+  hier: 'here',
+  sehr: 'very',
+  gut: 'good / well',
+  oft: 'often',
+  ganz: 'quite / completely',
+  'ganz anders': 'completely different(ly)',
+  anders: 'different(ly)',
+  als: 'than / as',
+  besser: 'better',
+  größer: 'bigger',
+  groß: 'big / tall',
+  große: 'big',
+  ziemlich: 'quite / rather',
+  günstig: 'convenient(ly) / cheap',
+  schrecklich: 'terrible',
+  schlechte: 'bad',
+  beste: 'best',
+  deutschen: 'German',
+  dahinter: 'behind it',
+  daneben: 'next to it',
+  warum: 'why',
+  man: 'one / you / people (in general)',
+  dieser: 'this',
+  diese: 'this / these',
+  unsere: 'our',
+  ihren: 'her / their',
+  deinem: 'your',
+  des: 'of the',
+  eines: 'of a',
+  meines: 'of my',
+  zum: 'to the / for the (zu dem)',
+  'zum Beispiel': 'for example',
+  'ein bisschen': 'a little / a bit',
+  bisschen: 'a little / a bit',
+  normalerweise: 'normally / usually',
+  danach: 'afterwards / then',
+  abends: 'in the evening(s)',
+  meistens: 'mostly',
+  Eins: 'one (the number 1)',
+  // verbs
+  liegt: 'lie(s) / is located | liegen',
+  finden: 'find',
+  schmeckt: 'taste(s) | schmecken',
+  glaube: 'believe / think | glauben',
+  gefällt: 'please(s) | gefallen',
+  'gefällt mir': 'I like (it)',
+  kennst: 'know | kennen',
+  dauert: 'take(s), last(s) | dauern',
+  lernen: 'learn',
+  'nehmen … an': 'accept | annehmen',
+  streitest: 'argue | sich streiten',
+  ärgert: 'annoy(s) | sich ärgern',
+  angemeldet: 'signed up | sich anmelden',
+  beeilen: 'hurry | sich beeilen',
+  beschwert: 'complained | sich beschweren',
+  // nouns
+  Hauptgebäude: 'main building',
+  Fahrstuhl: 'lift / elevator',
+  Verwaltungsleiterin: 'head of administration (woman)',
+  Marketingabteilung: 'marketing department',
+  Hauptrechner: 'main computers / servers',
+  Arbeitsbereich: 'work area',
+  Praxis: 'practice / surgery (of a doctor)',
+  Kantine: 'canteen',
+  Management: 'management',
+  Spitzenklasse: 'top class',
+  Kollegin: 'colleague (woman)',
+  Lieblingshobby: 'favourite hobby',
+  Farbe: 'colour',
+  Wand: 'wall',
+  Tasche: 'bag',
+  Außenministerin: 'foreign minister (woman)',
+  Familie: 'family',
+  Einladung: 'invitation',
+  Installation: 'installation',
+  Abschluss: 'degree / completion (of studies)',
+  Direktor: 'director',
+  Direktors: 'director’s | Direktor',
+  Leiterin: 'manager / head (woman)',
+  Kind: 'child',
+  Kindes: 'child’s | Kind',
+  Mitarbeiter: 'employee(s) / staff',
+  Person: 'person',
+  Taxi: 'taxi',
+  Schulen: 'schools',
+  Spanisch: 'Spanish',
+  Computer: 'computer',
+  Feierabend: 'end of the working day',
+  Sprachen: 'languages',
+  Note: 'mark / grade',
+  Mathematik: 'maths',
+  Spanischkurs: 'Spanish course',
+  Geschenk: 'present / gift',
+  Hochzeit: 'wedding',
+  Kunde: 'customer',
+  'Vitamin C': 'vitamin C',
 });
 
 // names: no translation, no dots
-Brezel.gloss.addNames(['PlayStation']);
+Brezel.gloss.addNames(['PlayStation', 'Jazz', 'Blues', 'Rock']);
 
 </script>
   <script>/* data/rules.js */
@@ -15137,7 +15252,7 @@ Brezel.deck.addRules('cases', [
   {
     id: 'genitiv',
     title: 'Genitiv: des, eines, meines',
-    text: 'The **Genitiv** says **whose** something is (*Wessen?* = whose?). It comes **after** the thing: *das Auto des Lehrers*. Masculine and neuter nouns add **-s**, short ones often **-es**.',
+    text: 'The **Genitiv** says **whose** something is (*Wessen?* = whose?). It usually comes **after** the noun it belongs to: *das Büro des Abteilungsleiters* (the office of the head of department). Masculine and neuter nouns add **-s**, short ones often **-es** (Begegnungen A2+, p. 21 and 31).',
     table: {
       head: ['', 'masc.', 'fem.', 'neut.', 'plural'],
       rows: [
@@ -15150,7 +15265,10 @@ Brezel.deck.addRules('cases', [
     },
     points: [
       '*das Zimmer **des** Kind**es***, *die Tasche **meiner** Schwester*, *die Spielsachen **der** Kinder*',
-      'Names just add **-s**, with no apostrophe: *Annas Auto, Toms Hund*',
+      'Feminine and plural nouns get **no ending**: *das Auto **der** Lehrerin*, *das Büro **der** Lehrer*',
+      '**-es** is usual with **one-syllable** words: *der Baum → des Baum**es***, *das Wort → des Wort**es***. Longer words take **-s**: *des Direktor**s***, *des Hobby**s***',
+      '*dein, sein, ihr, unser …* take the same endings as *mein*: *das Auto **unseres** Lehrers*',
+      'With **names** the Genitiv comes **before** the noun and just adds **-s**, with no apostrophe: *Kathrins Tagesablauf*, *Annas Auto*',
       'When **speaking**, people often say **von + Dativ** instead: *das Auto von meinem Vater*',
       'Some prepositions take the Genitiv in writing, e.g. **wegen** (because of): *wegen des Wetters*',
     ],
@@ -15158,10 +15276,21 @@ Brezel.deck.addRules('cases', [
   {
     id: 'gender',
     title: 'der, die or das?',
-    text: 'Learn every noun **with its article**. Some endings help:',
+    text: 'For many nouns there is **no rule**, so learn every new word **with its article**: *der Baum, die Maus, das Herz*. For some nouns there are rules (Begegnungen A2+, p. 30):',
+    table: {
+      head: ['', 'article', 'for example'],
+      rows: [
+        ['people and devices in **-er**', '**der**', 'Fahrer, Manager, Computer'],
+        ['people in **-in**', '**die**', 'Lehrerin, Sekretärin'],
+        ['nouns in **-ung**, **-heit**, **-keit**', '**die**', 'Übung, Lösung, Freiheit'],
+        ['nouns in **-e** (often)', '**die**', 'Adresse, Tabelle, Hausaufgabe'],
+        ['foreign words in **-tät, -ion, -ie, -ik**', '**die**', 'Universität, Million, Biologie, Physik'],
+        ['many international words', '**das**', 'Hotel, Problem, Telefon, Auto'],
+        ['a verb used as a noun', '**das**', 'Lesen, Reisen, Fotografieren'],
+        ['nouns in **-um**, **-chen**', '**das**', 'Museum, Mädchen'],
+      ],
+    },
     points: [
-      '**-ung, -heit, -keit, -in** → *die*: *die Zeitung, die Freiheit*',
-      '**-um, -chen** → *das*: *das Museum, das Mädchen*',
       'In a compound noun the **last part** decides: *das Haus + die Tür → die Haustür*',
       'The indefinite article follows the gender: der / das → **ein**, die → **eine**',
     ],
@@ -15464,7 +15593,7 @@ Brezel.deck.addRules('reflexive', [
     points: [
       'The action goes back to the subject: *Ich wasche mich* = I wash myself (Polish *myję się*).',
       '**echt reflexiv** — always with *sich*: *sich schämen, sich verspäten*',
-      '**teilreflexiv** — *sich* or another object: *Ich wasche mich. / Ich wasche das Auto.*',
+      '**teilreflexiv** — *sich* or another object: *Ich wasche mich. / Ich wasche meine Sachen.*',
       'German and Polish don’t always match: *sich erholen* (to rest) is reflexive, *odpoczywać* isn’t.',
     ],
   },
@@ -15522,6 +15651,18 @@ Brezel.deck.addRules('vocab', [
       '*Bedienung* = service · *Bedingung* = condition',
       '*alle* = all (people / things) · *alles* = everything',
       '*die Brille* = glasses — one thing in German, so it’s singular: *Die Brille ist neu.*',
+    ],
+  },
+  {
+    id: 'tagesablauf',
+    title: 'Talking about your day (der Tagesablauf)',
+    text: 'Kathrin tells us about her day (Begegnungen A2+, p. 20). Time words put the day in order, and the verb stays in **position 2** after them.',
+    points: [
+      '**normalerweise** (normally) · **danach** (afterwards, then) · **gegen** 8 Uhr (around 8) · **um** 9 Uhr (at 9) · **von** 12.30 **bis** 13.00 Uhr (from … to)',
+      '**morgens · nachmittags · abends** (in the morning / afternoon / evening) · **jeden Tag** (every day) · **meistens** (mostly) · **manchmal** (sometimes)',
+      'After a time word comes the **verb**, then the subject: *Um 9 Uhr **beginnt** meine Arbeit.*',
+      'Times: *7.30 Uhr* is read **sieben Uhr dreißig**, the hours first.',
+      '**Feierabend haben** = to finish work for the day · **fernsehen** = to watch TV (*Abends sehe ich fern*, separable)',
     ],
   },
   {
@@ -16729,6 +16870,346 @@ Brezel.deck.addCards('cases', [
     ],
     explain: 'der Schreibtisch, der Fernseher, der Drucker, der Pullover · das Flugzeug, das Bett, das Restaurant, das Zimmer · die Brille (singular = glasses!), die Sonne, die Wohnung (-ung), die Bluse.',
   },
+  // --- Genitiv (Begegnungen A2+, Kapitel 1: A25 Betriebsrundgang, C16, Kathrins Tagesablauf) -----
+  {
+    id: 'ca-30', type: 'mc', rule: 'genitiv',
+    prompt: 'Choose the **Genitiv** (*die Firma*)',
+    q: 'Das ist das Hauptgebäude ___ BETA.',
+    correct: 'der Firma', wrong: ['die Firma', 'des Firmas', 'dem Firma'],
+    explain: 'die → **der** in the Genitiv, and a feminine noun gets **no ending**: *das Hauptgebäude **der Firma** BETA* (the main building of the BETA company).',
+  },
+  {
+    id: 'ca-31', type: 'type', rule: 'genitiv',
+    prompt: 'Put it in the **Genitiv**',
+    q: 'Die Firma liegt sehr günstig, gleich in der Nähe ___.', hint: 'der Bahnhof',
+    answer: ['des Bahnhofs', 'des Bahnhofes'], reject: ['des Bahnhof', 'dem Bahnhof', 'den Bahnhof'],
+    explain: 'der → **des**, and the noun gets **-s**: *in der Nähe **des Bahnhofs*** (near the station). *in der Nähe* is always followed by the Genitiv.',
+  },
+  {
+    id: 'ca-32', type: 'type', rule: 'genitiv',
+    prompt: 'Put it in the **Genitiv**',
+    q: 'In der Nähe ___ ist der Fahrstuhl.', hint: 'der Eingang',
+    answer: ['des Eingangs', 'des Einganges'], reject: ['des Eingang', 'dem Eingang', 'den Eingang'],
+    explain: '*der Eingang* → **des Eingangs**: the lift is near the entrance. *der Fahrstuhl* = the lift (also *der Aufzug*).',
+  },
+  {
+    id: 'ca-33', type: 'gap', rule: 'genitiv',
+    prompt: 'Fill in the **Genitiv** (*die Verwaltungsleiterin*, *die Marketingabteilung*)',
+    q: 'Das hier ist das Zimmer {der} Verwaltungsleiterin und dahinter liegt das Zimmer {der} Marketingabteilung.',
+    options: ['des', 'die'],
+    explain: 'Both are **die** words (**-in** and **-ung**), and die → **der** in the Genitiv. *dahinter* = behind it, *die Abteilung* = the department.',
+  },
+  {
+    id: 'ca-34', type: 'type', rule: 'genitiv',
+    prompt: 'Put it in the **Genitiv**',
+    q: 'Dieser große Schreibtisch hier ist der Schreibtisch ___.', hint: 'der Marketingchef',
+    answer: 'des Marketingchefs', reject: ['des Marketingchef', 'dem Marketingchef', 'den Marketingchef'],
+    explain: 'der → **des** + **-s**: *der Schreibtisch **des Marketingchefs*** = the marketing manager’s desk.',
+  },
+  {
+    id: 'ca-35', type: 'mc', rule: 'genitiv',
+    prompt: 'Choose the **Genitiv** (*die Informatiker*, plural)',
+    q: 'Hier stehen unsere Hauptrechner. Das ist der Arbeitsbereich ___.',
+    correct: 'der Informatiker', wrong: ['des Informatikers', 'den Informatikern', 'die Informatiker'],
+    explain: 'Plural → **der**, and the noun doesn’t change: *der Arbeitsbereich **der Informatiker*** (the IT people’s work area). *der Hauptrechner* = the main computer (server).',
+  },
+  {
+    id: 'ca-36', type: 'type', rule: 'genitiv',
+    prompt: 'Put it in the **Genitiv**',
+    q: 'Gleich daneben finden Sie die Praxis ___.', hint: 'der Betriebsarzt',
+    answer: ['des Betriebsarztes', 'des Betriebsarzts'], reject: ['des Betriebsarzt', 'dem Betriebsarzt', 'den Betriebsarzt'],
+    explain: 'der → **des**; *Arzt* has one syllable, so it usually takes **-es**: *die Praxis **des Betriebsarztes*** (the company doctor’s practice). *des Betriebsarzts* is correct too.',
+  },
+  {
+    id: 'ca-37', type: 'type', rule: 'genitiv',
+    prompt: 'Put it in the **Genitiv**',
+    q: 'Das ist die Kantine ___. Das Essen schmeckt hier manchmal schrecklich.', hint: 'die Mitarbeiter (plural)',
+    answer: 'der Mitarbeiter', reject: ['die Mitarbeiter', 'den Mitarbeitern', 'des Mitarbeiters', 'der Mitarbeitern'],
+    explain: 'Plural → **der**, with no ending: *die Kantine **der Mitarbeiter*** (the staff canteen). *schrecklich* = terrible.',
+  },
+  {
+    id: 'ca-38', type: 'gap', rule: 'genitiv',
+    prompt: 'Fill in the **Genitiv** (*das Management*, *die Spitzenklasse*)',
+    q: 'Ganz anders schmeckt das Essen in der Kantine {des} {Managements}. Das Management hat einen Koch {der} Spitzenklasse!',
+    options: ['dem', 'Management', 'die'],
+    explain: '*das Management* → **des Managements** (neuter: + -s). *die Spitzenklasse* → **der Spitzenklasse** (feminine: no ending). *ein Koch der Spitzenklasse* = a top-class chef.',
+  },
+  {
+    id: 'ca-39', type: 'gap', rule: 'genitiv',
+    prompt: 'Fill in the **Genitiv** (*unser Abteilungsleiter*)',
+    q: 'Das hier ist das Zimmer {unseres} {Abteilungsleiters}. Es ist viel größer als mein Zimmer.',
+    options: ['unserem', 'Abteilungsleiter'],
+    explain: '*unser* takes the same endings as *mein*: masculine → **unseres** … **-s**. *der Abteilungsleiter* = the head of department.',
+  },
+  {
+    id: 'ca-40', type: 'gap', rule: 'genitiv',
+    prompt: 'Fill in the **Genitiv** (*meine Kollegin*)',
+    q: 'Ich glaube, das Brot {meiner} Kollegin schmeckt besser als das Essen in der Kantine.',
+    options: ['meine', 'meinem', 'meines'],
+    explain: '*meine Kollegin* → **meiner Kollegin** (feminine: meine → meiner, the noun stays the same). The Genitiv comes **after** the noun: *das Brot meiner Kollegin* = my colleague’s bread.',
+  },
+  {
+    id: 'ca-41', type: 'gap', rule: 'genitiv',
+    prompt: 'Article and **Genitiv** (*der Direktor*)',
+    q: '{Das} Lieblingshobby {des} {Direktors} ist Surfen.',
+    options: ['Der', 'dem', 'Direktor'],
+    explain: '*das Hobby* → **Das** Lieblingshobby; *der Direktor* → **des Direktors** (+ -s). *Surfen* is a verb used as a noun: *das Surfen*.',
+  },
+  {
+    id: 'ca-42', type: 'gap', rule: 'genitiv',
+    prompt: 'Article and **Genitiv** (*die Wand*)',
+    q: '{Die} Farbe {der} Wand gefällt mir gut.',
+    options: ['Das', 'des', 'den'],
+    explain: '*die Farbe*; *die Wand* → **der Wand** (feminine: no -s). I like the colour of the wall.',
+  },
+  {
+    id: 'ca-43', type: 'gap', rule: 'genitiv',
+    prompt: 'Article and **Genitiv** (*deine Mutter*)',
+    q: 'Ist das {die} Tasche {deiner} Mutter?',
+    options: ['der', 'deine', 'deines'],
+    explain: '*die Tasche*; *deine Mutter* → **deiner Mutter** (deine → deiner, like meine → meiner).',
+  },
+  {
+    id: 'ca-44', type: 'gap', rule: ['genitiv', 'akkusativ'],
+    prompt: 'Article and **Genitiv** (*die Außenministerin*)',
+    q: 'Kennst du schon {den} neuen Mann {der} Außenministerin?',
+    options: ['dem', 'des', 'die'],
+    explain: '*Wen kennst du?* → Akkusativ: **den** neuen Mann. *die Außenministerin* → **der Außenministerin**: the foreign minister’s new husband.',
+  },
+  {
+    id: 'ca-45', type: 'type', rule: 'genitiv',
+    prompt: 'Put it in the **Genitiv**',
+    q: 'Die Familie ___ ist ziemlich groß.', hint: 'dein Mann',
+    answer: ['deines Mannes', 'deines Manns'], reject: ['deines Mann', 'deinem Mann', 'deinen Mann'],
+    explain: '*dein Mann* → **deines Mannes**: masculine, and *Mann* has one syllable → **-es**. Your husband’s family is quite big.',
+  },
+  {
+    id: 'ca-46', type: 'gap', rule: ['genitiv', 'gender'],
+    prompt: 'Article and **Genitiv** (*deine Firma*)',
+    q: '{Die} Einladung {deiner} Firma zum Essen nehmen wir an!',
+    options: ['Das', 'deine', 'deines'],
+    explain: '*die Einladung* (-ung → die); *deine Firma* → **deiner Firma**. *eine Einladung annehmen* = to accept an invitation.',
+  },
+  {
+    id: 'ca-47', type: 'type', rule: 'genitiv',
+    prompt: 'Put it in the **Genitiv**',
+    q: 'Die Installation ___ dauert sehr lange.', hint: 'der Drucker',
+    answer: 'des Druckers', reject: ['des Drucker', 'dem Drucker', 'den Drucker'],
+    explain: '*der Drucker* → **des Druckers**: two syllables, so just **-s**. Installing the printer takes a very long time.',
+  },
+  {
+    id: 'ca-48', type: 'type', rule: 'genitiv',
+    prompt: 'Put it in the **Genitiv**',
+    q: 'Wie lange dauert die Ausbildung ___ noch?', hint: 'dein Sohn',
+    answer: ['deines Sohnes', 'deines Sohns'], reject: ['deines Sohn', 'deinem Sohn', 'deinen Sohn'],
+    explain: '*dein Sohn* → **deines Sohnes** (one syllable → usually **-es**). *die Ausbildung* = the training.',
+  },
+  {
+    id: 'ca-49', type: 'type', rule: 'genitiv',
+    prompt: 'Put it in the **Genitiv**',
+    q: 'Wann ist der Abschluss ___?', hint: 'dein Studium',
+    answer: 'deines Studiums', reject: ['deines Studium', 'deinem Studium', 'dein Studium'],
+    explain: '*das Studium* → **deines Studiums**: neuter works like masculine, + **-s**. *der Abschluss* = the degree, the end of your studies.',
+  },
+  {
+    id: 'ca-50', type: 'mc', rule: 'genitiv', asksRule: true, theory: true,
+    prompt: 'Where does the **Genitiv** usually go?',
+    correct: 'After the noun it belongs to: das Büro des Abteilungsleiters',
+    wrong: ['Before the noun: des Abteilungsleiters das Büro', 'At the end of the sentence', 'Right after the verb in position 2'],
+    explain: '*das Büro **des Abteilungsleiters*** = the office of the head of department. Only **names** go before the noun: *Kathrins Tagesablauf*.',
+  },
+  {
+    id: 'ca-51', type: 'mc', rule: 'genitiv', asksRule: true, theory: true,
+    prompt: '*Kathrin’s daily routine* in German is …',
+    correct: 'Kathrins Tagesablauf', wrong: ['Kathrin’s Tagesablauf', 'der Tagesablauf Kathrin', 'des Kathrin Tagesablauf'],
+    explain: 'With **names** the Genitiv comes **before** the noun and just adds **-s**, with no apostrophe: *Kathrins Tagesablauf*, *Annas Auto*.',
+  },
+  {
+    id: 'ca-52', type: 'tf', rule: 'genitiv', asksRule: true, theory: true,
+    statement: 'Short masculine and neuter nouns (one syllable) usually take **-es** in the Genitiv: *der Baum → des Baumes*, *das Wort → des Wortes*.',
+    answer: true,
+    explain: 'True: also *des Kindes, des Mannes, des Sohnes*. Longer words just take **-s**: *des Direktors, des Druckers, des Hobbys*.',
+  },
+  {
+    id: 'ca-53', type: 'tf', rule: 'genitiv', asksRule: true, theory: true,
+    statement: 'Feminine nouns get an **-s** in the Genitiv too: *die Kollegin → der Kollegins*.',
+    answer: false,
+    explain: 'False: only **masculine and neuter** nouns add -s. Feminine and plural nouns stay the same: *das Brot **der Kollegin***, *die Kantine **der Mitarbeiter***.',
+  },
+  {
+    id: 'ca-54', type: 'table', rule: 'genitiv', asksRule: true, strict: true,
+    prompt: 'Complete the **Genitiv** (Begegnungen p. 31)',
+    head: ['Nominativ', 'Genitiv'],
+    rows: [
+      ['der Direktor', 'des Direktors'],
+      ['ein Direktor', 'eines Direktors'],
+      ['die Leiterin', 'der Leiterin'],
+      ['meine Leiterin', 'meiner Leiterin'],
+      ['das Kind', 'des Kindes'],
+      ['mein Kind', 'meines Kindes'],
+      ['die Mitarbeiter', 'der Mitarbeiter'],
+    ],
+    blanks: 4,
+    explain: 'masculine and neuter: **des / eines / meines** + **-(e)s** · feminine: **der / einer / meiner**, no ending · plural: **der / meiner**, no ending. *Kind* is one syllable → *des Kind**es***.',
+  },
+  {
+    id: 'ca-55', type: 'match', rule: 'genitiv', asksRule: true,
+    prompt: 'Match each noun with its **Genitiv**',
+    pairs: [['der Leiter', 'des Leiters'], ['die Kollegin', 'der Kollegin'], ['das Hobby', 'des Hobbys'], ['die Lehrer (plural)', 'der Lehrer'], ['der Baum', 'des Baumes']],
+    explain: 'der / das → **des** + -(e)s · die and plural → **der**, no ending. *Baum* is one syllable → *des Baum**es***.',
+  },
+
+  // --- der, die or das? (Begegnungen A2+, p. 30–31: C12–C15) --------------------------------------
+  {
+    id: 'ca-56', type: 'sort', rule: 'gender',
+    prompt: '**der**, **die** or **das**? (Begegnungen p. 30)',
+    buckets: [
+      { label: 'der', sub: 'maskulin', items: ['Minister'] },
+      { label: 'die', sub: 'feminin', items: ['Waschmaschine', 'Geschichte', 'Freundin', 'Besprechung'] },
+      { label: 'das', sub: 'neutral', items: ['Schreiben', 'Radio'] },
+    ],
+    explain: 'der Minister (a person in -er) · die Waschmaschine, die Geschichte (-e) · die Freundin (-in) · die Besprechung (-ung) · das Schreiben (a verb used as a noun) · das Radio (an international word).',
+  },
+  {
+    id: 'ca-57', type: 'sort', rule: 'gender',
+    prompt: '**der**, **die** or **das**? (Begegnungen p. 30)',
+    buckets: [
+      { label: 'der', sub: 'maskulin', items: ['Fernseher'] },
+      { label: 'die', sub: 'feminin', items: ['Bluse', 'Familie', 'Sonnenbrille', 'Zeitung', 'Straße'] },
+      { label: 'das', sub: 'neutral', items: ['Handy', 'Leben', 'Café'] },
+    ],
+    explain: 'der Fernseher (a device in -er) · die Bluse, die Sonnenbrille, die Straße (-e) · die Familie (-ie) · die Zeitung (-ung) · das Handy, das Café (international words) · das Leben (*leben* used as a noun).',
+  },
+  {
+    id: 'ca-58', type: 'sort', rule: 'gender',
+    prompt: 'Look at the ending: **der**, **die** or **das**?',
+    buckets: [
+      { label: 'der', sub: 'maskulin', items: ['Informatiker', 'Schüler', 'Drucker'] },
+      { label: 'die', sub: 'feminin', items: ['Fakultät', 'Information', 'Zeichnung', 'Mathematik'] },
+      { label: 'das', sub: 'neutral', items: ['Gymnasium', 'Praktikum', 'Turnen'] },
+    ],
+    explain: 'der: people and devices in **-er** · die: **-tät, -ion, -ung, -ik** · das: **-um**, and a verb used as a noun (*turnen → das Turnen*).',
+  },
+  {
+    id: 'ca-59', type: 'sort', rule: 'gender',
+    prompt: 'Look at the ending: **der**, **die** or **das**?',
+    buckets: [
+      { label: 'der', sub: 'maskulin', items: ['Fahrer', 'Computer'] },
+      { label: 'die', sub: 'feminin', items: ['Dozentin', 'Stunde', 'Prüfung', 'Chemie'] },
+      { label: 'das', sub: 'neutral', items: ['Hotel', 'Internet', 'Rechnen'] },
+    ],
+    explain: 'der Fahrer, der Computer (-er) · die Dozentin (-in), die Stunde (-e), die Prüfung (-ung), die Chemie (-ie) · das Hotel, das Internet (international words), das Rechnen (*rechnen* used as a noun).',
+  },
+  {
+    id: 'ca-60', type: 'mc', rule: 'gender', asksRule: true, theory: true,
+    prompt: 'Nouns ending in **-ung** (*Prüfung, Übung, Wohnung*) are …',
+    correct: 'feminine: die', wrong: ['masculine: der', 'neuter: das', 'der or das, it depends'],
+    explain: 'Always **die**: *die Prüfung, die Übung, die Lösung, die Zeichnung, die Ausbildung, die Vorlesung, die Wohnung*.',
+  },
+  {
+    id: 'ca-61', type: 'mc', rule: 'gender', asksRule: true, theory: true,
+    prompt: 'People and devices ending in **-er** (*Fahrer, Schüler, Drucker*) are …',
+    correct: 'masculine: der', wrong: ['feminine: die', 'neuter: das', 'always plural: die'],
+    explain: '*der Fahrer, der Manager, der Informatiker, der Schüler, der Computer, der Drucker*. Only for people and devices: *das Zimmer* is neuter.',
+  },
+  {
+    id: 'ca-62', type: 'mc', rule: 'gender', asksRule: true, theory: true,
+    prompt: 'Foreign words ending in **-tät, -ion, -ie** or **-ik** are …',
+    correct: 'feminine: die', wrong: ['masculine: der', 'neuter: das', 'der or das, it depends'],
+    explain: '*die Universität, die Fakultät, die Million, die Information, die Chemie, die Biologie, die Physik, die Mathematik*.',
+  },
+  {
+    id: 'ca-63', type: 'mc', rule: 'gender', asksRule: true, theory: true,
+    prompt: 'A verb used as a noun (*lesen → Lesen*) is …',
+    correct: 'neuter: das', wrong: ['masculine: der', 'feminine: die', 'it has no article'],
+    explain: '*das Rechnen, das Turnen, das Lesen, das Surfen, das Essen, das Reisen, das Fotografieren, das Schreiben* — with a capital letter, like every noun.',
+  },
+  {
+    id: 'ca-64', type: 'tf', rule: 'gender', asksRule: true, theory: true,
+    statement: 'Nouns ending in **-um** are neuter: *das Studium, das Gymnasium, das Praktikum*.',
+    answer: true,
+    explain: 'True: **-um → das**, like *das Museum*.',
+  },
+  {
+    id: 'ca-65', type: 'tf', rule: 'gender', asksRule: true, theory: true,
+    statement: 'Nouns ending in **-e** are **always** feminine.',
+    answer: false,
+    explain: 'False: they are **often** feminine (*die Adresse, die Stunde, die Schule, die Sprache*), but not always: *der Name, das Ende*.',
+  },
+  {
+    id: 'ca-66', type: 'tf', rule: 'gender', asksRule: true, theory: true,
+    statement: 'Many international words are neuter: *das Hotel, das Internet, das Kino, das Hobby*.',
+    answer: true,
+    explain: 'True: also *das Problem, das Telefon, das System, das Auto, das Lotto*.',
+  },
+  {
+    id: 'ca-67', type: 'tf', rule: 'gender', asksRule: true, theory: true,
+    statement: 'Every noun has a rule that tells you if it is der, die or das.',
+    answer: false,
+    explain: 'False: for **many** nouns there is no rule (*der Baum, die Maus, das Herz*). So learn every new word **with its article**: *der Tisch*, not just *Tisch*.',
+  },
+  {
+    id: 'ca-68', type: 'match', rule: 'gender', asksRule: true, sayChoices: false,
+    prompt: 'Complete the nouns: the article helps (Sg. = singular)',
+    pairs: [['die Einlad…', '-ung'], ['die Informat…', '-ion'], ['das Gymnasi…', '-um'], ['der Schül…', '-er'], ['die Lehrer… (Sg.)', '-in'], ['das Les…', '-en']],
+    explain: '*die Einladung, die Information, das Gymnasium, der Schüler, die Lehrerin, das Lesen*.',
+  },
+  {
+    id: 'ca-69', type: 'type', rule: 'gender', asksRule: true, noun: true,
+    prompt: 'Which noun is it? Write it **with its article**',
+    q: 'Hier wohnt man.',
+    answer: 'die Wohnung', reject: ['der Wohnung', 'das Wohnung'],
+    explain: '**die Wohnung** (the flat): *-ung* → die.',
+  },
+  {
+    id: 'ca-70', type: 'type', rule: 'gender', asksRule: true, noun: true,
+    prompt: 'Which noun is it? Write it **with its article**',
+    q: 'Diese Person fährt ein Taxi.',
+    answer: ['der Taxifahrer', 'die Taxifahrerin'], reject: ['das Taxifahrer', 'der Taxifahrerin'],
+    explain: '**der Taxifahrer**: people in *-er* are der. A woman: *die Taxifahrer**in***.',
+  },
+  {
+    id: 'ca-71', type: 'type', rule: 'gender', asksRule: true, noun: true,
+    prompt: 'Which noun is it? Write it **with its article**',
+    q: 'In deutschen Schulen ist die Eins die beste.',
+    answer: 'die Note', reject: ['der Note', 'das Note'],
+    explain: '**die Note** (the mark): in Germany **1** is the best mark and 6 the worst. *-e* → often die.',
+  },
+  {
+    id: 'ca-72', type: 'type', rule: 'gender', asksRule: true, noun: true,
+    prompt: 'Which noun is it? Write it **with its article**',
+    q: 'Diese Frau arbeitet in einem Café oder Restaurant.',
+    answer: 'die Kellnerin', reject: ['der Kellnerin', 'der Kellner'],
+    explain: '**die Kellnerin** (the waitress): a woman → *-in* → die. A man: *der Kellner*.',
+  },
+  {
+    id: 'ca-73', type: 'type', rule: 'gender', asksRule: true, noun: true,
+    prompt: 'Which noun is it? Write it **with its article**',
+    q: 'Hier kann man studieren.',
+    answer: ['die Universität', 'die Uni', 'die Hochschule'], reject: ['der Universität', 'das Universität'],
+    explain: '**die Universität** (short: *die Uni*): *-tät* → die.',
+  },
+  {
+    id: 'ca-74', type: 'type', rule: 'gender', asksRule: true, noun: true,
+    prompt: 'Which noun is it? Write it **with its article**',
+    q: 'Das sind zum Beispiel Jazz, Blues und Rock.',
+    answer: ['die Musik', 'die Musikrichtungen', 'die Musikstile'], reject: ['der Musik', 'das Musik'],
+    explain: '**die Musik**: *-ik* → die, like *die Physik* and *die Mathematik*.',
+  },
+  {
+    id: 'ca-75', type: 'type', rule: 'gender', asksRule: true, noun: true,
+    prompt: 'Which noun is it? Write it **with its article**',
+    q: 'Das sind zum Beispiel Englisch, Deutsch oder Spanisch.',
+    answer: ['die Sprachen', 'die Sprache'], reject: ['das Sprachen', 'der Sprachen'],
+    explain: '**die Sprachen** (languages; one language = *die Sprache*): *-e* → often die. Spelt with **ch**: Spra**ch**e.',
+  },
+  {
+    id: 'ca-76', type: 'type', rule: 'gender', asksRule: true, noun: true,
+    prompt: 'Which noun is it? Write it **with its article**',
+    q: 'Hier lernen Kinder von 6 bis 18.',
+    answer: 'die Schule', reject: ['das Schule', 'der Schule'],
+    explain: '**die Schule**: *-e* → often die. (One kind of secondary school is *das Gymnasium*: *-um* → das.)',
+  },
 ]);
 
 </script>
@@ -16843,6 +17324,40 @@ Brezel.deck.addCards('prepositions', [
     q: 'Ich wohne ___ 2020 in Wien.',
     correct: 'seit', wrong: ['seid', 'vor', 'im'],
     explain: '**seit** (since / for) + present tense: I have lived in Vienna since 2020. Careful: **seid** is the ihr-form of *sein*.',
+  },
+  // --- Wo? → Dativ, Wohin? → Akkusativ (Kathrin in the canteen, Begegnungen A2+ p. 20) ------------
+  {
+    id: 'pp-30', type: 'gap', rule: 'im-ins',
+    q: 'Ich gehe oft in {die} Kantine essen.',
+    options: ['der', 'dem'],
+    explain: '**Wohin** gehst du essen? → where to → Akkusativ: *in **die** Kantine* (a die word stays die). Compare *ins Kino*.',
+  },
+  {
+    id: 'pp-31', type: 'gap', rule: ['im-ins', 'genitiv'],
+    q: 'Das Brot meiner Kollegin schmeckt besser als das Essen in {der} Kantine.',
+    options: ['die', 'den'],
+    explain: '**Wo** schmeckt das Essen? → where → Dativ: *in **der** Kantine* (die → der). Compare *im Kino*.',
+  },
+  {
+    id: 'pp-32', type: 'mc', rule: 'im-ins', asksRule: true, theory: true,
+    prompt: 'A **Wohin?** question (*Wohin gehst du essen?*) is answered in the …',
+    correct: 'Akkusativ: in die Kantine', wrong: ['Dativ: in der Kantine', 'Genitiv: der Kantine', 'Nominativ: die Kantine'],
+    explain: '**Wohin?** (where to?) → Akkusativ: *in die Kantine, ins Kino*. **Wo?** (where?) → Dativ: *in der Kantine, im Kino*.',
+  },
+  {
+    id: 'pp-33', type: 'mc', rule: 'im-ins', asksRule: true, theory: true,
+    prompt: 'A **Wo?** question (*Wo schmeckt das Brot besser?*) is answered in the …',
+    correct: 'Dativ: in der Kantine', wrong: ['Akkusativ: in die Kantine', 'Genitiv: des Kantine', 'Nominativ: die Kantine'],
+    explain: '**Wo?** (where?) → Dativ: *in der Kantine, im Büro*. **Wohin?** (where to?) → Akkusativ: *in die Kantine, ins Büro*.',
+  },
+  {
+    id: 'pp-34', type: 'sort', rule: 'im-ins',
+    prompt: '**Wo?** (where) or **Wohin?** (where to)',
+    buckets: [
+      { label: 'Wo?', sub: 'Dativ', items: ['in der Kantine', 'in der Schule', 'im Restaurant', 'im Kino'] },
+      { label: 'Wohin?', sub: 'Akkusativ', items: ['in die Kantine', 'in die Schule', 'ins Restaurant', 'ins Kino'] },
+    ],
+    explain: 'Wo? → Dativ: die → **der**, der / das → **im**. Wohin? → Akkusativ: die stays **die**, das → **ins**.',
   },
 ]);
 
@@ -17530,6 +18045,109 @@ Brezel.deck.addCards('vocab', [
     prompt: 'Match the job activities (A6)',
     pairs: [['Gäste bedienen', 'to serve guests'], ['Kinder unterrichten', 'to teach children'], ['Gespräche mit Patienten führen', 'to talk with patients'], ['kranken Menschen helfen', 'to help sick people'], ['E-Mails beantworten', 'to answer emails'], ['Ideen präsentieren', 'to present ideas']],
     explain: 'From A6 *Berufliche Tätigkeiten*. *bedienen* → **die Bedienung** (service).',
+  },
+  // --- Der Tagesablauf von Kathrin (Begegnungen A2+, Kapitel 1, A24, p. 20–21) ---------------------
+  {
+    id: 'vo-60', type: 'match', rule: 'tagesablauf', asksRule: true,
+    prompt: 'Kathrin’s day: match the words',
+    pairs: [['der Tagesablauf', 'daily routine'], ['normalerweise', 'normally'], ['danach', 'afterwards'], ['gegen 8 Uhr', 'around 8 o’clock'], ['meistens', 'mostly'], ['der Feierabend', 'the end of the working day']],
+    explain: '*Normalerweise stehe ich um 7.30 Uhr auf, danach dusche ich mich. Gegen 8 Uhr frühstücke ich.*',
+  },
+  {
+    id: 'vo-61', type: 'match', rule: 'tagesablauf',
+    prompt: 'Kathrin’s day: match the words',
+    pairs: [['erzählen', 'to tell'], ['im Stau stehen', 'to be stuck in traffic'], ['das Gleiche', 'the same thing'], ['den Computer anschalten', 'to switch on the computer'], ['der Abteilungsleiter', 'head of department'], ['die Mittagspause', 'lunch break']],
+    explain: '*Jeden Morgen passiert bei uns im Büro **das Gleiche**: Ich begrüße meine Kollegen, **schalte** meinen Computer **an** …*',
+  },
+  {
+    id: 'vo-62', type: 'match', rule: 'tagesablauf', asksRule: true,
+    prompt: 'Kathrin’s day: match the words',
+    pairs: [['die Kantine', 'canteen'], ['Brot mitbringen', 'to bring bread along'], ['schmecken', 'to taste'], ['Rechnungen schreiben', 'to write invoices'], ['Tabellen ausfüllen', 'to fill in spreadsheets'], ['fernsehen', 'to watch TV']],
+    explain: '*Meine Kollegin Martina **bringt** sich immer Brot **mit**. Abends **sehe** ich meistens **fern**.* Both are separable.',
+  },
+  {
+    id: 'vo-63', type: 'order', rule: ['tagesablauf', 'separable'],
+    en: 'Normally I get up at 7.30.',
+    answer: 'Normalerweise stehe ich um 7.30 Uhr auf.',
+    explain: '*Normalerweise* (1) **stehe** (2) *ich* … **auf** at the end: *aufstehen* is separable. *7.30 Uhr* = *sieben Uhr dreißig*.',
+  },
+  {
+    id: 'vo-64', type: 'order', rule: ['tagesablauf', 'reflexive-position'],
+    en: 'Afterwards I have a shower.',
+    answer: 'Danach dusche ich mich.',
+    extra: ['sich'],
+    explain: '*Danach* (1) **dusche** (2) *ich* **mich**: after a time word the verb comes next, then the subject, then the reflexive pronoun.',
+  },
+  {
+    id: 'vo-65', type: 'order', rule: ['tagesablauf', 'inversion'],
+    en: 'At around 8 o’clock I have breakfast.',
+    answer: 'Gegen 8 Uhr frühstücke ich.',
+    explain: '*Gegen 8 Uhr* (1) **frühstücke** (2) *ich*. **gegen** + time = around; **um** + time = at exactly.',
+  },
+  {
+    id: 'vo-66', type: 'order', rule: ['tagesablauf', 'inversion'],
+    en: 'Sometimes I am stuck in traffic for a long time.',
+    answer: 'Manchmal stehe ich lange im Stau.',
+    explain: '*Manchmal* (1) **stehe** (2) *ich* … *im Stau stehen* = to be stuck in traffic.',
+  },
+  {
+    id: 'vo-67', type: 'order', rule: ['tagesablauf', 'inversion'],
+    en: 'Every morning the same thing happens in our office.',
+    answer: 'Jeden Morgen passiert bei uns im Büro das Gleiche.',
+    explain: '*Jeden Morgen* (1) **passiert** (2) … *bei uns im Büro* = in our office; *das Gleiche* = the same thing (the subject, here at the end).',
+  },
+  {
+    id: 'vo-68', type: 'order', rule: ['tagesablauf', 'separable'],
+    en: 'In the evening I mostly watch TV.',
+    answer: 'Abends sehe ich meistens fern.',
+    explain: '*fernsehen* is separable: **sehe** in position 2, **fern** at the end. *abends* = in the evening.',
+  },
+  {
+    id: 'vo-69', type: 'order', rule: ['tagesablauf', 'inversion'],
+    en: 'At 5.30 pm I finish work.',
+    answer: 'Um 17.30 Uhr habe ich Feierabend.',
+    explain: '*Feierabend haben* = to finish work for the day. *17.30 Uhr* = *siebzehn Uhr dreißig*.',
+  },
+  {
+    id: 'vo-70', type: 'gap', rule: ['present-endings', 'separable'],
+    prompt: 'Kathrin’s day in the 3rd person: *Normalerweise stehe ich um 7.30 Uhr auf, danach dusche ich mich.*',
+    q: 'Normalerweise {steht} Kathrin um 7.30 Uhr {auf}, danach {duscht} sie {sich}.',
+    options: ['stehe', 'dusche', 'mich'],
+    explain: 'ich stehe … auf → sie **steht** … **auf**; ich dusche **mich** → sie **duscht sich**.',
+  },
+  {
+    id: 'vo-71', type: 'type', rule: 'present-endings',
+    prompt: 'Kathrin’s day in the 3rd person: *Ich begrüße meine Kollegen.*',
+    q: 'Kathrin ___ ihre Kollegen.', hint: 'begrüßen',
+    answer: 'begrüßt',
+    explain: 'er / sie → **-t**: *Kathrin **begrüßt** ihre Kollegen*. And *meine* → **ihre** (her).',
+  },
+  {
+    id: 'vo-72', type: 'gap', rule: ['present-endings', 'vowel-change'],
+    prompt: 'Kathrin’s day in the 3rd person: *Ich schalte meinen Computer an, lese meine E-Mails und telefoniere viel.*',
+    q: 'Sie {schaltet} ihren Computer {an}, {liest} ihre E-Mails und {telefoniert} viel.',
+    options: ['schalte', 'lese', 'telefoniere'],
+    explain: '*schalten* ends in -t, so **schaltet** (with an extra e); *lesen* changes e → ie: **liest**; **telefoniert**. *anschalten* is separable: **an** at the end.',
+  },
+  {
+    id: 'vo-73', type: 'gap', rule: ['present-endings', 'vowel-change'],
+    prompt: 'Kathrin’s day in the 3rd person: *Um 17.30 Uhr habe ich Feierabend. Abends sehe ich meistens fern oder lese ein Buch.*',
+    q: 'Um 17.30 Uhr {hat} sie Feierabend. Abends {sieht} sie meistens {fern} oder {liest} ein Buch.',
+    options: ['habe', 'sehe', 'lese'],
+    explain: 'ich habe → sie **hat**; *fernsehen* and *lesen* change e → ie: sie **sieht** … **fern**, sie **liest**.',
+  },
+  {
+    id: 'vo-74', type: 'mc', rule: ['tagesablauf', 'inversion'], asksRule: true, theory: true,
+    prompt: 'A sentence starts with **Danach** (afterwards). What comes next?',
+    correct: 'The verb: Danach dusche ich mich.',
+    wrong: ['The subject: Danach ich dusche mich.', 'A comma: Danach, ich dusche mich.', 'The pronoun: Danach mich dusche ich.'],
+    explain: 'The verb is always in **position 2**. *Danach* is position 1, so the verb follows straight away, then the subject: *Danach **dusche ich** mich.*',
+  },
+  {
+    id: 'vo-75', type: 'tf', rule: 'tagesablauf', asksRule: true, theory: true,
+    statement: 'In German, *7.30 Uhr* is read **sieben Uhr dreißig**.',
+    answer: true,
+    explain: 'True: the hours first, then the minutes. In everyday speech you also hear **halb acht** (half to eight), just like Polish *wpół do ósmej*.',
   },
 ]);
 
@@ -18626,6 +19244,107 @@ Brezel.deck.addCards('reflexive', [
     answer: 'Die Kollegen haben sich über die Arbeitszeiten unterhalten.',
     extra: ['sind'],
     explain: '**haben sich** … **unterhalten** at the end. *unter-* is inseparable here, so no ge-: *unterhalten* (looks like the infinitive).',
+  },
+  // --- C11: Ergänzen Sie die Reflexivpronomen (Begegnungen A2+, p. 29) -----------------------------
+  {
+    id: 'rf-70', type: 'type', level: 2, rule: 'reflexive-pronouns',
+    prompt: 'Add the reflexive pronoun',
+    q: 'Susanne interessiert ___ für Sprachen.', hint: 'sich interessieren',
+    answer: 'sich',
+    explain: 'Susanne = *sie* → **sich**. *sich interessieren **für*** = to be interested in.',
+  },
+  {
+    id: 'rf-71', type: 'type', level: 2, rule: 'reflexive-pronouns',
+    prompt: 'Add the reflexive pronoun',
+    q: 'Matthias erinnert ___ nicht gern an seine Schulzeit.', hint: 'sich erinnern',
+    answer: 'sich',
+    explain: 'Matthias = *er* → **sich**. *sich erinnern **an*** = to remember (Polish *przypominać sobie*).',
+  },
+  {
+    id: 'rf-72', type: 'type', level: 2, rule: ['reflexive-pronouns', 'reflexive-perfekt'],
+    prompt: 'Add the reflexive pronoun',
+    q: 'Ich habe ___ verliebt.', hint: 'sich verlieben',
+    answer: 'mich',
+    explain: 'ich → **mich**, and the Perfekt with **haben**: *Ich habe **mich** verliebt* (I have fallen in love). *ver-* → no ge-.',
+  },
+  {
+    id: 'rf-73', type: 'type', level: 2, rule: 'reflexive-pronouns',
+    prompt: 'Add the reflexive pronoun',
+    q: 'Warum streitest du ___ immer mit deinem Bruder?', hint: 'sich streiten',
+    answer: 'dich',
+    explain: 'du → **dich**. *sich streiten **mit*** = to argue with.',
+  },
+  {
+    id: 'rf-74', type: 'type', level: 2, rule: 'reflexive-pronouns',
+    prompt: 'Add the reflexive pronoun',
+    q: 'Otto hat eine schlechte Note in Mathematik. Er ärgert ___.', hint: 'sich ärgern',
+    answer: 'sich',
+    explain: 'er → **sich**: *Er ärgert sich* = he is annoyed.',
+  },
+  {
+    id: 'rf-75', type: 'type', level: 2, rule: ['reflexive-pronouns', 'reflexive-perfekt'],
+    prompt: 'Add the reflexive pronoun',
+    q: 'Frau und Herr Müller haben ___ für einen Spanischkurs angemeldet.', hint: 'sich anmelden',
+    answer: 'sich',
+    explain: 'Two people = *sie* (plural) → **sich**. *sich anmelden **für*** = to sign up for; separable: an**ge**meldet.',
+  },
+  {
+    id: 'rf-76', type: 'type', level: 2, rule: 'reflexive-pronouns', gloss: { Sie: 'they' },
+    prompt: 'Add the reflexive pronoun',
+    q: 'Sie treffen ___ um 20.00 Uhr vor dem Kino.', hint: 'sich treffen',
+    answer: 'sich',
+    explain: '*sie* (they) → **sich**; here it means *each other*: they meet in front of the cinema at 8 pm.',
+  },
+  {
+    id: 'rf-77', type: 'type', level: 2, rule: ['reflexive-pronouns', 'modal'],
+    prompt: 'Add the reflexive pronoun',
+    q: 'Sonja muss ___ beeilen.', hint: 'sich beeilen',
+    answer: 'sich',
+    explain: 'Sonja = *sie* → **sich**. With a modal verb the pronoun comes right after it, and the infinitive goes to the end: *muss **sich** beeilen*.',
+  },
+  {
+    id: 'rf-78', type: 'type', level: 2, rule: ['reflexive-pronouns', 'reflexive-perfekt'],
+    prompt: 'Add the reflexive pronoun',
+    q: 'Wir haben ___ für das Geschenk noch nicht bedankt.', hint: 'sich bedanken',
+    answer: 'uns',
+    explain: 'wir → **uns**: we haven’t said thank you for the present yet.',
+  },
+  {
+    id: 'rf-79', type: 'type', level: 2, rule: 'reflexive-pronouns',
+    prompt: 'Add the reflexive pronoun',
+    q: 'Marie schminkt ___ für die Hochzeit.', hint: 'sich schminken',
+    answer: 'sich',
+    explain: 'Marie = *sie* → **sich**. *die Hochzeit* = the wedding.',
+  },
+  {
+    id: 'rf-80', type: 'type', level: 2, rule: ['reflexive-pronouns', 'reflexive-question'],
+    prompt: 'Add the reflexive pronoun',
+    q: 'Freut ihr ___ auf den Urlaub?', hint: 'sich freuen',
+    answer: 'euch',
+    explain: 'ihr → **euch**. *sich freuen **auf*** = to look forward to something; *sich freuen **über*** = to be happy about something you have.',
+  },
+  {
+    id: 'rf-81', type: 'type', level: 2, rule: ['reflexive-pronouns', 'reflexive-perfekt'],
+    prompt: 'Add the reflexive pronoun',
+    q: 'Der Kunde hat ___ beschwert.', hint: 'sich beschweren',
+    answer: 'sich',
+    explain: 'der Kunde = *er* → **sich**. *be-* → no ge-: *beschwert*.',
+  },
+  {
+    id: 'rf-82', type: 'type', level: 2, rule: ['reflexive-pronouns', 'reflexive-perfekt'],
+    prompt: 'Add the reflexive pronoun',
+    q: 'Hast du ein bisschen Vitamin C für mich? Ich habe ___ erkältet.', hint: 'sich erkälten',
+    answer: 'mich',
+    explain: 'ich → **mich**: *Ich habe mich erkältet* = I have caught a cold.',
+  },
+  {
+    id: 'rf-83', type: 'sort', rule: 'reflexive',
+    prompt: 'As in the book (p. 29): **always** with sich, or **sich or another object**?',
+    buckets: [
+      { label: 'reflexiv', sub: 'always sich', items: ['sich befinden', 'sich beschweren', 'sich freuen', 'sich interessieren', 'sich streiten'] },
+      { label: 'teilreflexiv', sub: 'sich or another object', items: ['sich anmelden', 'sich föhnen', 'sich schminken', 'sich waschen', 'sich erinnern'] },
+    ],
+    explain: '*Ich wasche **mich** / Ich wasche **meine Sachen**. Ich melde **mich** an / Ich melde **mein Kind** an. Ich erinnere **dich** an den Termin.* The book lists *befinden, beschweren, freuen, interessieren, streiten* as always reflexive.',
   },
 ]);
 
@@ -23392,14 +24111,16 @@ ${front}${mirror(front)}
 </script>
   <script>/* js/ui/home.js */
 /*
- * Home screen: overall progress, reviews due, session setup (cards, topic, difficulty slider,
- * Start Learning / Start Gaming), topics with their grammar rules (💻 = has minigames), achievements.
+ * Home screen: overall progress, session setup (cards, topic, difficulty slider, Start Learning /
+ * Start Gaming, and what the chosen topic teaches: topic.learn in data/topics.js), topics with
+ * their grammar rules, achievements. 💻 on a topic tile = the topic has minigames.
  */
 (function () {
   'use strict';
   const B = window.Brezel;
   const { h, md, pct } = B.util;
-  const SIZES = [5, 10, 20, 50, 0]; // 0 = every remaining card
+  const SIZES = [5, 10, 15, 20, 'random']; // random: 5 to 20, drawn when the session starts (js/ui/session.js)
+  const ALL_LEARN = 'A mix of every topic: word order, verb forms, the past, der / die / das and the four cases, prepositions, reflexive verbs and more. Pick a topic above to see what it teaches.';
 
   // --- the difficulty slider -------------------------------------------------------------------
   const LEVEL_LOOK = {
@@ -23584,7 +24305,7 @@ ${front}${mirror(front)}
     const ov = B.stats.overview();
     const topics = B.stats.byTopic();
     let size = B.store.setting('size');
-    if (!SIZES.includes(size)) size = 20;
+    if (!SIZES.includes(size)) size = B.store.setting('size', 20); // 50 and All are gone
     let topic = B.store.setting('topic');
     if (topic !== 'all' && !B.deck.topicMap[topic]) topic = 'all';
     let level = B.store.setting('level');
@@ -23626,23 +24347,18 @@ ${front}${mirror(front)}
       h('div', { class: 'top-actions' }, soundBtn, themeBtn));
 
     // --- hero ---------------------------------------------------------------------
-    const dueLine = ov.due
-      ? h('p', { class: 'due-line' }, h('span', { 'aria-hidden': 'true' }, '🔁 '), `${ov.due} card${ov.due === 1 ? '' : 's'} to review today`)
-      : null;
     const heroText = ov.complete
       ? h('div', { class: 'hero-text' },
         h('h1', {}, 'Alles fertig! 🎉'),
         h('p', {}, `You’ve mastered all ${ov.total} cards.`),
-        h('p', { class: 'muted' }, 'Your detailed review is ready.'),
-        dueLine)
+        h('p', { class: 'muted' }, 'Your detailed review is ready.'))
       : h('div', { class: 'hero-text' },
         h('h1', {}, greeting()),
         h('p', {}, ov.done ? `You’ve mastered ${ov.done} of ${ov.total} cards.` : `${ov.total} cards are waiting for you.`),
         h('p', { class: 'muted' },
           ov.done
             ? `${ov.total - ov.done} to go` + (ov.stillWrong ? ` · ${ov.stillWrong} need another try` : '')
-            : 'Grammar first: word order, verbs, tenses, articles and more.'),
-        dueLine);
+            : 'Grammar first: word order, verbs, tenses, articles and more.'));
     const scene = B.scene ? B.scene.now() : null;
     const hero = h('section', { class: 'card hero' + (scene ? ' has-scene scene-' + scene : '') },
       // the greeting box spans the whole width on wide screens: a wider view, so nothing is cropped
@@ -23660,7 +24376,7 @@ ${front}${mirror(front)}
     });
     const sizeSeg = h('div', { class: 'seg', role: 'group', 'aria-label': 'Cards per session' });
     const sizeBtns = SIZES.map((n) => {
-      const b = h('button', { type: 'button', class: 'seg-btn' }, n ? String(n) : 'All');
+      const b = h('button', { type: 'button', class: 'seg-btn', title: n === 'random' ? 'Anywhere from 5 to 20 cards' : null }, n === 'random' ? 'Random' : String(n));
       b.addEventListener('click', () => {
         size = B.store.setting('size', n);
         B.audio.play('tap');
@@ -23702,7 +24418,6 @@ ${front}${mirror(front)}
       const due = B.stats.due(topic, level).length;
       const fresh = B.stats.fresh(topic, level).length;
       const pending = due + fresh;
-      const n = size ? Math.min(size, pending) : pending;
       const look = LEVEL_LOOK[level];
       const lvName = B.level.SETTINGS.find((x) => x.key === level).name;
       const atLevel = B.deck.cards.filter((c) => (topic === 'all' || B.deck.inTopic(c, topic)) && B.level.fits(c, level)).length;
@@ -23717,20 +24432,23 @@ ${front}${mirror(front)}
         b.classList.toggle('is-playing', id === topic);
       });
       topicCards.forEach(({ id, el }) => el.classList.toggle('is-selected', id === topic));
-      const tName = topic === 'all' ? 'all topics' : B.deck.topicMap[topic].name;
-      const gamesLine = games.length ? ` · 💻 ${games.length} game${games.length === 1 ? '' : 's'}` : '';
+      const t = B.deck.topicMap[topic];
+      const tName = t ? t.name : 'all topics';
+      // what the topic teaches, in plain words with examples (data/topics.js: learn)
+      const learn = h('span', { html: md(t ? t.learn || t.tip || '' : ALL_LEARN) });
       if (!pending) {
         const next = B.stats.nextDue(topic, level);
         startBtn.disabled = true;
         startBtn.textContent = 'All caught up ✓';
-        startSub.textContent = (atLevel
+        // the button is off, so say why
+        const why = atLevel
           ? `Every ${level === 'mixed' ? '' : lvName + ' '}card here is mastered.` + (next != null ? ` The next review is ${B.srs.when(next, B.srs.day())}.` : '') + ' Pick another topic or difficulty — or play a game.'
-          : `There are no ${lvName} cards in ${tName}. Pick another difficulty.`) + gamesLine;
+          : `There are no ${lvName} cards in ${tName}. Pick another difficulty.`;
+        startSub.replaceChildren(learn, h('span', { class: 'start-why' }, why));
       } else {
         startBtn.disabled = false;
         startBtn.replaceChildren(h('span', { 'aria-hidden': 'true' }, '▶ '), 'Start Learning');
-        const parts = [due ? `${due} to review` : '', fresh ? `${fresh} new` : ''].filter(Boolean).join(' + ');
-        startSub.textContent = `${n} card${n === 1 ? '' : 's'} · ${tName} · ${parts}` + (due && n < pending ? ' · reviews first' : '') + gamesLine;
+        startSub.replaceChildren(learn);
       }
     }
 
@@ -23778,11 +24496,9 @@ ${front}${mirror(front)}
         ruleBtn.setAttribute('aria-expanded', String(open));
         if (open) B.glossary.unfold(tip);
       });
-      const games = B.games ? B.games.forTopic(t.topic.id) : [];
-      const main = h('button', { class: 'topic-main', type: 'button', 'aria-label': `${t.topic.name}: ${t.done} of ${t.total} mastered${t.due ? `, ${t.due} to review today` : ''}${games.length ? `, ${games.length} games` : ''}. Select topic.` },
+      const main = h('button', { class: 'topic-main', type: 'button', 'aria-label': `${t.topic.name}: ${t.done} of ${t.total} mastered${t.due ? `, ${t.due} to review today` : ''}. Select topic.` },
         h('span', { class: 'topic-icon', 'aria-hidden': 'true', html: B.art.topic(t.topic.id) }),
-        h('span', { class: 'topic-text' }, h('b', {}, t.topic.name), h('small', {}, t.topic.de)),
-        games.length ? h('span', { class: 'game-pill', title: `Minigames: ${games.map((g) => g.name).join(', ')}` }, '💻', h('span', { class: 'game-pill-n' }, String(games.length))) : null,
+        h('span', { class: 'topic-text' }, h('b', {}, t.topic.name), h('small', { lang: 'de' }, t.topic.de)),
         t.due ? h('span', { class: 'due-pill', title: `${t.due} to review today` }, `🔁 ${t.due}`) : null,
         h('span', { class: 'topic-count' }, t.done === t.total ? '✓' : `${t.done}/${t.total}`));
       const complete = t.total > 0 && t.done === t.total;
@@ -23827,7 +24543,7 @@ ${front}${mirror(front)}
         setup,
         h('section', { class: 'topics' },
           h('h2', { class: 'section-title' }, 'Topics'),
-          h('p', { class: 'muted small topics-help' }, 'Tap a topic to practise only that. Open 📖 Rule for a quick reminder. 💻 = this topic has minigames.'),
+          h('p', { class: 'muted small topics-help' }, 'Tap a topic to practise only that. Open 📖 Rule for a quick reminder.'),
           h('div', { class: 'topic-grid' }, topicCards.map((t) => t.el))),
         B.ui.achievementsSection ? h('div', { class: 'home-ach' }, B.ui.achievementsSection()) : null,
         h('footer', { class: 'home-foot' }, resetBtn, h('p', { class: 'muted small' }, 'Progress is saved in this browser on this device.')))
@@ -24316,6 +25032,7 @@ ${front}${mirror(front)}
   const XP_COMBO = 5; // bonus per card while on a streak of 5+
   const XP_HINT = 3; // each Help me hint costs this much of the card's XP (never below XP_MIN)
   const XP_MIN = 2;
+  const RANDOM_SIZE = [5, 20]; // cards in a "Random" session
 
   function buildQueue({ topic, size, practice, level }) {
     const lv = practice ? null : level;
@@ -24393,6 +25110,8 @@ ${front}${mirror(front)}
 
   B.ui.session = function (root, opts) {
     const practice = !!opts.practice;
+    // "Random" on the home screen: anywhere from 5 to 20 cards, drawn now
+    if (opts.size === 'random') opts = Object.assign({}, opts, { size: randInt(RANDOM_SIZE[0], RANDOM_SIZE[1]) });
     const queue = buildQueue(opts);
     if (!queue.length) {
       setTimeout(() => {

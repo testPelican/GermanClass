@@ -630,17 +630,6 @@ b {
   margin-top: 4px;
 }
 
-.hero-text .due-line {
-  display: inline-block;
-  margin-top: 8px;
-  padding: 3px 10px;
-  border-radius: 999px;
-  background: var(--orange-soft);
-  color: var(--orange-ink);
-  font-size: 14px;
-  font-weight: 800;
-}
-
 .ring {
   position: relative;
   width: 120px;
@@ -777,11 +766,25 @@ b {
   margin-top: 4px;
 }
 
+/* what the chosen topic teaches (data/topics.js: learn) */
 .start-sub {
-  margin: 10px 0 14px;
+  max-width: 62ch;
+  margin: 10px auto 14px;
   text-align: center;
   font-size: 14px;
+  line-height: 1.55;
   color: var(--muted);
+}
+
+.start-sub strong,
+.start-sub em {
+  color: var(--text);
+}
+
+.start-sub .start-why {
+  display: block;
+  margin-top: 6px;
+  font-weight: 700;
 }
 
 .home-links {
@@ -819,6 +822,9 @@ b {
 
 .topic-card {
   display: grid;
+  /* one column that never grows past the card: long names wrap instead of pushing the count out */
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
   gap: 10px;
   align-content: start;
   padding: 12px 14px;
@@ -868,6 +874,13 @@ b {
   flex-direction: column;
   flex: 1;
   min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* only long words break (Grammatik-regeln), never short ones (Verben) */
+.topic-text small {
+  hyphens: auto;
+  hyphenate-limit-chars: 12 5 5;
 }
 
 .topic-text b {
@@ -4274,24 +4287,6 @@ body.is-dragging * {
   .game-btn:not(.no-games):hover .game-btn-icon {
     animation: wobble 0.8s ease-in-out;
   }
-}
-
-/* 💻 on topic cards that have minigames */
-.game-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  flex: none;
-  padding: 2px 7px;
-  border-radius: 999px;
-  background: color-mix(in srgb, #a560e8 16%, var(--surface));
-  font-size: 13px;
-  font-weight: 800;
-}
-
-.game-pill-n {
-  color: color-mix(in srgb, #a560e8 70%, var(--text));
-  font-variant-numeric: tabular-nums;
 }
 
 .home .home-ach {

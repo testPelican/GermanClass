@@ -176,4 +176,6 @@ Brezel.deck.addProperNouns([
   'Bremen', 'New_York', 'New York', 'Frankreich', 'Griechenland',
   // Kapitel 1, A20–A22 (p. 18–19)
   'Knut', 'Luise', 'Sabine', 'Felix', 'Leon', 'Kathrin', 'Alexandra', 'Weber', 'Schneider', 'Huber', 'Mia', 'Julian', 'Sebastian', 'Peter',
+  // Kapitel 1, A25 and C11 (p. 21, 29)
+  'BETA', 'Susanne', 'Matthias', 'Sonja', 'Müller',
 ]);

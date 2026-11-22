@@ -23,6 +23,7 @@
   const XP_COMBO = 5; // bonus per card while on a streak of 5+
   const XP_HINT = 3; // each Help me hint costs this much of the card's XP (never below XP_MIN)
   const XP_MIN = 2;
+  const RANDOM_SIZE = [5, 20]; // cards in a "Random" session
 
   function buildQueue({ topic, size, practice, level }) {
     const lv = practice ? null : level;
@@ -100,6 +101,8 @@
 
   B.ui.session = function (root, opts) {
     const practice = !!opts.practice;
+    // "Random" on the home screen: anywhere from 5 to 20 cards, drawn now
+    if (opts.size === 'random') opts = Object.assign({}, opts, { size: randInt(RANDOM_SIZE[0], RANDOM_SIZE[1]) });
     const queue = buildQueue(opts);
     if (!queue.length) {
       setTimeout(() => {

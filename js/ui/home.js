@@ -1,12 +1,14 @@
 /*
- * Home screen: overall progress, reviews due, session setup (cards, topic, difficulty slider,
- * Start Learning / Start Gaming), topics with their grammar rules (💻 = has minigames), achievements.
+ * Home screen: overall progress, session setup (cards, topic, difficulty slider, Start Learning /
+ * Start Gaming, and what the chosen topic teaches: topic.learn in data/topics.js), topics with
+ * their grammar rules, achievements. 💻 on a topic tile = the topic has minigames.
  */
 (function () {
   'use strict';
   const B = window.Brezel;
   const { h, md, pct } = B.util;
-  const SIZES = [5, 10, 20, 50, 0]; // 0 = every remaining card
+  const SIZES = [5, 10, 15, 20, 'random']; // random: 5 to 20, drawn when the session starts (js/ui/session.js)
+  const ALL_LEARN = 'A mix of every topic: word order, verb forms, the past, der / die / das and the four cases, prepositions, reflexive verbs and more. Pick a topic above to see what it teaches.';
 
   // --- the difficulty slider -------------------------------------------------------------------
   const LEVEL_LOOK = {
@@ -191,7 +193,7 @@
     const ov = B.stats.overview();
     const topics = B.stats.byTopic();
     let size = B.store.setting('size');
-    if (!SIZES.includes(size)) size = 20;
+    if (!SIZES.includes(size)) size = B.store.setting('size', 20); // 50 and All are gone
     let topic = B.store.setting('topic');
     if (topic !== 'all' && !B.deck.topicMap[topic]) topic = 'all';
     let level = B.store.setting('level');
@@ -233,23 +235,18 @@
       h('div', { class: 'top-actions' }, soundBtn, themeBtn));
 
     // --- hero ---------------------------------------------------------------------
-    const dueLine = ov.due
-      ? h('p', { class: 'due-line' }, h('span', { 'aria-hidden': 'true' }, '🔁 '), `${ov.due} card${ov.due === 1 ? '' : 's'} to review today`)
-      : null;
     const heroText = ov.complete
       ? h('div', { class: 'hero-text' },
         h('h1', {}, 'Alles fertig! 🎉'),
         h('p', {}, `You’ve mastered all ${ov.total} cards.`),
-        h('p', { class: 'muted' }, 'Your detailed review is ready.'),
-        dueLine)
+        h('p', { class: 'muted' }, 'Your detailed review is ready.'))
       : h('div', { class: 'hero-text' },
         h('h1', {}, greeting()),
         h('p', {}, ov.done ? `You’ve mastered ${ov.done} of ${ov.total} cards.` : `${ov.total} cards are waiting for you.`),
         h('p', { class: 'muted' },
           ov.done
             ? `${ov.total - ov.done} to go` + (ov.stillWrong ? ` · ${ov.stillWrong} need another try` : '')
-            : 'Grammar first: word order, verbs, tenses, articles and more.'),
-        dueLine);
+            : 'Grammar first: word order, verbs, tenses, articles and more.'));
     const scene = B.scene ? B.scene.now() : null;
     const hero = h('section', { class: 'card hero' + (scene ? ' has-scene scene-' + scene : '') },
       // the greeting box spans the whole width on wide screens: a wider view, so nothing is cropped
@@ -267,7 +264,7 @@
     });
     const sizeSeg = h('div', { class: 'seg', role: 'group', 'aria-label': 'Cards per session' });
     const sizeBtns = SIZES.map((n) => {
-      const b = h('button', { type: 'button', class: 'seg-btn' }, n ? String(n) : 'All');
+      const b = h('button', { type: 'button', class: 'seg-btn', title: n === 'random' ? 'Anywhere from 5 to 20 cards' : null }, n === 'random' ? 'Random' : String(n));
       b.addEventListener('click', () => {
         size = B.store.setting('size', n);
         B.audio.play('tap');
@@ -309,7 +306,6 @@
       const due = B.stats.due(topic, level).length;
       const fresh = B.stats.fresh(topic, level).length;
       const pending = due + fresh;
-      const n = size ? Math.min(size, pending) : pending;
       const look = LEVEL_LOOK[level];
       const lvName = B.level.SETTINGS.find((x) => x.key === level).name;
       const atLevel = B.deck.cards.filter((c) => (topic === 'all' || B.deck.inTopic(c, topic)) && B.level.fits(c, level)).length;
@@ -324,20 +320,23 @@
         b.classList.toggle('is-playing', id === topic);
       });
       topicCards.forEach(({ id, el }) => el.classList.toggle('is-selected', id === topic));
-      const tName = topic === 'all' ? 'all topics' : B.deck.topicMap[topic].name;
-      const gamesLine = games.length ? ` · 💻 ${games.length} game${games.length === 1 ? '' : 's'}` : '';
+      const t = B.deck.topicMap[topic];
+      const tName = t ? t.name : 'all topics';
+      // what the topic teaches, in plain words with examples (data/topics.js: learn)
+      const learn = h('span', { html: md(t ? t.learn || t.tip || '' : ALL_LEARN) });
       if (!pending) {
         const next = B.stats.nextDue(topic, level);
         startBtn.disabled = true;
         startBtn.textContent = 'All caught up ✓';
-        startSub.textContent = (atLevel
+        // the button is off, so say why
+        const why = atLevel
           ? `Every ${level === 'mixed' ? '' : lvName + ' '}card here is mastered.` + (next != null ? ` The next review is ${B.srs.when(next, B.srs.day())}.` : '') + ' Pick another topic or difficulty — or play a game.'
-          : `There are no ${lvName} cards in ${tName}. Pick another difficulty.`) + gamesLine;
+          : `There are no ${lvName} cards in ${tName}. Pick another difficulty.`;
+        startSub.replaceChildren(learn, h('span', { class: 'start-why' }, why));
       } else {
         startBtn.disabled = false;
         startBtn.replaceChildren(h('span', { 'aria-hidden': 'true' }, '▶ '), 'Start Learning');
-        const parts = [due ? `${due} to review` : '', fresh ? `${fresh} new` : ''].filter(Boolean).join(' + ');
-        startSub.textContent = `${n} card${n === 1 ? '' : 's'} · ${tName} · ${parts}` + (due && n < pending ? ' · reviews first' : '') + gamesLine;
+        startSub.replaceChildren(learn);
       }
     }
 
@@ -385,11 +384,9 @@
         ruleBtn.setAttribute('aria-expanded', String(open));
         if (open) B.glossary.unfold(tip);
       });
-      const games = B.games ? B.games.forTopic(t.topic.id) : [];
-      const main = h('button', { class: 'topic-main', type: 'button', 'aria-label': `${t.topic.name}: ${t.done} of ${t.total} mastered${t.due ? `, ${t.due} to review today` : ''}${games.length ? `, ${games.length} games` : ''}. Select topic.` },
+      const main = h('button', { class: 'topic-main', type: 'button', 'aria-label': `${t.topic.name}: ${t.done} of ${t.total} mastered${t.due ? `, ${t.due} to review today` : ''}. Select topic.` },
         h('span', { class: 'topic-icon', 'aria-hidden': 'true', html: B.art.topic(t.topic.id) }),
-        h('span', { class: 'topic-text' }, h('b', {}, t.topic.name), h('small', {}, t.topic.de)),
-        games.length ? h('span', { class: 'game-pill', title: `Minigames: ${games.map((g) => g.name).join(', ')}` }, '💻', h('span', { class: 'game-pill-n' }, String(games.length))) : null,
+        h('span', { class: 'topic-text' }, h('b', {}, t.topic.name), h('small', { lang: 'de' }, t.topic.de)),
         t.due ? h('span', { class: 'due-pill', title: `${t.due} to review today` }, `🔁 ${t.due}`) : null,
         h('span', { class: 'topic-count' }, t.done === t.total ? '✓' : `${t.done}/${t.total}`));
       const complete = t.total > 0 && t.done === t.total;
@@ -434,7 +431,7 @@
         setup,
         h('section', { class: 'topics' },
           h('h2', { class: 'section-title' }, 'Topics'),
-          h('p', { class: 'muted small topics-help' }, 'Tap a topic to practise only that. Open 📖 Rule for a quick reminder. 💻 = this topic has minigames.'),
+          h('p', { class: 'muted small topics-help' }, 'Tap a topic to practise only that. Open 📖 Rule for a quick reminder.'),
           h('div', { class: 'topic-grid' }, topicCards.map((t) => t.el))),
         B.ui.achievementsSection ? h('div', { class: 'home-ach' }, B.ui.achievementsSection()) : null,
         h('footer', { class: 'home-foot' }, resetBtn, h('p', { class: 'muted small' }, 'Progress is saved in this browser on this device.')))

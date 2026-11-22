@@ -1,8 +1,8 @@
 # 🥨 Brezel — German grammar flashcards
 
-A Duolingo-style flashcard app built from your class notes: 698 cards across
-16 topics, plus a 📏 **Rules** topic, in 9 exercise types, and 106 easier copies
-of typed cards (804 in all). Three difficulty levels, 💡 hints, German speech,
+A Duolingo-style flashcard app built from your class notes: 780 cards across
+16 topics, plus a 📏 **Rules** topic, in 9 exercise types, and 124 easier copies
+of typed cards (904 in all). Three difficulty levels, 💡 hints, German speech,
 achievements and minigames. It runs offline in any modern browser; nothing to
 install.
 
@@ -25,11 +25,15 @@ keeps its own progress.
 
 ## How a session works
 
-- The start screen shows how far you are, e.g. **23/804**. A card only counts
+- The start screen shows how far you are, e.g. **23/904**. A card only counts
   once you answer it correctly. Then it comes back for reviews (see below).
-- Choose the **cards** per session (5, 10, 20, 50 or all), the **topic** and
-  the **difficulty**, then press **▶ Start Learning**, or **🎮 Start Gaming**
-  for minigames (see below).
+- Choose the **cards** per session (5, 10, 15, 20 or **Random**: anywhere from
+  5 to 20, drawn when the session starts), the **topic** and the
+  **difficulty**, then press **▶ Start Learning**, or **🎮 Start Gaming** for
+  minigames (see below).
+- Under the Start buttons, a line says **what the chosen topic teaches**, in
+  plain words with examples, e.g. *Here you will learn reflexive verbs … ich
+  freue mich, du ziehst dich um*. It comes from `learn` in `data/topics.js`.
 - **Start Learning** first takes the reviews that are due, then new cards, up
   to the session size, and mixes them. Cards and answer options are shuffled
   every session.
@@ -37,7 +41,7 @@ keeps its own progress.
   card goes back into the pile at a random later spot in the same session.
 - **Practise mistakes** replays every card you have ever got wrong. It is extra
   training only and doesn't change your progress.
-- When all 804 are done, **Review** shows your strong and weak topics, mastery
+- When all 904 are done, **Review** shows your strong and weak topics, mastery
   per topic, first-try accuracy per exercise type and accuracy per session.
   Every chart can be switched to a table.
 
@@ -47,7 +51,8 @@ keeps its own progress.
 game). Each one starts with a short how-to and a 3-2-1 countdown. At the end
 you see your score, your best, your mistakes with the right answers, and the
 question **Noch ein Spiel?** — play the next game, the same one again, or stop.
-Topics with games show **💻** and how many; a topic without games says so.
+The topic tiles under *New session* show **💻** when the topic has games; a
+topic without games says so.
 The difficulty slider sets the game level too (*Mixed* picks one per game).
 Games earn XP but never change your card progress or reviews.
 
@@ -79,9 +84,9 @@ the arrow keys. Each card shows its level next to its topic.
 
 | Level | What you do | Cards |
 |---|---|---|
-| 🌱 Low | Recognise: true/false, multiple choice, small match | 270 |
-| ⛰️ Medium | Build: fill gaps, sort, spot the mistake, short sentences | 288 |
-| 🏔️ High | Produce: type answers, tables, long sentences | 246 |
+| 🌱 Low | Recognise: true/false, multiple choice, small match | 304 |
+| ⛰️ Medium | Build: fill gaps, sort, spot the mistake, short sentences | 327 |
+| 🏔️ High | Produce: type answers, tables, long sentences | 273 |
 
 - A card's level comes from what it asks you to do, unless the card sets
   `level` itself. The 📒 Verb list does: Präsens = Low, Präteritum = Medium,
@@ -145,8 +150,8 @@ it right:
 - A wrong answer moves it **two steps down** (never below step 1) and keeps it
   in today's pile. Once you get it right again, it comes back tomorrow and
   climbs from there.
-- The start screen shows **🔁 N cards to review today**, and each topic shows
-  how many of its cards are due. A review card is tagged **🔁 Review** with
+- Each topic card shows how many of its cards are due today (**🔁 N**).
+  Start Learning always takes the due reviews first. A review card is tagged **🔁 Review** with
   its step (●●○○○○), and after a right answer the app says when it comes back.
 - When nothing is due and every card of a topic is mastered, the topic says
   **All caught up** and when the next review is.
@@ -161,7 +166,7 @@ it right:
 
 ### The Rule book
 
-- **📖 Rule book** on the start screen lists all 59 grammar rules, grouped by
+- **📖 Rule book** on the start screen lists all 60 grammar rules, grouped by
   topic, with their tables (e.g. the four cases). Tap a rule to open it.
 - The search box finds rules by any word in them. Case and umlauts don't
   matter: *dativ* finds *Dativ*, *madchen* finds *Mädchen*.
@@ -197,13 +202,15 @@ Rules, 1,000 XP) and the minigames. *Reset progress* resets them too.
 - **📏 Rules** asks only about the grammar rules themselves, such as *What is a
   Hilfsverb?*, *Perfekt or Präteritum?*, *Where does the verb go?* and *Which
   case is dem?*. It never asks you to translate a word.
-- Its 104 questions come from every topic, and every rule in the Glossary has
+- Its 120 questions come from every topic, and every rule in the Glossary has
   at least one. That includes the four cases: Nominativ, Akkusativ, Dativ and
   Genitiv (*der, ein, mein · den, einen, meinen · dem, einem, meinem · des,
-  eines, meines*).
+  eines, meines*), where the Genitiv goes (*das Büro des Chefs*, but
+  *Kathrins Tagesablauf*), and the der / die / das rules of Begegnungen p. 30
+  (*-ung, -tät, -ion → die · -um, verbs as nouns → das*).
 - Each question also belongs to its own topic, e.g. the case questions are in
   *Articles & cases*. Mastering it in Rules counts there too, and the total
-  stays 804.
+  stays 904.
 
 ### Word translations and the Glossary
 
@@ -343,8 +350,9 @@ Each file in `js/exercises/` starts with a comment documenting its fields.
   theory card; `data/cards/16-rules.js` has one for each rule that had none.
 - **New words** in a question go in `data/glossary.js`. The deck check lists
   any question word that has no translation yet.
-- **A new topic:** add it to `data/topics.js`, then create a card file and add
-  its `<script>` tag to `index.html` next to the others.
+- **A new topic:** add it to `data/topics.js` (with `learn`, the line under the
+  Start buttons, and `tip`, the 📖 Rule reminder), then create a card file and
+  add its `<script>` tag to `index.html` next to the others.
 - **New verbs** go in `data/lexicon.js`. That powers conjugation tables and
   tells the typo rule which forms are "other real forms". Add `prt` (the six
   Präteritum forms) when a card asks for them, so *freut* isn't accepted as a
@@ -408,7 +416,7 @@ js/games/             minigames: engine.js (registry + contract) and one file pe
 js/ui/                screens: home, session, summary, review, Rule book, charts, achievements,
                       the game screen (arcade.js); the Glossary dialog; topic pictures (art.js),
                       the time-of-day view (scenery.js)
-data/topics.js        topics + the rule tip shown for each
+data/topics.js        topics: what each teaches (learn) + the rule tip (tip)
 data/lexicon.js       verb forms, word families, proper nouns
 data/glossary.js      English meanings of the words in the questions
 data/rules.js         the grammar rules, by topic: shown in the Glossary and the Rule book

@@ -284,7 +284,7 @@ Brezel.deck.addRules('cases', [
   {
     id: 'genitiv',
     title: 'Genitiv: des, eines, meines',
-    text: 'The **Genitiv** says **whose** something is (*Wessen?* = whose?). It comes **after** the thing: *das Auto des Lehrers*. Masculine and neuter nouns add **-s**, short ones often **-es**.',
+    text: 'The **Genitiv** says **whose** something is (*Wessen?* = whose?). It usually comes **after** the noun it belongs to: *das Büro des Abteilungsleiters* (the office of the head of department). Masculine and neuter nouns add **-s**, short ones often **-es** (Begegnungen A2+, p. 21 and 31).',
     table: {
       head: ['', 'masc.', 'fem.', 'neut.', 'plural'],
       rows: [
@@ -297,7 +297,10 @@ Brezel.deck.addRules('cases', [
     },
     points: [
       '*das Zimmer **des** Kind**es***, *die Tasche **meiner** Schwester*, *die Spielsachen **der** Kinder*',
-      'Names just add **-s**, with no apostrophe: *Annas Auto, Toms Hund*',
+      'Feminine and plural nouns get **no ending**: *das Auto **der** Lehrerin*, *das Büro **der** Lehrer*',
+      '**-es** is usual with **one-syllable** words: *der Baum → des Baum**es***, *das Wort → des Wort**es***. Longer words take **-s**: *des Direktor**s***, *des Hobby**s***',
+      '*dein, sein, ihr, unser …* take the same endings as *mein*: *das Auto **unseres** Lehrers*',
+      'With **names** the Genitiv comes **before** the noun and just adds **-s**, with no apostrophe: *Kathrins Tagesablauf*, *Annas Auto*',
       'When **speaking**, people often say **von + Dativ** instead: *das Auto von meinem Vater*',
       'Some prepositions take the Genitiv in writing, e.g. **wegen** (because of): *wegen des Wetters*',
     ],
@@ -305,10 +308,21 @@ Brezel.deck.addRules('cases', [
   {
     id: 'gender',
     title: 'der, die or das?',
-    text: 'Learn every noun **with its article**. Some endings help:',
+    text: 'For many nouns there is **no rule**, so learn every new word **with its article**: *der Baum, die Maus, das Herz*. For some nouns there are rules (Begegnungen A2+, p. 30):',
+    table: {
+      head: ['', 'article', 'for example'],
+      rows: [
+        ['people and devices in **-er**', '**der**', 'Fahrer, Manager, Computer'],
+        ['people in **-in**', '**die**', 'Lehrerin, Sekretärin'],
+        ['nouns in **-ung**, **-heit**, **-keit**', '**die**', 'Übung, Lösung, Freiheit'],
+        ['nouns in **-e** (often)', '**die**', 'Adresse, Tabelle, Hausaufgabe'],
+        ['foreign words in **-tät, -ion, -ie, -ik**', '**die**', 'Universität, Million, Biologie, Physik'],
+        ['many international words', '**das**', 'Hotel, Problem, Telefon, Auto'],
+        ['a verb used as a noun', '**das**', 'Lesen, Reisen, Fotografieren'],
+        ['nouns in **-um**, **-chen**', '**das**', 'Museum, Mädchen'],
+      ],
+    },
     points: [
-      '**-ung, -heit, -keit, -in** → *die*: *die Zeitung, die Freiheit*',
-      '**-um, -chen** → *das*: *das Museum, das Mädchen*',
       'In a compound noun the **last part** decides: *das Haus + die Tür → die Haustür*',
       'The indefinite article follows the gender: der / das → **ein**, die → **eine**',
     ],
@@ -611,7 +625,7 @@ Brezel.deck.addRules('reflexive', [
     points: [
       'The action goes back to the subject: *Ich wasche mich* = I wash myself (Polish *myję się*).',
       '**echt reflexiv** — always with *sich*: *sich schämen, sich verspäten*',
-      '**teilreflexiv** — *sich* or another object: *Ich wasche mich. / Ich wasche das Auto.*',
+      '**teilreflexiv** — *sich* or another object: *Ich wasche mich. / Ich wasche meine Sachen.*',
       'German and Polish don’t always match: *sich erholen* (to rest) is reflexive, *odpoczywać* isn’t.',
     ],
   },
@@ -669,6 +683,18 @@ Brezel.deck.addRules('vocab', [
       '*Bedienung* = service · *Bedingung* = condition',
       '*alle* = all (people / things) · *alles* = everything',
       '*die Brille* = glasses — one thing in German, so it’s singular: *Die Brille ist neu.*',
+    ],
+  },
+  {
+    id: 'tagesablauf',
+    title: 'Talking about your day (der Tagesablauf)',
+    text: 'Kathrin tells us about her day (Begegnungen A2+, p. 20). Time words put the day in order, and the verb stays in **position 2** after them.',
+    points: [
+      '**normalerweise** (normally) · **danach** (afterwards, then) · **gegen** 8 Uhr (around 8) · **um** 9 Uhr (at 9) · **von** 12.30 **bis** 13.00 Uhr (from … to)',
+      '**morgens · nachmittags · abends** (in the morning / afternoon / evening) · **jeden Tag** (every day) · **meistens** (mostly) · **manchmal** (sometimes)',
+      'After a time word comes the **verb**, then the subject: *Um 9 Uhr **beginnt** meine Arbeit.*',
+      'Times: *7.30 Uhr* is read **sieben Uhr dreißig**, the hours first.',
+      '**Feierabend haben** = to finish work for the day · **fernsehen** = to watch TV (*Abends sehe ich fern*, separable)',
     ],
   },
   {
