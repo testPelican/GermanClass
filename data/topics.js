@@ -15,9 +15,9 @@ Brezel.deck.addTopics([
     name: 'Basics',
     de: 'Grundlagen',
     icon: '🧱',
-    learn: 'Here you will learn the **building blocks** of every sentence: *sein* and *haben* for every person (*ich **bin**, du **hast***), their past *war* and *hatte*, the pronouns *mich, dich, sich, uns, euch*, *mich* or *mir*, and why it is *ich **bin** 30* — not *ich habe 30*.',
+    learn: 'Here you will learn the **building blocks** of every sentence: *sein* and *haben* for every person (*ich **bin**, du **hast***), their past *war* and *hatte*, the pronouns *mich, dich, sich, uns, euch*, *mich* or *mir*, **denn** (because: *…, denn ich **bin** müde*), and why it is *ich **bin** 30* — not *ich habe 30*.',
     tip:
-      'Learn each person as one row: **ich** bin · habe · mich · mein · **du** bist · hast · dich · dein · **er / sie / es** ist · hat · sich · sein / ihr · **wir** sind · haben · uns · unser · **ihr** seid · habt · euch · euer · **sie / Sie** sind · haben · sich · ihr / Ihr. Age and adjectives take **sein** (*Polish mam 30 lat* → *ich bin 30*), nouns take **haben** (*ich habe Zeit*). Most verbs take **mich, dich**; *mit, helfen, gefallen* and *schmecken* take **mir, dir**. Many cards here also belong to their own topic, so they count in both.',
+      'Learn each person as one row: **ich** bin · habe · mich · mein · **du** bist · hast · dich · dein · **er / sie / es** ist · hat · sich · sein / ihr · **wir** sind · haben · uns · unser · **ihr** seid · habt · euch · euer · **sie / Sie** sind · haben · sich · ihr / Ihr. Age and adjectives take **sein** (*Polish mam 30 lat* → *ich bin 30*), nouns take **haben** (*ich habe Zeit*). Most verbs take **mich, dich**; *mit, helfen, gefallen* and *schmecken* take **mir, dir**. **denn** (because) keeps the normal order: *…, denn ich bin müde*. Many cards here also belong to their own topic, so they count in both.',
   },
   {
     id: 'rules',

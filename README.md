@@ -1,8 +1,8 @@
 # 🥨 Brezel — German grammar flashcards
 
-A Duolingo-style flashcard app built from your class notes: 845 cards across
-17 topics, plus a 📏 **Rules** topic, in 9 exercise types, and 144 easier copies
-of typed cards (989 in all). Three difficulty levels, 💡 hints, German speech,
+A Duolingo-style flashcard app built from your class notes: 858 cards across
+17 topics, plus a 📏 **Rules** topic, in 9 exercise types, and 147 easier copies
+of typed cards (1,005 in all). Three difficulty levels, 💡 hints, German speech,
 achievements and minigames. It runs offline in any modern browser; nothing to
 install.
 
@@ -25,7 +25,7 @@ keeps its own progress.
 
 ## How a session works
 
-- The start screen shows how far you are, e.g. **23/989**. A card only counts
+- The start screen shows how far you are, e.g. **23/1005**. A card only counts
   once you answer it correctly. Then it comes back for reviews (see below).
 - Choose the **cards** per session (5, 10, 15, 20 or **Random**: anywhere from
   5 to 20, drawn when the session starts), the **topic** and the
@@ -41,7 +41,7 @@ keeps its own progress.
   card goes back into the pile at a random later spot in the same session.
 - **Practise mistakes** replays every card you have ever got wrong. It is extra
   training only and doesn't change your progress.
-- When all 989 are done, **Review** shows your strong and weak topics, mastery
+- When all 1,005 are done, **Review** shows your strong and weak topics, mastery
   per topic, first-try accuracy per exercise type and accuracy per session.
   Every chart can be switched to a table.
 
@@ -84,9 +84,9 @@ the arrow keys. Each card shows its level next to its topic.
 
 | Level | What you do | Cards |
 |---|---|---|
-| 🌱 Low | Recognise: true/false, multiple choice, small match | 341 |
-| ⛰️ Medium | Build: fill gaps, sort, spot the mistake, short sentences | 348 |
-| 🏔️ High | Produce: type answers, tables, long sentences | 300 |
+| 🌱 Low | Recognise: true/false, multiple choice, small match | 351 |
+| ⛰️ Medium | Build: fill gaps, sort, spot the mistake, short sentences | 350 |
+| 🏔️ High | Produce: type answers, tables, long sentences | 304 |
 
 - A card's level comes from what it asks you to do, unless the card sets
   `level` itself. The 📒 Verb list does: Präsens = Low, Präteritum = Medium,
@@ -166,7 +166,7 @@ it right:
 
 ### The Rule book
 
-- **📖 Rule book** on the start screen lists all 63 grammar rules, grouped by
+- **📖 Rule book** on the start screen lists all 64 grammar rules, grouped by
   topic, with their tables (e.g. the four cases). Tap a rule to open it.
 - The search box finds rules by any word in them. Case and umlauts don't
   matter: *dativ* finds *Dativ*, *madchen* finds *Mädchen*.
@@ -210,18 +210,21 @@ Rules, 1,000 XP) and the minigames. *Reset progress* resets them too.
     *ich bin 30*, not Polish *mam 30 lat*;
   - **mich or mir?** *besuchen, anrufen* take *mich*; *mit, helfen, gefallen,
     schmecken* take *mir*;
+  - **denn** (because, Polish *bo*) keeps the normal order: *…, denn ich bin
+    müde*, not *denn ich müde bin*; unlike *danach*, which takes the verb first
+    (*danach dusche ich mich*);
   - the **person chart**: turn every *ich* form into another person
     (*bin · habe · war · hatte · mich · mein* → *bist · hast · warst · hattest ·
     dich · dein*).
-- It has 65 cards of its own (`data/cards/18-basics.js`) and shares 27 cards
+- It has 78 cards of its own (`data/cards/18-basics.js`) and shares 27 cards
   with their own topics: the *sein* and *haben* tables and sentences
   (Present tense), the Präteritum of *sein* and *haben* (Simple past), and the
   reflexive pronoun drills (Reflexive verbs). With the easier copies, that is
-  123 cards.
+  139 cards.
 - A shared card is the same card in both topics. Mastering it in one counts in
-  the other, and the total stays 989.
-- In the 📖 Rule book, Basics has its three rules (*One person, one set of
-  forms*, *sein or haben?*, *mich or mir?*) and also shows the rules it shares:
+  the other, and the total stays 1,005.
+- In the 📖 Rule book, Basics has its four rules (*One person, one set of
+  forms*, *sein or haben?*, *mich or mir?*, *denn = because*) and also shows the rules it shares:
   *sein and haben*, *Präteritum of sein and haben* and *Reflexive pronouns*.
 - Games: Spiegel, Zeitmaschine, Hör genau, Verb-Automat, Memory, Der Türsteher
   and the Bossfight against *Der Bauklotz-Bär*.
@@ -231,7 +234,7 @@ Rules, 1,000 XP) and the minigames. *Reset progress* resets them too.
 - **📏 Rules** asks only about the grammar rules themselves, such as *What is a
   Hilfsverb?*, *Perfekt or Präteritum?*, *Where does the verb go?* and *Which
   case is dem?*. It never asks you to translate a word.
-- Its 125 questions come from every topic, and every rule in the Glossary has
+- Its 127 questions come from every topic, and every rule in the Glossary has
   at least one. That includes the four cases: Nominativ, Akkusativ, Dativ and
   Genitiv (*der, ein, mein · den, einen, meinen · dem, einem, meinem · des,
   eines, meines*), where the Genitiv goes (*das Büro des Chefs*, but
@@ -239,7 +242,7 @@ Rules, 1,000 XP) and the minigames. *Reset progress* resets them too.
   (*-ung, -tät, -ion → die · -um, verbs as nouns → das*).
 - Each question also belongs to its own topic, e.g. the case questions are in
   *Articles & cases*. Mastering it in Rules counts there too, and the total
-  stays 989.
+  stays 1,005.
 
 ### Word translations and the Glossary
 

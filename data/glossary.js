@@ -742,6 +742,10 @@ Brezel.gloss.addWords({
   früher: 'in the past / earlier',
   Spiegel: 'mirror',
   Stadt: 'town / city',
+  denn: 'because',
+  bleibe: 'stay | bleiben',
+  bleibt: 'stay(s) | bleiben',
+  beeile: 'hurry | sich beeilen',
 });
 
 // names: no translation, no dots

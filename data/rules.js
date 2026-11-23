@@ -68,6 +68,17 @@ Brezel.deck.addRules('basics', [
       '**uns** and **euch** are the same in both cases; only *ich, du* and *Sie* change.',
     ],
   },
+  {
+    id: 'denn',
+    title: 'denn = because: the verb stays second',
+    text: '**denn** joins two main clauses and gives the reason, like Polish *bo*. Like *und, aber, oder*, it stands **before** position 1 (position 0), so the clause after it keeps the normal order: subject, then verb.',
+    points: [
+      '*Sie lernt Deutsch, **denn** sie wohnt in Wien.* Not *denn wohnt sie*, not *denn sie in Wien wohnt*.',
+      'A **comma** always comes before *denn*.',
+      'After *denn* you may also start with a time word; then the usual swap follows: *…, denn morgen **habe ich** Zeit.*',
+      '**denn** (because, position 0) ≠ **danach** (afterwards, position 1): *Ich frühstücke, danach **gehe ich** zur Arbeit.*',
+    ],
+  },
 ]);
 
 // --- word order --------------------------------------------------------------------------

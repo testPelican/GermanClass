@@ -1,7 +1,7 @@
 /*
  * Basics: sein and haben for every person (and their past war / hatte), the reflexive pronouns
- * mich, dich, sich, uns, euch, sein or haben in set phrases (ich bin 30), mich or mir, and the
- * person chart that ties them together. Polish as a guide where it helps (mam 30 lat, pomóc mi).
+ * mich, dich, sich, uns, euch, sein or haben in set phrases (ich bin 30), mich or mir, denn
+ * (because: the verb stays second), and the person chart that ties them together. Polish as a guide where it helps (mam 30 lat, pomóc mi).
  * More Basics cards live in their own topics and are shared with also: ['basics']
  * (the sein / haben tables, the Präteritum of sein and haben, the reflexive pronoun drills).
  */
@@ -455,5 +455,98 @@ Brezel.deck.addCards('basics', [
     answer: 'Kannst du mir morgen helfen?',
     extra: ['mich'],
     explain: '*helfen* takes the Dativ → **mir**. A yes/no question starts with the verb, and *helfen* goes to the end.',
+  },
+
+  // --- denn (because): the verb stays in position 2 ---------------------------------------------
+  {
+    id: 'ba-66', type: 'mc', rule: 'denn', gloss: false,
+    prompt: 'What does **denn** mean here?',
+    q: 'Ich trinke einen Kaffee, denn ich bin müde.',
+    correct: 'because', wrong: ['afterwards', 'but', 'or'],
+    explain: '**denn** = because (Polish *bo*): *I’m having a coffee because I’m tired.* (*afterwards* = *danach*.)',
+  },
+  {
+    id: 'ba-67', type: 'mc', rule: 'denn',
+    prompt: 'Choose the right word order after **denn**',
+    q: 'Ich bleibe heute zu Hause, denn ___.',
+    correct: 'ich bin krank', wrong: ['bin ich krank', 'ich krank bin', 'krank ich bin'],
+    explain: '*denn* doesn’t count as a position. A normal main clause follows: subject, then the verb in position 2: *denn **ich bin** krank*.',
+  },
+  {
+    id: 'ba-68', type: 'tf', rule: 'denn',
+    q: 'Wir kommen heute nicht, denn wir haben keine Zeit.',
+    answer: true, labels: ['Correct', 'Wrong'],
+    explain: 'Right: after *denn* the normal order stays: *denn **wir haben** keine Zeit*. And a comma comes before *denn*.',
+  },
+  {
+    id: 'ba-69', type: 'tf', rule: 'denn',
+    q: 'Er geht zum Arzt, denn er krank ist.',
+    answer: false, fix: 'Er geht zum Arzt, denn er ist krank.',
+    labels: ['Correct', 'Wrong'],
+    explain: 'After *denn* the verb stays in position 2: *denn er **ist** krank*, not at the end.',
+  },
+  {
+    id: 'ba-70', type: 'mc', rule: ['denn', 'inversion'],
+    prompt: 'Choose the right word order after **danach**',
+    q: 'Ich stehe um 7 Uhr auf, danach ___.',
+    correct: 'dusche ich mich', wrong: ['ich dusche mich', 'ich mich dusche', 'dusche mich ich'],
+    explain: '*danach* is position 1, so the verb comes next: *danach **dusche ich** mich*. *denn* is different: it is position 0, so the subject comes first: *denn **ich bin** müde*.',
+  },
+  {
+    id: 'ba-71', type: 'gap', rule: ['denn', 'sein-haben'],
+    q: 'Du bist glücklich, {denn} du {hast} Urlaub.',
+    options: ['danach', 'hat'],
+    explain: '**denn** + subject + verb: *denn du **hast** Urlaub*. (*danach* would need the verb first: *danach hast du …*.)',
+  },
+  {
+    id: 'ba-72', type: 'type', rule: ['denn', 'sein-haben'],
+    prompt: 'Conjugate the verb',
+    q: 'Mein Bruder bleibt zu Hause, denn er ___ krank.', hint: 'sein',
+    answer: 'ist',
+    explain: '*er* → **ist**, right after the subject: *denn er **ist** krank*.',
+  },
+  {
+    id: 'ba-73', type: 'type', rule: ['denn', 'sein-haben'],
+    prompt: 'Conjugate the verb',
+    q: 'Ich beeile mich, denn ich ___ um 9 Uhr einen Termin.', hint: 'haben',
+    answer: 'habe',
+    explain: '*ich* → **habe**: *denn ich **habe** um 9 Uhr einen Termin*.',
+  },
+  {
+    id: 'ba-74', type: 'type', rule: ['denn', 'reflexive-pronouns'],
+    prompt: 'Add the reflexive pronoun',
+    q: 'Kathrin ist glücklich, denn sie freut ___ auf den Urlaub.', hint: 'sich freuen',
+    answer: 'sich',
+    explain: '*sie* (Kathrin) → **sich**. After *denn*: subject, verb, pronoun: *denn sie freut **sich***.',
+  },
+  {
+    id: 'ba-75', type: 'order', rule: 'denn',
+    en: 'We are glad because we have time today.',
+    start: 'Wir freuen uns,',
+    answer: 'Wir freuen uns, denn wir haben heute Zeit.',
+    answers: ['Wir freuen uns, denn heute haben wir Zeit.'],
+    extra: ['hat'],
+    explain: '*denn* first, then the normal order: *denn **wir haben** heute Zeit*. (Starting with *heute* is fine too: *denn heute **haben wir** Zeit*.)',
+  },
+  {
+    id: 'ba-76', type: 'order', rule: 'denn',
+    en: 'He isn’t coming today because he is ill.',
+    start: 'Er kommt heute nicht,',
+    answer: 'Er kommt heute nicht, denn er ist krank.',
+    extra: ['danach', 'sind'],
+    explain: '**denn** = because; then subject + verb: *denn **er ist** krank*. *danach* means *afterwards*.',
+  },
+  {
+    id: 'ba-77', type: 'tf', rule: 'denn', asksRule: true, theory: true,
+    statement: 'After **denn** the verb stays in position 2, as in any main clause: *…, denn ich bin müde*.',
+    answer: true,
+    explain: '*denn* is position 0 (like *und, aber, oder*), so the clause after it is normal: *denn **ich bin** müde*. Polish *bo* works the same way: *bo jestem zmęczony*.',
+  },
+  {
+    id: 'ba-78', type: 'mc', rule: 'denn', asksRule: true, theory: true,
+    prompt: 'Which words **don’t** count as position 1, so the subject can come right after them?',
+    correct: 'und, aber, oder, denn',
+    wrong: ['heute, morgen, danach, gestern', 'mit, bei, nach, aus', 'normalerweise, meistens, oft, manchmal'],
+    explain: '*und, aber, oder, denn* only join two clauses (position 0): *…, denn **ich bin** müde*. A time word is position 1, so the verb comes next: *Danach **dusche ich** mich.*',
   },
 ]);
