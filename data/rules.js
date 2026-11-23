@@ -260,6 +260,26 @@ Brezel.deck.addRules('past', [
 // --- cases, articles ---------------------------------------------------------------------
 Brezel.deck.addRules('cases', [
   {
+    id: 'article',
+    also: ['basics'],
+    title: 'What is an article?',
+    text: 'An **article** is the little word before a noun. German has the **definite** article *der, die, das* (= the) and the **indefinite** article *ein, eine* (= a).',
+    table: {
+      head: ['', 'the', 'a', 'for example'],
+      rows: [
+        ['masculine', 'der', 'ein', 'der Lehrer'],
+        ['feminine', 'die', 'eine', 'die Mutter'],
+        ['neuter', 'das', 'ein', 'das Auto'],
+        ['plural', 'die', '—', 'die Autos'],
+      ],
+    },
+    points: [
+      'Every noun is masculine, feminine or neuter, often for no reason (*das Mädchen* is neuter). So learn every noun **with its article**.',
+      '*kein, keine* (no) and *mein, dein …* (my, your …) work like *ein*.',
+      'The article also shows the noun’s **case**, its role in the sentence: *der Hund, den Hund, dem Hund, des Hundes*.',
+    ],
+  },
+  {
     id: 'cases',
     title: 'The four cases',
     text: 'The **article** shows what a noun does in the sentence. The table shows a **masculine** noun (*der Hund*); the rule of each case has all the forms.',
@@ -278,6 +298,7 @@ Brezel.deck.addRules('cases', [
       '**Dativ** (*Wem?*) — the person who gets something, and after *mit, bei, zu …*: *Ich gebe **dem Hund** Wasser.*',
       '**Genitiv** (*Wessen?*) — whose? The noun adds **-s**: *der Ball **des Hundes***',
       '*kein, dein, sein, ihr, unser …* take the same endings as *ein* and *mein*.',
+      'A case is simply a **role**. English shows it only with *he / him / his*: *He sees the dog · The dog sees him · his dog*. German shows it with the article.',
     ],
   },
   {

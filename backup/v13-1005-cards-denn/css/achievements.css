@@ -1,0 +1,499 @@
+/*
+ * Achievements: the badge grid on the home screen, the details dialog and the
+ * "Achievement unlocked!" pop-up (js/ui/achievements.js). Uses the tokens in css/app.css.
+ * Each badge sets --ach (its colour) and --i (its position, for staggered animations).
+ */
+
+/* === Home section ============================================================ */
+.ach-section {
+  display: grid;
+  gap: 10px;
+}
+
+.home .ach-section {
+  grid-column: 1 / -1;
+}
+
+.ach-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ach-head .section-title {
+  margin: 0;
+}
+
+.ach-count {
+  flex: none;
+  color: var(--muted);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.ach-count b {
+  color: var(--text);
+  font-size: 19px;
+}
+
+.ach-total {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--track);
+  overflow: hidden;
+}
+
+.ach-total span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #58cc02, #1cb0f6, #ce82ff, #ff86d0, #ff9600, #ffc800);
+  transition: width 0.8s ease;
+}
+
+.ach-help {
+  margin-bottom: 4px;
+}
+
+.ach-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 10px;
+}
+
+/* === Badge ==================================================================== */
+.ach-badge {
+  --ach: var(--blue);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 12px 6px 10px;
+  border: 2px solid var(--border);
+  border-bottom-width: 4px;
+  border-radius: 16px;
+  background: var(--surface);
+  color: var(--text);
+  text-align: center;
+  transition: transform 0.15s ease, border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  animation: ach-in 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(var(--i, 0) * 16ms);
+}
+
+.ach-badge:active {
+  transform: translateY(2px);
+}
+
+.ach-badge.is-unlocked {
+  border-color: color-mix(in srgb, var(--ach) 55%, var(--border));
+  background: color-mix(in srgb, var(--ach) 9%, var(--surface));
+}
+
+.ach-art {
+  position: relative;
+  isolation: isolate;
+  display: block;
+  flex: none;
+  width: 64px;
+  height: 64px;
+}
+
+.ach-art svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.is-locked .ach-art svg {
+  filter: grayscale(1);
+  opacity: 0.32;
+}
+
+[data-theme='dark'] .is-locked .ach-art svg {
+  filter: grayscale(1) brightness(1.25);
+  opacity: 0.26;
+}
+
+.ach-lock {
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--muted);
+}
+
+.ach-lock svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* a little twinkle on earned badges */
+.is-unlocked > .ach-art::after {
+  content: '';
+  position: absolute;
+  top: 1px;
+  right: 2px;
+  width: 14px;
+  height: 14px;
+  background: radial-gradient(circle, #fff 35%, #ffe680 75%);
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+  opacity: 0;
+  pointer-events: none;
+  animation: ach-twinkle 5s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * -0.43s);
+}
+
+.ach-name {
+  max-width: 100%;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.2;
+  overflow-wrap: break-word;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  hyphenate-limit-chars: 8 4 4;
+}
+
+.is-locked .ach-name {
+  color: var(--muted);
+}
+
+.ach-meta {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.is-unlocked .ach-meta {
+  color: var(--text-2);
+}
+
+.ach-bar {
+  display: block;
+  width: 72%;
+  height: 6px;
+  margin-top: 3px;
+  border-radius: 999px;
+  background: var(--track);
+  overflow: hidden;
+}
+
+.ach-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--blue);
+}
+
+.ach-bar.big {
+  width: 100%;
+  height: 12px;
+  margin: 0;
+}
+
+.ach-bar.big > span {
+  background: var(--ach);
+}
+
+@media (hover: hover) {
+  .ach-badge:hover {
+    transform: translateY(-3px);
+    border-color: var(--border-strong);
+  }
+  .ach-badge.is-unlocked:hover {
+    border-color: var(--ach);
+    box-shadow: 0 8px 18px color-mix(in srgb, var(--ach) 25%, transparent);
+  }
+  .ach-badge.is-unlocked:hover .ach-art {
+    animation: ach-wiggle 0.55s ease;
+  }
+  .ach-badge.is-locked:hover .ach-art svg {
+    opacity: 0.5;
+  }
+}
+
+/* === Details dialog ================================================================ */
+.ach-modal {
+  max-width: 360px;
+}
+
+.ach-hero {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 150px;
+  margin: -8px 0 6px;
+}
+
+.ach-art.big {
+  width: 120px;
+  height: 120px;
+  animation: ach-badge-pop 0.55s 0.05s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+
+.ach-art.big .ach-lock {
+  width: 38px;
+  height: 38px;
+  right: 0;
+  bottom: 0;
+}
+
+.ach-art.big .ach-lock svg {
+  width: 20px;
+  height: 20px;
+}
+
+.ach-rays {
+  position: absolute;
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--ach) 30%, transparent) 0deg 10deg, transparent 10deg 30deg);
+  -webkit-mask: radial-gradient(circle, #000 40%, transparent 70%);
+  mask: radial-gradient(circle, #000 40%, transparent 70%);
+  animation: ach-spin 14s linear infinite;
+}
+
+.ach-en {
+  margin-top: -4px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.ach-desc {
+  margin: 14px 0 12px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.ach-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.ach-progress-num {
+  flex: none;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.ach-when {
+  margin-bottom: 18px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.ach-modal.is-unlocked .ach-when {
+  color: var(--text-2);
+}
+
+/* === "Achievement unlocked!" pop-up ============================================== */
+.ach-pop-layer {
+  position: fixed;
+  top: calc(72px + env(safe-area-inset-top));
+  left: 50%;
+  z-index: 1090;
+  display: grid;
+  gap: 8px;
+  width: min(92vw, 380px);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.ach-pop {
+  --ach: var(--blue);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 18px 10px 12px;
+  border: 2px solid var(--ach);
+  border-bottom-width: 5px;
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--lift);
+  color: var(--text);
+  pointer-events: auto;
+  cursor: pointer;
+  animation: ach-pop-in 0.55s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+}
+
+.ach-pop.out {
+  animation: ach-pop-out 0.26s ease-in both;
+}
+
+.ach-pop .ach-art {
+  width: 56px;
+  height: 56px;
+  animation: ach-badge-pop 0.6s 0.12s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+
+.ach-pop .ach-art::before {
+  content: '';
+  position: absolute;
+  inset: -9px;
+  z-index: -1;
+  border-radius: 50%;
+  background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--ach) 35%, transparent) 0deg 12deg, transparent 12deg 30deg);
+  animation: ach-spin 6s linear infinite;
+}
+
+.ach-pop-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.ach-pop-kicker {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--ach) 75%, var(--text));
+}
+
+.ach-pop-name {
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.ach-pop-en {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+/* === Small screens ================================================================= */
+@media (max-width: 520px) {
+  .ach-grid {
+    grid-template-columns: repeat(auto-fill, minmax(66px, 1fr));
+    gap: 7px;
+  }
+  .ach-badge {
+    gap: 5px;
+    padding: 9px 3px 7px;
+    border-radius: 14px;
+  }
+  .ach-art {
+    width: 50px;
+    height: 50px;
+  }
+  .ach-lock {
+    width: 21px;
+    height: 21px;
+  }
+  .ach-lock svg {
+    width: 12px;
+    height: 12px;
+  }
+  .ach-name {
+    font-size: 11.5px;
+  }
+  .ach-meta {
+    font-size: 10.5px;
+  }
+  .ach-pop-layer {
+    top: calc(64px + env(safe-area-inset-top));
+  }
+}
+
+/* === Animations ===================================================================== */
+@keyframes ach-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ach-twinkle {
+  0%,
+  78%,
+  100% {
+    opacity: 0;
+    transform: scale(0.3) rotate(0deg);
+  }
+  86% {
+    opacity: 1;
+    transform: scale(1.1) rotate(45deg);
+  }
+  92% {
+    opacity: 0.8;
+    transform: scale(0.9) rotate(80deg);
+  }
+}
+
+@keyframes ach-wiggle {
+  0%,
+  100% {
+    transform: none;
+  }
+  30% {
+    transform: rotate(-8deg) scale(1.06);
+  }
+  60% {
+    transform: rotate(6deg) scale(1.06);
+  }
+}
+
+@keyframes ach-badge-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) rotate(-25deg);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ach-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes ach-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-24px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ach-pop-out {
+  to {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.96);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-unlocked > .ach-art::after,
+  .ach-rays,
+  .ach-pop .ach-art::before {
+    animation: none;
+  }
+  .is-unlocked > .ach-art::after {
+    display: none;
+  }
+}

@@ -213,6 +213,45 @@ Brezel.deck.addCards('cases', [
     correct: '-ung, -heit, -keit', wrong: ['-um, -chen', '-er, -ling', '-en, -el'],
     explain: '*die Zeit**ung**, die Frei**heit**, die Möglich**keit***. And **-um, -chen** are *das*: *das Muse**um**, das Mäd**chen***.',
   },
+  // what an article is, and a case as a role (also in Basics)
+  {
+    id: 'ru-51', type: 'mc', rule: 'article', asksRule: true, theory: true, also: ['basics'],
+    prompt: 'What is an **article**?',
+    correct: 'The little word before a noun: der, die, das (the), ein, eine (a)',
+    wrong: ['A word that stands for a noun: er, sie, es (he, she, it)', 'The ending of a verb: -e, -st, -t (ich wohne, du wohnst)', 'A word that joins two clauses: und, aber, oder, denn'],
+    explain: 'An **article** comes before a noun: ***der** Mann, **eine** Frau, **das** Kind*. *der, die, das* = **the** (definite), *ein, eine* = **a** (indefinite).',
+  },
+  {
+    id: 'ru-52', type: 'match', rule: 'article', asksRule: true, theory: true, also: ['basics'],
+    prompt: 'Match each article with its English meaning',
+    pairs: [['der, die, das', 'the'], ['ein, eine', 'a'], ['kein, keine', 'no'], ['mein, meine', 'my']],
+    explain: '*der, die, das* = **the** · *ein, eine* = **a** · *kein, keine* = **no** · *mein, meine* = **my**. *kein* and *mein* take the same endings as *ein*.',
+  },
+  {
+    id: 'ru-53', type: 'match', rule: ['article', 'gender'], asksRule: true, theory: true, also: ['basics'],
+    prompt: 'Every noun has a gender. Match each one',
+    pairs: [['der Mann', 'masculine'], ['die Frau', 'feminine'], ['das Kind', 'neuter'], ['die Kinder', 'plural']],
+    explain: '**der** = masculine, **die** = feminine, **das** = neuter, and **die** again for every plural. The gender is often arbitrary, so learn each noun with its article.',
+  },
+  {
+    id: 'ru-54', type: 'mc', rule: 'cases', asksRule: true, theory: true, also: ['basics'],
+    prompt: 'What is a **case** (Nominativ, Akkusativ …)?',
+    correct: 'The role a noun plays in the sentence; the article shows it',
+    wrong: ['The gender of a noun: masculine, feminine or neuter', 'The plural form of a noun: die Kinder, die Autos', 'The tense of the verb: Präsens, Perfekt, Präteritum'],
+    explain: 'A case is a **role**: who does it (Nominativ), what it is done to (Akkusativ), who receives it (Dativ), who owns it (Genitiv). *der Hund, den Hund, dem Hund, des Hundes*.',
+  },
+  {
+    id: 'ru-55', type: 'match', rule: 'cases', asksRule: true, theory: true,
+    prompt: 'English shows the case only with *he / him / his*. Match each with its German case',
+    pairs: [['he (He sees the dog.)', 'Nominativ'], ['him (The dog sees him.)', 'Akkusativ'], ['to him (I give him a book.)', 'Dativ'], ['his (That is his dog.)', 'Genitiv']],
+    explain: 'The same man, four roles: **he** does it (Nominativ), it is done to **him** (Akkusativ), he **receives** it (Dativ), it is **his** (Genitiv). German shows these roles with the article.',
+  },
+  {
+    id: 'ru-56', type: 'match', rule: 'cases', asksRule: true, theory: true,
+    prompt: 'The same director, four roles. Which case is *Direktor* in?',
+    pairs: [['Der Direktor schläft.', 'Nominativ'], ['Ich sehe den Direktor.', 'Akkusativ'], ['Ich gebe dem Direktor ein Buch.', 'Dativ'], ['das Auto des Direktors', 'Genitiv']],
+    explain: '**der** Direktor does it (Nominativ) · I see **den** Direktor (Akkusativ) · he receives the book: **dem** Direktor (Dativ) · the car is his: **des** Direktor**s** (Genitiv, + -s).',
+  },
 ]);
 
 Brezel.deck.addCards('prepositions', [
