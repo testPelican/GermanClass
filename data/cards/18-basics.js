@@ -1,0 +1,459 @@
+/*
+ * Basics: sein and haben for every person (and their past war / hatte), the reflexive pronouns
+ * mich, dich, sich, uns, euch, sein or haben in set phrases (ich bin 30), mich or mir, and the
+ * person chart that ties them together. Polish as a guide where it helps (mam 30 lat, pomóc mi).
+ * More Basics cards live in their own topics and are shared with also: ['basics']
+ * (the sein / haben tables, the Präteritum of sein and haben, the reflexive pronoun drills).
+ */
+Brezel.deck.addCards('basics', [
+  // --- reflexive pronouns for every person ------------------------------------------------
+  {
+    id: 'ba-01', type: 'match', rule: 'reflexive-pronouns', asksRule: true,
+    prompt: 'Match each person with its **reflexive pronoun**',
+    pairs: [['ich', 'mich'], ['du', 'dich'], ['wir', 'uns'], ['ihr', 'euch']],
+    explain: 'ich → **mich**, du → **dich**, wir → **uns**, ihr → **euch**. Everyone else (er, sie, es, sie, Sie) takes **sich**.',
+  },
+  {
+    id: 'ba-02', type: 'sort', rule: 'reflexive-pronouns', asksRule: true,
+    prompt: 'Which subjects take **sich**?',
+    buckets: [
+      { label: 'sich', items: ['er', 'es', 'Sie', 'Kathrin', 'meine Eltern'] },
+      { label: 'mich · dich · uns · euch', items: ['ich', 'du', 'wir', 'ihr'] },
+    ],
+    explain: '**sich** goes with everyone you talk *about* (er, es, Kathrin, meine Eltern) and with formal **Sie**. The others have their own: ich **mich**, du **dich**, wir **uns**, ihr **euch**.',
+  },
+  {
+    id: 'ba-03', type: 'mc', rule: 'reflexive-pronouns',
+    prompt: 'Choose the reflexive pronoun',
+    q: 'Meine Eltern freuen ___ auf den Urlaub.',
+    correct: 'sich', wrong: ['uns', 'euch', 'sie'],
+    explain: '*meine Eltern* = sie (they) → **sich**. Not *sie*: the pronoun points back to the subject.',
+  },
+  {
+    id: 'ba-04', type: 'mc', rule: 'reflexive-pronouns',
+    prompt: 'Choose the reflexive pronoun',
+    q: 'Ihr zieht ___ schnell an.',
+    correct: 'euch', wrong: ['sich', 'uns', 'ihr'],
+    explain: 'ihr → **euch**: *Ihr zieht **euch** an.* Polish says *ubieracie **się***, but German changes the pronoun with the person.',
+  },
+  {
+    id: 'ba-05', type: 'type', rule: 'reflexive-pronouns',
+    prompt: 'Add the reflexive pronoun',
+    q: 'Wir freuen ___ auf das Wochenende.', hint: 'sich freuen',
+    answer: 'uns',
+    explain: 'wir → **uns**: *Wir freuen **uns***. (Polish *cieszymy **się***.)',
+  },
+  {
+    id: 'ba-06', type: 'type', rule: 'reflexive-pronouns',
+    prompt: 'Add the reflexive pronoun',
+    q: 'Warum ärgerst du ___?', hint: 'sich ärgern',
+    answer: 'dich',
+    explain: 'du → **dich**: *Warum ärgerst du **dich**?* = Why are you annoyed?',
+  },
+  {
+    id: 'ba-07', type: 'type', rule: 'reflexive-pronouns',
+    prompt: 'Add the reflexive pronoun',
+    q: 'Ich interessiere ___ für Musik.', hint: 'sich interessieren',
+    answer: 'mich',
+    explain: 'ich → **mich**. *sich interessieren für* = to be interested in (Polish *interesuję **się***).',
+  },
+  {
+    id: 'ba-08', type: 'type', rule: 'reflexive-pronouns',
+    prompt: 'Add the reflexive pronoun',
+    q: 'Kathrin schminkt ___ vor dem Spiegel.', hint: 'sich schminken',
+    answer: 'sich',
+    explain: '*Kathrin* = sie (she) → **sich**.',
+  },
+  {
+    id: 'ba-09', type: 'type', rule: 'reflexive-pronouns',
+    prompt: 'Add the reflexive pronoun',
+    q: 'Frau Weber, beeilen Sie ___ bitte!', hint: 'sich beeilen',
+    answer: 'sich', reject: ['Sie'],
+    explain: 'Formal **Sie** → **sich**, with a small *s*: *Beeilen Sie **sich**!* Never *Sie Sie*.',
+  },
+  {
+    id: 'ba-10', type: 'type', rule: 'reflexive-pronouns',
+    prompt: 'Add the reflexive pronoun',
+    q: 'Lisa und Tom streiten ___ nie.', hint: 'sich streiten',
+    answer: 'sich',
+    explain: '*Lisa und Tom* = sie (they) → **sich**.',
+  },
+  {
+    id: 'ba-11', type: 'gap', rule: 'reflexive-pronouns',
+    q: 'Ich freue {mich}, und du freust {dich}.',
+    options: ['sich', 'uns'],
+    explain: 'The same verb, two persons: ich freue **mich**, du freust **dich**.',
+  },
+  {
+    id: 'ba-12', type: 'gap', rule: 'reflexive-pronouns',
+    q: 'Wir ziehen {uns} an, und ihr zieht {euch} an.',
+    options: ['sich', 'ihr'],
+    explain: 'wir → **uns**, ihr → **euch**. *ihr* is the person, *euch* is its pronoun.',
+  },
+  {
+    id: 'ba-13', type: 'spot', rule: 'reflexive-pronouns',
+    q: 'Wir interessieren sich für Fußball.', wrong: 'sich', correct: 'uns',
+    explain: 'wir → **uns**: *Wir interessieren **uns** für Fußball.* Polish *się* is for everyone; German *sich* is not.',
+  },
+  {
+    id: 'ba-14', type: 'spot', rule: ['reflexive-pronouns', 'modal'],
+    q: 'Ihr müsst sich beeilen.', wrong: 'sich', correct: 'euch',
+    explain: 'ihr → **euch**: *Ihr müsst **euch** beeilen.* The pronoun stays near the front; the infinitive goes to the end.',
+  },
+  {
+    id: 'ba-15', type: 'tf', rule: 'reflexive-pronouns', asksRule: true, theory: true,
+    statement: 'The reflexive pronoun of **ihr** is **euch**: *ihr freut euch*.',
+    answer: true,
+    explain: 'ihr → **euch**, wir → **uns**: *Ihr freut **euch**, wir freuen **uns***. Only er / sie / es, sie (they) and Sie take *sich*.',
+  },
+  {
+    id: 'ba-16', type: 'order', rule: ['reflexive-pronouns', 'reflexive-position'],
+    en: 'Today I am getting dressed quickly.',
+    answer: 'Heute ziehe ich mich schnell an.',
+    extra: ['sich'],
+    explain: '*Heute* comes first, so the verb comes next and then *ich*. The pronoun **mich** follows right after, and *an* goes to the end.',
+  },
+
+  // --- sein in every person ----------------------------------------------------------------
+  {
+    id: 'ba-17', type: 'match', rule: 'sein-haben', asksRule: true,
+    prompt: 'Match each person with its form of **sein**',
+    pairs: [['ich', 'bin'], ['du', 'bist'], ['er', 'ist'], ['ihr', 'seid']],
+    explain: 'ich **bin**, du **bist**, er **ist**, wir **sind**, ihr **seid**, sie **sind**.',
+  },
+  {
+    id: 'ba-18', type: 'mc', rule: 'sein-haben',
+    prompt: 'Choose the correct form of **sein**',
+    q: '___ ihr heute Abend zu Hause?',
+    correct: 'Seid', wrong: ['Seit', 'Sind', 'Ist'],
+    explain: 'ihr → **seid** (with **d**). *seit* (with **t**) means *since*.',
+  },
+  {
+    id: 'ba-19', type: 'type', rule: 'sein-haben',
+    prompt: 'Conjugate the verb',
+    q: 'Mein Bruder ___ Lehrer.', hint: 'sein',
+    answer: 'ist',
+    explain: '*mein Bruder* = er → **ist**.',
+  },
+  {
+    id: 'ba-20', type: 'type', rule: 'sein-haben',
+    prompt: 'Conjugate the verb',
+    q: 'Wir ___ aus Polen.', hint: 'sein',
+    answer: 'sind',
+    explain: 'wir → **sind**: *Wir **sind** aus Polen.* (Polish *jesteśmy z Polski*.)',
+  },
+  {
+    id: 'ba-21', type: 'type', rule: ['sein-haben', 'yes-no'],
+    prompt: 'Conjugate the verb',
+    q: '___ du müde?', hint: 'sein',
+    answer: 'Bist', reject: ['Hast'],
+    explain: 'du → **bist**. A yes/no question starts with the verb: ***Bist** du müde?*',
+  },
+  {
+    id: 'ba-22', type: 'spot', rule: 'sein-haben',
+    q: 'Ihr seit heute sehr glücklich.', wrong: 'seit', correct: 'seid',
+    explain: '**seid** (you are, with **d**) ≠ **seit** (since, with **t**): *Ihr **seid** heute sehr glücklich.*',
+  },
+  {
+    id: 'ba-23', type: 'tf', rule: 'sein-haben',
+    q: 'Meine Kinder ist in der Schule.',
+    answer: false, fix: 'Meine Kinder sind in der Schule.',
+    labels: ['Correct', 'Wrong'],
+    explain: '*meine Kinder* = sie (they) → **sind**: *Meine Kinder **sind** in der Schule.*',
+  },
+
+  // --- haben in every person ----------------------------------------------------------------
+  {
+    id: 'ba-24', type: 'match', rule: 'sein-haben', asksRule: true,
+    prompt: 'Match each person with its form of **haben**',
+    pairs: [['ich', 'habe'], ['du', 'hast'], ['er', 'hat'], ['ihr', 'habt']],
+    explain: 'ich **habe**, du **hast**, er **hat**, wir **haben**, ihr **habt**, sie **haben**. No *b* in *hast* and *hat*.',
+  },
+  {
+    id: 'ba-25', type: 'mc', rule: 'sein-haben',
+    prompt: 'Choose the correct form of **haben**',
+    q: 'Herr Huber ___ einen Termin um zehn Uhr.',
+    correct: 'hat', wrong: ['hast', 'habt', 'haben'],
+    explain: '*Herr Huber* = er → **hat**. (*habt* is the form for ihr.)',
+  },
+  {
+    id: 'ba-26', type: 'type', rule: ['sein-haben', 'yes-no'],
+    prompt: 'Conjugate the verb',
+    q: '___ ihr am Wochenende Zeit?', hint: 'haben',
+    answer: 'Habt',
+    explain: 'ihr → **habt**: ***Habt** ihr am Wochenende Zeit?*',
+  },
+  {
+    id: 'ba-27', type: 'type', rule: 'sein-haben',
+    prompt: 'Conjugate the verb',
+    q: 'Du ___ ein schönes Auto.', hint: 'haben',
+    answer: 'hast', reject: ['habst'],
+    explain: 'du → **hast**, without the *b*: du **hast**, er **hat**.',
+  },
+  {
+    id: 'ba-28', type: 'gap', rule: 'sein-haben',
+    q: 'Ich {habe} einen Hund, und mein Bruder {hat} ein Auto.',
+    options: ['hast', 'habt'],
+    explain: 'ich → **habe**; *mein Bruder* = er → **hat**.',
+  },
+  {
+    id: 'ba-29', type: 'sort', rule: 'sein-haben',
+    prompt: 'Which form of **haben**?',
+    buckets: [
+      { label: 'hat', items: ['er', 'es', 'Kathrin', 'mein Bruder'] },
+      { label: 'habt', items: ['ihr'] },
+      { label: 'haben', items: ['wir', 'Sie', 'meine Eltern', 'Lisa und Tom'] },
+    ],
+    explain: '**hat** for one person or thing you talk about (er, es, Kathrin, mein Bruder) · **habt** for *ihr* · **haben** for wir, Sie and more than one person (*meine Eltern, Lisa und Tom*).',
+  },
+
+  // --- sein or haben? ------------------------------------------------------------------------
+  {
+    id: 'ba-30', type: 'mc', rule: 'sein-or-haben',
+    prompt: 'Polish says *mam 25 lat*. What does German say?',
+    correct: 'Ich bin 25 Jahre alt.',
+    wrong: ['Ich habe 25 Jahre alt.', 'Ich habe 25 Jahre.', 'Ich bin 25 Jahre haben.'],
+    explain: 'Age takes **sein**: *Ich **bin** 25 (Jahre alt).* Polish counts the years you *have*; German says how old you *are*.',
+  },
+  {
+    id: 'ba-31', type: 'type', rule: 'sein-or-haben',
+    prompt: 'sein or haben? Write the right form',
+    q: 'Wie alt ___ du?', hint: 'sein or haben?',
+    answer: 'bist', reject: ['hast'],
+    explain: 'Age takes **sein**: *Wie alt **bist** du?*',
+  },
+  {
+    id: 'ba-32', type: 'type', rule: 'sein-or-haben',
+    prompt: 'sein or haben? Write the right form',
+    q: 'Meine Mutter ___ 60 Jahre alt.', hint: 'sein or haben?',
+    answer: 'ist', reject: ['hat'],
+    explain: 'Age → **sein**: *Sie **ist** 60.* Not *hat*: that is Polish *ma 60 lat*.',
+  },
+  {
+    id: 'ba-33', type: 'gap', rule: 'sein-or-haben',
+    q: 'Ich {bin} müde, aber ich {habe} keine Zeit.',
+    options: ['sind', 'haben'],
+    explain: 'An adjective (*müde*) → **sein**; a noun (*Zeit*) → **haben**.',
+  },
+  {
+    id: 'ba-34', type: 'sort', rule: 'sein-or-haben',
+    prompt: '**sein** or **haben**?',
+    buckets: [
+      { label: 'sein', sub: 'ich bin …', items: ['müde', '30 Jahre alt', 'verheiratet', 'krank'] },
+      { label: 'haben', sub: 'ich habe …', items: ['Zeit', 'Angst', 'zwei Kinder', 'einen Termin'] },
+    ],
+    explain: 'Adjectives and age take **sein**: *ich bin müde, krank, verheiratet, 30 Jahre alt*. Nouns take **haben**: *ich habe Zeit, Angst, zwei Kinder, einen Termin*.',
+  },
+  {
+    id: 'ba-35', type: 'spot', rule: 'sein-or-haben',
+    q: 'Mein Bruder hat 35 Jahre alt.', wrong: 'hat', correct: 'ist',
+    explain: 'Age → **sein**: *Mein Bruder **ist** 35 Jahre alt.* Polish says *ma 35 lat*; German doesn’t.',
+  },
+  {
+    id: 'ba-36', type: 'tf', rule: 'sein-or-haben',
+    q: 'Wir sind keine Zeit.',
+    answer: false, fix: 'Wir haben keine Zeit.',
+    labels: ['Correct', 'Wrong'],
+    explain: '*Zeit* is a noun, something you have → **haben**: *Wir **haben** keine Zeit.*',
+  },
+  {
+    id: 'ba-37', type: 'order', rule: 'sein-or-haben',
+    en: 'She is married and has two children.',
+    answer: 'Sie ist verheiratet und hat zwei Kinder.',
+    extra: ['sind', 'haben'],
+    explain: '*verheiratet* is an adjective → **ist**; *zwei Kinder* is a noun → **hat**.',
+  },
+  {
+    id: 'ba-38', type: 'tf', rule: 'sein-or-haben', asksRule: true, theory: true,
+    statement: 'Age takes **sein** in German: *ich bin 30*, not *ich habe 30 Jahre*.',
+    answer: true,
+    explain: 'Polish *mam 30 lat* uses *mieć*; German uses **sein**: *Ich **bin** 30 (Jahre alt).*',
+  },
+
+  // --- war and hatte ----------------------------------------------------------------------
+  {
+    id: 'ba-39', type: 'match', rule: 'praet-sein-haben', asksRule: true,
+    prompt: 'Match the **present** with its **Präteritum**',
+    pairs: [['ich bin', 'ich war'], ['du bist', 'du warst'], ['wir haben', 'wir hatten'], ['ihr habt', 'ihr hattet']],
+    explain: '*sein*: bin → **war**, bist → **warst**. *haben*: haben → **hatten**, habt → **hattet**.',
+  },
+  {
+    id: 'ba-40', type: 'mc', rule: ['praet-sein-haben', 'sein-or-haben'],
+    prompt: 'Choose the right past form',
+    q: 'Gestern ___ ich keine Zeit.',
+    correct: 'hatte', wrong: ['habe', 'hat', 'war'],
+    explain: '*Gestern* → the past. *Zeit* takes haben → **hatte**: *Gestern **hatte** ich keine Zeit.*',
+  },
+  {
+    id: 'ba-41', type: 'type', rule: 'praet-sein-haben',
+    prompt: 'Use the Präteritum',
+    q: 'Letztes Jahr ___ wir in Wien.', hint: 'sein',
+    answer: 'waren',
+    explain: 'wir → **waren**: *Letztes Jahr **waren** wir in Wien.*',
+  },
+  {
+    id: 'ba-42', type: 'type', rule: ['praet-sein-haben', 'yes-no'],
+    prompt: 'Use the Präteritum',
+    q: '___ du gestern krank?', hint: 'sein',
+    answer: 'Warst',
+    explain: 'du → **warst**: ***Warst** du gestern krank?*',
+  },
+  {
+    id: 'ba-43', type: 'type', rule: 'praet-sein-haben',
+    prompt: 'Use the Präteritum',
+    q: 'Meine Eltern ___ früher einen Hund.', hint: 'haben',
+    answer: 'hatten',
+    explain: '*meine Eltern* = sie (they) → **hatten**.',
+  },
+  {
+    id: 'ba-44', type: 'gap', rule: 'praet-sein-haben',
+    q: 'Heute {bin} ich müde, und gestern {war} ich auch müde.',
+    options: ['wart', 'ist'],
+    explain: '*Heute* → the present, **bin**; *gestern* → the Präteritum, **war**.',
+  },
+  {
+    id: 'ba-45', type: 'spot', rule: ['praet-sein-haben', 'sein-or-haben'],
+    q: 'Ihr wart gestern keine Zeit.', wrong: 'wart', correct: 'hattet',
+    explain: '*Zeit* takes **haben**, and ihr in the past → **hattet**: *Ihr **hattet** gestern keine Zeit.*',
+  },
+  {
+    id: 'ba-46', type: 'order', rule: ['praet-sein-haben', 'inversion'],
+    en: 'Yesterday I was ill and had no time.',
+    answer: 'Gestern war ich krank und hatte keine Zeit.',
+    extra: ['bin'],
+    explain: '*Gestern* first, then the verb **war**, then *ich*. Ill → **war** (sein), no time → **hatte** (haben).',
+  },
+
+  // --- the person chart: from ich to another person ------------------------------------------
+  {
+    id: 'ba-47', type: 'table', rule: 'person-chart', asksRule: true,
+    prompt: 'Change every **ich** form into the **du** form',
+    head: ['ich', 'du'],
+    rows: [['bin', 'bist'], ['habe', 'hast'], ['war', 'warst'], ['hatte', 'hattest'], ['mich', 'dich'], ['mein', 'dein']],
+    explain: 'du: **bist**, **hast**, **warst**, **hattest**, **dich**, **dein**. The du forms of the verbs end in *-st* (*hast* without a *b*).',
+  },
+  {
+    id: 'ba-48', type: 'table', rule: 'person-chart', asksRule: true,
+    prompt: 'Change every **ich** form into the **er** form',
+    head: ['ich', 'er'],
+    rows: [['bin', 'ist'], ['habe', 'hat'], ['war', 'war'], ['hatte', 'hatte'], ['mich', 'sich'], ['mein', 'sein']],
+    explain: 'er: **ist**, **hat**, **war**, **hatte**, **sich**, **sein**. In the Präteritum, ich and er are the same: *ich war – er war*.',
+  },
+  {
+    id: 'ba-49', type: 'table', rule: 'person-chart', asksRule: true,
+    prompt: 'Change every **ich** form into the **wir** form',
+    head: ['ich', 'wir'],
+    rows: [['bin', 'sind'], ['habe', 'haben'], ['war', 'waren'], ['hatte', 'hatten'], ['mich', 'uns'], ['mein', 'unser']],
+    explain: 'wir: **sind**, **haben**, **waren**, **hatten**, **uns**, **unser**.',
+  },
+  {
+    id: 'ba-50', type: 'table', rule: 'person-chart', asksRule: true,
+    prompt: 'Change every **ich** form into the **ihr** form',
+    head: ['ich', 'ihr'],
+    rows: [['bin', 'seid'], ['habe', 'habt'], ['war', 'wart'], ['hatte', 'hattet'], ['mich', 'euch'], ['mein', 'euer']],
+    explain: 'ihr: **seid** (with *d*), **habt**, **wart**, **hattet**, **euch**, **euer**.',
+  },
+  {
+    id: 'ba-51', type: 'table', rule: 'person-chart', asksRule: true,
+    prompt: 'Change every **ich** form into the formal **Sie** form',
+    head: ['ich', 'Sie'],
+    rows: [['bin', 'sind'], ['habe', 'haben'], ['war', 'waren'], ['hatte', 'hatten'], ['mich', 'sich'], ['mein', 'Ihr']],
+    explain: 'Sie: **sind**, **haben**, **waren**, **hatten** (like sie, they), the pronoun **sich** with a small *s*, and **Ihr** with a capital *I*.',
+  },
+  {
+    id: 'ba-52', type: 'tf', rule: 'person-chart', asksRule: true, theory: true,
+    statement: '**ihr** has two meanings: the person *you (all)* (*ihr seid*) and the possessive *her / their* (*ihr Hund*).',
+    answer: true,
+    explain: '*Ihr **seid** müde* = you (all) are tired · *Lisa und **ihr** Hund* = Lisa and her dog · *Max und Kathrin und **ihr** Auto* = their car.',
+  },
+  {
+    id: 'ba-53', type: 'mc', rule: 'person-chart', asksRule: true, theory: true,
+    prompt: 'Which forms belong to **wir**?',
+    correct: 'sind · haben · uns · unser',
+    wrong: ['seid · habt · euch · euer', 'sind · haben · sich · unser', 'ist · hat · uns · unser'],
+    explain: 'wir **sind**, wir **haben**, wir freuen **uns**, **unser** Haus. (*seid, habt, euch, euer* belong to ihr.)',
+  },
+
+  // --- mich or mir? -------------------------------------------------------------------------
+  {
+    id: 'ba-54', type: 'mc', rule: 'mich-mir',
+    prompt: 'Choose the right pronoun',
+    q: 'Hilfst du ___ bitte?',
+    correct: 'mir', wrong: ['mich', 'ich', 'mein'],
+    explain: '*helfen* takes the **Dativ**: *Hilfst du **mir**?* Polish does the same: *pomożesz **mi***.',
+  },
+  {
+    id: 'ba-55', type: 'mc', rule: 'mich-mir',
+    prompt: 'Choose the right pronoun',
+    q: 'Besuchst du ___ am Wochenende?',
+    correct: 'mich', wrong: ['mir', 'ich', 'mein'],
+    explain: '*besuchen* takes the **Akkusativ**: *Besuchst du **mich**?* (Polish *odwiedzisz **mnie***.)',
+  },
+  {
+    id: 'ba-56', type: 'type', rule: 'mich-mir',
+    prompt: 'Write the pronoun for **ich**',
+    q: 'Das Essen schmeckt ___ sehr gut.', hint: 'mich or mir?',
+    answer: 'mir', reject: ['mich'],
+    explain: '*schmecken* takes the Dativ: *Das schmeckt **mir*** = I like the taste. (Polish *smakuje **mi***.)',
+  },
+  {
+    id: 'ba-57', type: 'type', rule: 'mich-mir',
+    prompt: 'Write the pronoun for **ich**',
+    q: 'Rufst du ___ morgen an?', hint: 'mich or mir?',
+    answer: 'mich', reject: ['mir'],
+    explain: '*anrufen* takes the Akkusativ: *Rufst du **mich** an?* (Polish *zadzwonisz do mnie?*)',
+  },
+  {
+    id: 'ba-58', type: 'type', rule: ['mich-mir', 'mit-dativ'],
+    prompt: 'Write the pronoun for **ich**',
+    q: 'Kommst du mit ___ ins Kino?', hint: 'mich or mir?',
+    answer: 'mir', reject: ['mich'],
+    explain: '**mit** always takes the Dativ: *mit **mir**, mit **dir**, mit **Ihnen***.',
+  },
+  {
+    id: 'ba-59', type: 'type', rule: ['mich-mir', 'gefallen'],
+    prompt: 'Write the pronoun for **du**',
+    q: 'Wie gefällt ___ der Kurs?', hint: 'dich or dir?',
+    answer: 'dir', reject: ['dich'],
+    explain: '*gefallen* takes the Dativ: *Wie gefällt **dir** der Kurs?* = How do you like the course?',
+  },
+  {
+    id: 'ba-60', type: 'gap', rule: 'mich-mir',
+    q: 'Ich helfe {dir}, und du hilfst {mir}.',
+    options: ['dich', 'mich'],
+    explain: '*helfen* + Dativ: **dir**, **mir**, never *dich, mich*.',
+  },
+  {
+    id: 'ba-61', type: 'gap', rule: 'mich-mir',
+    q: 'Frau Weber, ich rufe {Sie} morgen an und helfe {Ihnen}.',
+    options: ['Ihr', 'sich'],
+    explain: 'Formal: Akkusativ **Sie** (*ich rufe Sie an*), Dativ **Ihnen** (*ich helfe Ihnen*).',
+  },
+  {
+    id: 'ba-62', type: 'sort', rule: 'mich-mir',
+    prompt: '**mich** or **mir**?',
+    buckets: [
+      { label: 'mich', sub: 'Akkusativ', items: ['Er besucht …', 'Sie ruft … an', 'Kennst du …?'] },
+      { label: 'mir', sub: 'Dativ', items: ['Er hilft …', 'Das gefällt …', 'Kommst du mit …?'] },
+    ],
+    explain: '**mich** with *besuchen, anrufen, kennen* (Akkusativ) · **mir** with *helfen, gefallen* and after *mit* (Dativ).',
+  },
+  {
+    id: 'ba-63', type: 'spot', rule: ['mich-mir', 'gefallen'],
+    q: 'Die Stadt gefällt mich sehr.', wrong: 'mich', correct: 'mir',
+    explain: '*gefallen* takes the Dativ: *Die Stadt gefällt **mir** sehr.*',
+  },
+  {
+    id: 'ba-64', type: 'tf', rule: 'mich-mir', asksRule: true, theory: true,
+    statement: '**mit** always takes the Dativ: *mit mir, mit dir, mit Ihnen*, never *mit mich*.',
+    answer: true,
+    explain: 'After **mit** come the Dativ forms: *Kommst du mit **mir**? Ich gehe mit **dir**. Wir sprechen mit **Ihnen**.*',
+  },
+  {
+    id: 'ba-65', type: 'order', rule: 'mich-mir',
+    en: 'Can you help me tomorrow?',
+    answer: 'Kannst du mir morgen helfen?',
+    extra: ['mich'],
+    explain: '*helfen* takes the Dativ → **mir**. A yes/no question starts with the verb, and *helfen* goes to the end.',
+  },
+]);

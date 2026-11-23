@@ -9,7 +9,66 @@
  * **bold** and *italic* work as in card text, also in table cells. A table row starts with its label.
  * Examples here are deliberately not the sentences from the cards (tools/validate.js checks).
  * Each addRules call holds the rules of one topic; the 📖 Rule book shows them in that order.
+ * also: ['basics'] shows a rule under another topic of the Rule book as well (sein-haben …).
  */
+
+// --- basics (sein, haben, pronouns: the person chart) -------------------------------------
+Brezel.deck.addRules('basics', [
+  {
+    id: 'person-chart',
+    title: 'One person, one set of forms',
+    text: 'Every person has its own form of **sein** and **haben**, its own reflexive pronoun and its own possessive. Learn each person as one row:',
+    table: {
+      head: ['', 'sein', 'haben', 'sich', 'mein'],
+      rows: [
+        ['**ich**', 'bin', 'habe', 'mich', 'mein'],
+        ['**du**', 'bist', 'hast', 'dich', 'dein'],
+        ['**er / es**', 'ist', 'hat', 'sich', 'sein'],
+        ['**sie** (she)', 'ist', 'hat', 'sich', 'ihr'],
+        ['**wir**', 'sind', 'haben', 'uns', 'unser'],
+        ['**ihr**', 'seid', 'habt', 'euch', 'euer'],
+        ['**sie** (they)', 'sind', 'haben', 'sich', 'ihr'],
+        ['**Sie**', 'sind', 'haben', 'sich', 'Ihr'],
+      ],
+    },
+    points: [
+      '**sich** is for everyone you talk *about* (er, sie, es, sie, a name) and for formal **Sie** — always with a small *s*.',
+      '*ihr* is two words: the person **you (all)** (*ihr habt Glück*) and the possessive **her / their** (*Anna und ihr Bruder*).',
+      'In the Präteritum, ich and er are the same: *ich war – er war*, *ich hatte – er hatte*.',
+    ],
+  },
+  {
+    id: 'sein-or-haben',
+    title: 'sein or haben? Age and adjectives take sein',
+    text: 'Polish often says *mieć* where German says **sein**. The rule of thumb: your **age** or an **adjective** → *sein*; a **noun**, something you have → *haben*.',
+    points: [
+      '**sein** + age: *Er ist 40 (Jahre alt).* Polish *ma 40 lat* — but never *er hat 40 Jahre*.',
+      '**sein** + adjective: *müde, krank, glücklich, verheiratet, ledig* → *Paula ist ledig.*',
+      '**haben** + noun: *Zeit, Angst, Kinder, ein Auto* → *Wir haben Angst.*',
+      'Asking for the age: *Wie alt sind Sie?*',
+    ],
+  },
+  {
+    id: 'mich-mir',
+    title: 'mich or mir? Akkusativ or Dativ',
+    text: 'The verb or the preposition decides. Most verbs take the **Akkusativ** (*mich, dich*); a few take the **Dativ** (*mir, dir*).',
+    table: {
+      head: ['Nominativ', 'Akkusativ', 'Dativ'],
+      rows: [
+        ['ich', 'mich', 'mir'],
+        ['du', 'dich', 'dir'],
+        ['wir', 'uns', 'uns'],
+        ['ihr', 'euch', 'euch'],
+        ['Sie', 'Sie', 'Ihnen'],
+      ],
+    },
+    points: [
+      '**Akkusativ** with *besuchen, anrufen, fragen, kennen, einladen* and the reflexive verbs: *Sie fragt mich.*',
+      '**Dativ** after **mit** and **bei**, and with **helfen, gefallen, schmecken**: *Der Kaffee schmeckt mir.* Polish does the same: *pomóc mi, smakuje mi*.',
+      '**uns** and **euch** are the same in both cases; only *ich, du* and *Sie* change.',
+    ],
+  },
+]);
 
 // --- word order --------------------------------------------------------------------------
 Brezel.deck.addRules('order', [
@@ -99,6 +158,7 @@ Brezel.deck.addRules('present', [
   },
   {
     id: 'sein-haben',
+    also: ['basics'],
     title: 'sein and haben',
     text: 'The two most important verbs are irregular — learn them by heart.',
     points: [
@@ -528,6 +588,7 @@ Brezel.deck.addRules('tenses', [
 Brezel.deck.addRules('praet', [
   {
     id: 'praet-sein-haben',
+    also: ['basics'],
     title: 'Präteritum of sein and haben',
     points: [
       '**sein**: ich war, du warst, er war, wir waren, ihr wart, sie waren',
@@ -575,6 +636,7 @@ Brezel.deck.addRules('verblist', [
 Brezel.deck.addRules('reflexive', [
   {
     id: 'reflexive-pronouns',
+    also: ['basics'],
     title: 'Reflexive pronouns',
     text: 'A reflexive verb needs a pronoun that points back to the subject. Polish says *się* for everyone; German changes it with the person:',
     points: [

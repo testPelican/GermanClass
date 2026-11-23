@@ -1,8 +1,8 @@
 # 🥨 Brezel — German grammar flashcards
 
-A Duolingo-style flashcard app built from your class notes: 780 cards across
-16 topics, plus a 📏 **Rules** topic, in 9 exercise types, and 124 easier copies
-of typed cards (904 in all). Three difficulty levels, 💡 hints, German speech,
+A Duolingo-style flashcard app built from your class notes: 845 cards across
+17 topics, plus a 📏 **Rules** topic, in 9 exercise types, and 144 easier copies
+of typed cards (989 in all). Three difficulty levels, 💡 hints, German speech,
 achievements and minigames. It runs offline in any modern browser; nothing to
 install.
 
@@ -25,7 +25,7 @@ keeps its own progress.
 
 ## How a session works
 
-- The start screen shows how far you are, e.g. **23/904**. A card only counts
+- The start screen shows how far you are, e.g. **23/989**. A card only counts
   once you answer it correctly. Then it comes back for reviews (see below).
 - Choose the **cards** per session (5, 10, 15, 20 or **Random**: anywhere from
   5 to 20, drawn when the session starts), the **topic** and the
@@ -41,7 +41,7 @@ keeps its own progress.
   card goes back into the pile at a random later spot in the same session.
 - **Practise mistakes** replays every card you have ever got wrong. It is extra
   training only and doesn't change your progress.
-- When all 904 are done, **Review** shows your strong and weak topics, mastery
+- When all 989 are done, **Review** shows your strong and weak topics, mastery
   per topic, first-try accuracy per exercise type and accuracy per session.
   Every chart can be switched to a table.
 
@@ -63,13 +63,13 @@ Games earn XP but never change your card progress or reviews.
 | 🚫 Nicht oder kein? | swipe to *nicht* or *kein…* | Questions & negation |
 | 🏠 Im oder ins? | Wo? → *im*, Wohin? → *ins* | Prepositions |
 | ⚡ Partizip-Blitz | infinitive → Partizip II, against the clock | Past, Separable, Verb list, Tenses … |
-| 🪞 Spiegel | the right reflexive pronoun: *mich, dich, sich, uns, euch* | Reflexive, Verb list |
-| 🕰️ Zeitmaschine | Präsens, Präteritum or Perfekt? | Tenses, Simple past, Past, Verb list |
-| 👂 Hör genau | listen and tap the word you heard (*schon / schön*, *fährt / fahrt*) | Present, Simple past, Cases, Possessives, Reflexive, Verb list |
-| 🎰 Verb-Automat | pull the lever: person + verb + tense, then give the form | Present, Simple past, Modal verbs, Verb list, Reflexive, Tenses |
-| 🃏 Memory | flip cards to find pairs (*gehen · ging*, *Lehrer · Lehrerin* …) | most topics |
+| 🪞 Spiegel | the right reflexive pronoun: *mich, dich, sich, uns, euch* | Basics, Reflexive, Verb list |
+| 🕰️ Zeitmaschine | Präsens, Präteritum or Perfekt? (*ich bin · ich war · ich bin gewesen*) | Basics, Tenses, Simple past, Past, Verb list |
+| 👂 Hör genau | listen and tap the word you heard (*schon / schön*, *fährt / fahrt*, *mich / mir*) | Basics, Present, Simple past, Cases, Possessives, Reflexive, Verb list |
+| 🎰 Verb-Automat | pull the lever: person + verb + tense, then give the form | Basics (*sein, haben, sich freuen, sich anziehen*), Present, Simple past, Modal verbs, Verb list, Reflexive, Tenses |
+| 🃏 Memory | flip cards to find pairs (*gehen · ging*, *ich bin · ich war*, *Lehrer · Lehrerin* …) | most topics |
 | ✂️ Die Schere | cut a separable verb (*steht … auf*) or keep it together (*beantwortet*) | Separable, Verb list, Word order |
-| 🐉 Bossfight | beat the topic's monster with real cards (*Der Spiegel-Geist* …) | every topic |
+| 🐉 Bossfight | beat the topic's monster with real cards (*Der Bauklotz-Bär*, *Der Spiegel-Geist* …) | every topic |
 | 🌧️ Artikel-Regen | nouns rain down: *der, die* or *das* before they land | Cases, Female & male forms, Vocabulary |
 
 Level changes the game: more time and fewer options on Low; typing instead of
@@ -84,9 +84,9 @@ the arrow keys. Each card shows its level next to its topic.
 
 | Level | What you do | Cards |
 |---|---|---|
-| 🌱 Low | Recognise: true/false, multiple choice, small match | 304 |
-| ⛰️ Medium | Build: fill gaps, sort, spot the mistake, short sentences | 327 |
-| 🏔️ High | Produce: type answers, tables, long sentences | 273 |
+| 🌱 Low | Recognise: true/false, multiple choice, small match | 341 |
+| ⛰️ Medium | Build: fill gaps, sort, spot the mistake, short sentences | 348 |
+| 🏔️ High | Produce: type answers, tables, long sentences | 300 |
 
 - A card's level comes from what it asks you to do, unless the card sets
   `level` itself. The 📒 Verb list does: Präsens = Low, Präteritum = Medium,
@@ -166,7 +166,7 @@ it right:
 
 ### The Rule book
 
-- **📖 Rule book** on the start screen lists all 60 grammar rules, grouped by
+- **📖 Rule book** on the start screen lists all 63 grammar rules, grouped by
   topic, with their tables (e.g. the four cases). Tap a rule to open it.
 - The search box finds rules by any word in them. Case and umlauts don't
   matter: *dativ* finds *Dativ*, *madchen* finds *Mädchen*.
@@ -197,12 +197,41 @@ row, a session without a mistake, a session without help, High difficulty, a
 fixing mistakes), topics (a whole topic, the Verb list, reflexive verbs,
 Rules, 1,000 XP) and the minigames. *Reset progress* resets them too.
 
+### 🧱 Basics
+
+- **🧱 Basics** is the first topic after *All topics*. It drills the building
+  blocks of every sentence, for every person:
+  - **sein** and **haben** (*ich bin, du hast, ihr seid*), with the traps
+    *seid / seit* and *hast / habst*;
+  - their Präteritum **war** and **hatte** (*gestern hatte ich keine Zeit*);
+  - the reflexive pronouns **mich, dich, sich, uns, euch** (*Frau Weber,
+    beeilen Sie sich!*);
+  - **sein or haben?** Age and adjectives take *sein*, nouns take *haben*:
+    *ich bin 30*, not Polish *mam 30 lat*;
+  - **mich or mir?** *besuchen, anrufen* take *mich*; *mit, helfen, gefallen,
+    schmecken* take *mir*;
+  - the **person chart**: turn every *ich* form into another person
+    (*bin · habe · war · hatte · mich · mein* → *bist · hast · warst · hattest ·
+    dich · dein*).
+- It has 65 cards of its own (`data/cards/18-basics.js`) and shares 27 cards
+  with their own topics: the *sein* and *haben* tables and sentences
+  (Present tense), the Präteritum of *sein* and *haben* (Simple past), and the
+  reflexive pronoun drills (Reflexive verbs). With the easier copies, that is
+  123 cards.
+- A shared card is the same card in both topics. Mastering it in one counts in
+  the other, and the total stays 989.
+- In the 📖 Rule book, Basics has its three rules (*One person, one set of
+  forms*, *sein or haben?*, *mich or mir?*) and also shows the rules it shares:
+  *sein and haben*, *Präteritum of sein and haben* and *Reflexive pronouns*.
+- Games: Spiegel, Zeitmaschine, Hör genau, Verb-Automat, Memory, Der Türsteher
+  and the Bossfight against *Der Bauklotz-Bär*.
+
 ### The Rules topic
 
 - **📏 Rules** asks only about the grammar rules themselves, such as *What is a
   Hilfsverb?*, *Perfekt or Präteritum?*, *Where does the verb go?* and *Which
   case is dem?*. It never asks you to translate a word.
-- Its 120 questions come from every topic, and every rule in the Glossary has
+- Its 125 questions come from every topic, and every rule in the Glossary has
   at least one. That includes the four cases: Nominativ, Akkusativ, Dativ and
   Genitiv (*der, ein, mein · den, einen, meinen · dem, einem, meinem · des,
   eines, meines*), where the Genitiv goes (*das Büro des Chefs*, but
@@ -210,7 +239,7 @@ Rules, 1,000 XP) and the minigames. *Reset progress* resets them too.
   (*-ung, -tät, -ion → die · -um, verbs as nouns → das*).
 - Each question also belongs to its own topic, e.g. the case questions are in
   *Articles & cases*. Mastering it in Rules counts there too, and the total
-  stays 904.
+  stays 989.
 
 ### Word translations and the Glossary
 
@@ -343,6 +372,10 @@ Each file in `js/exercises/` starts with a comment documenting its fields.
     hidden.
   - `gloss: { Sie: 'she' }`: a meaning for this card only, e.g. when *Sie* at
     the start of a sentence means *she*.
+- **`also: ['basics']`**: the card also belongs to these topics (the same card,
+  with one progress). Use it to put a card that lives in its own topic into
+  Basics too. A rule can have `also` as well: the Rule book then shows it under
+  both topics.
 - **`theory: true`**: the card asks about a rule itself, so it is in the Rules
   topic too. Don't use it on cards that ask what a word means (`gloss: false`),
   conjugation tables or sentence building. A new rule needs at least one
@@ -420,7 +453,7 @@ data/lexicon.js       verb forms, word families, proper nouns
 data/glossary.js      English meanings of the words in the questions
 data/rules.js         the grammar rules, by topic: shown in the Glossary and the Rule book
 data/cards/           the cards, one file per topic; 16-rules.js has rule questions for several topics,
-                      17-verb-list.js builds the Verb list from one table
+                      17-verb-list.js builds the Verb list from one table, 18-basics.js is Basics
 data/games-*.js       content of the minigames (sentences, nouns with articles, monsters …)
 tools/validate.js     deck checker
 tools/build.js        builds Brezel.html

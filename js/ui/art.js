@@ -2,7 +2,7 @@
  * Topic pictures: one small animated SVG per topic (flat, friendly, readable from 18 px up).
  *
  *   B.art.topic(id) → '<svg class="t-art t-art-<id>" viewBox="0 0 64 64" aria-hidden="true">…</svg>'
- *                     ids: all, rules, verblist, order, present, past, cases, prepositions, gender,
+ *                     ids: all, basics, rules, verblist, order, present, past, cases, prepositions, gender,
  *                     possessive, questions, verbs, prefix, tenses, praet, reflexive, pastq, vocab;
  *                     any other id gets a generic card with a star.
  *   B.art.color(id) → the topic's accent colour (works on light and dark surfaces)
@@ -47,6 +47,7 @@
 
   const COLORS = {
     all: '#a560e8',
+    basics: '#cf5c36',
     rules: '#1cb0f6',
     verblist: '#f5b800',
     order: '#58cc02',
@@ -67,6 +68,28 @@
   };
 
   const ART = {
+    // 🧱 basics: a little brick wall; the top brick ("ich") drops into place
+    basics: () => `
+      <g class="ta ta-r1">
+        <rect x="6" y="45" width="16.5" height="11" rx="2.2" fill="#cf5c36"/>
+        <rect x="23.75" y="45" width="16.5" height="11" rx="2.2" fill="#e27a52"/>
+        <rect x="41.5" y="45" width="16.5" height="11" rx="2.2" fill="#cf5c36"/>
+        <path d="M9 47.6h8M26.75 47.6h8M44.5 47.6h8" stroke="#fff" stroke-opacity="0.35" stroke-width="1.6" stroke-linecap="round"/>
+      </g>
+      <g class="ta ta-r2">
+        <rect x="6" y="33" width="7.6" height="11" rx="2.2" fill="#e27a52"/>
+        <rect x="14.85" y="33" width="16.5" height="11" rx="2.2" fill="#cf5c36"/>
+        <rect x="32.6" y="33" width="16.5" height="11" rx="2.2" fill="#e27a52"/>
+        <rect x="50.35" y="33" width="7.65" height="11" rx="2.2" fill="#cf5c36"/>
+        <path d="M17.85 35.6h8M35.6 35.6h8" stroke="#fff" stroke-opacity="0.35" stroke-width="1.6" stroke-linecap="round"/>
+      </g>
+      <g class="ta ta-brick">
+        <rect x="23.75" y="21" width="16.5" height="11" rx="2.2" fill="#ffc800"/>
+        <text x="32" y="29.4" text-anchor="middle" font-family="${FONT}" font-size="8" font-weight="900" fill="#8a6100">ich</text>
+      </g>
+      <g class="ta ta-spark"><path d="${sparkle(50, 15, 5)}" fill="#ffc800"/></g>
+      <g class="ta ta-spark2"><path d="${sparkle(13, 22, 3.2)}" fill="#e27a52"/></g>`,
+
     // ✨ all topics: a fan of cards with sparkles
     all: () => `
       <g class="ta ta-c1"><rect x="21" y="13" width="22" height="31" rx="4" fill="#ffc800" transform="rotate(-24 32 50)"/><circle cx="25.5" cy="18" r="2" fill="#fff" transform="rotate(-24 32 50)"/></g>

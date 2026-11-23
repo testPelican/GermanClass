@@ -42,7 +42,7 @@
     const lens = h('span', { class: 'rb-lens', html: LENS });
 
     const sections = B.deck.topics.filter((t) => !t.collects).map((t) => {
-      const rules = B.deck.rules.filter((r) => r.topic === t.id);
+      const rules = B.deck.rulesOfTopic(t.id);
       if (!rules.length) return null;
       const items = rules.map((r) => {
         const body = B.glossary.rule(r, { title: false });
@@ -50,7 +50,7 @@
         el.addEventListener('toggle', () => {
           if (el.open && !quiet) B.glossary.unfold(body);
         });
-        return { el, text: haystack(r, t) };
+        return { el, id: r.id, text: haystack(r, t) };
       });
       const el = h('section', { class: 'card rb-topic art-host', 'aria-label': t.name },
         h('h2', { class: 'section-title rb-head' },
@@ -61,23 +61,25 @@
       el.style.setProperty('--t', B.art.color(t.id));
       return { id: t.id, el, items };
     }).filter(Boolean);
-    const total = sections.reduce((n, s) => n + s.items.length, 0);
+    // a rule can be in two topics (also: ['basics']): count it once
+    const total = new Set(sections.flatMap((s) => s.items.map((i) => i.id))).size;
     let quiet = false; // opening rules by searching or jumping: no unfold animation for each
 
     function filter() {
       const words = norm(search.value).split(' ').filter(Boolean);
-      let shown = 0;
+      const hits = new Set();
       for (const s of sections) {
         let any = false;
         for (const i of s.items) {
           const hit = words.every((w) => i.text.includes(w));
           i.el.hidden = !hit;
           if (words.length) i.el.open = hit;
-          if (hit) shown++;
+          if (hit) hits.add(i.id);
           any = any || hit;
         }
         s.el.hidden = !any;
       }
+      const shown = hits.size;
       count.textContent = words.length
         ? `${shown} of ${total} rules match`
         : `${total} rules in ${sections.length} topics. Tap a rule to open it.`;

@@ -72,7 +72,11 @@ for (const c of deck.cards) {
   }
 }
 console.log('\nBy topic:');
-for (const t of deck.topics) console.log(`  ${t.icon}  ${t.name.padEnd(28)} ${deck.byTopic(t.id).length}${t.collects ? '  (gathered from the other topics)' : ''}`);
+for (const t of deck.topics) {
+  const shared = deck.cards.filter((c) => c.topic !== t.id && deck.alsoOf(c).includes(t.id)).length;
+  const note = t.collects ? '  (gathered from the other topics)' : shared ? `  (${shared} shared with other topics)` : '';
+  console.log(`  ${t.icon}  ${t.name.padEnd(28)} ${deck.byTopic(t.id).length}${note}`);
+}
 console.log('\nBy exercise type:');
 for (const [k, v] of Object.entries(byType).sort((a, b) => b[1] - a[1])) console.log(`  ${B.ex.label(k).padEnd(30)} ${v}`);
 
@@ -128,6 +132,7 @@ if (!glossErrors) console.log(`  ✓ every card has a rule (${deck.rules.length}
 if (!glossErrors) console.log(`  ✓ every question word has a translation (${hidden} meaning cards hide them)`);
 for (const r of deck.rules) {
   if (!deck.topicMap[r.topic] || deck.topicMap[r.topic].collects) gfail(`rule ${r.id}: unknown topic "${r.topic}" (use Brezel.deck.addRules('<topic>', [...]))`);
+  for (const t of deck.alsoOf(r)) if (!deck.topicMap[t] || deck.topicMap[t].collects || t === r.topic) gfail(`rule ${r.id}: also "${t}" is not another topic`);
   if (r.table && !(Array.isArray(r.table.rows) && r.table.rows.length && r.table.rows.every((row) => Array.isArray(row) && row.length === (r.table.head || r.table.rows[0]).length))) {
     gfail(`rule ${r.id}: every table row needs as many cells as the head`);
   }

@@ -350,7 +350,7 @@
     color: '#9b5de5',
     blurb: 'Mirror, mirror: the action goes back to the subject. Pick **mich, dich, sich, uns** or **euch**.',
     how: ['Tap the pronoun or press 1–4', 'Polish says *się* for everyone — German doesn’t!', 'High: Perfekt and questions too'],
-    topics: ['reflexive', 'verblist'],
+    topics: ['basics', 'reflexive', 'verblist'],
     time: 60,
     art: '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" font-family="system-ui,sans-serif" font-weight="900"><circle cx="60" cy="60" r="56" fill="#f3e8ff"/><rect x="55" y="88" width="10" height="16" fill="#9b5de5"/><rect x="38" y="102" width="44" height="8" rx="4" fill="#9b5de5"/><ellipse cx="60" cy="52" rx="32" ry="40" fill="#c58cf5"/><ellipse cx="60" cy="52" rx="25" ry="33" fill="#e9f7ff"/><path d="M44 34q6-10 16-14M42 46q3-8 9-12" stroke="#fff" stroke-width="5" stroke-linecap="round" fill="none"/><text x="60" y="64" text-anchor="middle" font-size="17" fill="#7b3fc4" transform="translate(120 0) scale(-1 1)">sich</text></svg>',
     ready: (topic) => spiegelPool(topic).length >= 3,
@@ -425,7 +425,7 @@
     color: '#00a6a0',
     blurb: 'Set the dial! Is the verb form **Präsens**, **Präteritum** or **Perfekt**?',
     how: ['1 Präteritum · 2 Perfekt · 3 Präsens', 'Medium: every person · High: reflexive and separable verbs, against the clock'],
-    topics: ['tenses', 'praet', 'past', 'verblist'],
+    topics: ['basics', 'tenses', 'praet', 'past', 'verblist'],
     time: 60,
     art: '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><circle cx="60" cy="60" r="56" fill="#e3f6f5"/><path d="M60 80 16 80A44 44 0 0 1 38 41.9Z" fill="#ce82ff"/><path d="M60 80 38 41.9A44 44 0 0 1 82 41.9Z" fill="#1cb0f6"/><path d="M60 80 82 41.9A44 44 0 0 1 104 80Z" fill="#58cc02"/><path d="M60 80 90 58" stroke="#2b3a40" stroke-width="6" stroke-linecap="round"/><circle cx="60" cy="80" r="8" fill="#2b3a40"/><circle cx="60" cy="80" r="3" fill="#ffc800"/><rect x="20" y="88" width="80" height="16" rx="8" fill="#00a6a0"/><circle cx="34" cy="96" r="3" fill="#fff"/><circle cx="46" cy="96" r="3" fill="#fff"/><circle cx="58" cy="96" r="3" fill="#ffc800"/></svg>',
     ready: (topic) => zeitPool(topic).length >= 4,
@@ -498,6 +498,15 @@
       for (const { v } of verbs('reflexive', [])) add([0, 1, 2, 3, 4, 5].map((p) => L.form(v, 'present', p, { reflexive: true })));
     }
     if (topic === 'verblist' || topic === 'all') for (const { v } of verbs('verblist', ['pp'])) add([v.forms[2], v.prt && v.prt[2], v.pp, v.inf, v.forms[1]]);
+    if (topic === 'basics') {
+      // sein and haben, now and in the past, and the pronouns: mich / mir is taught here
+      for (const inf of ['sein', 'haben']) {
+        const v = L.verb(inf);
+        if (v) add(v.forms), add(v.prt || []), add([v.forms[0], v.prt && v.prt[0], v.forms[2], v.prt && v.prt[2]]);
+      }
+      fams((f) => f.includes('mich')).forEach(add);
+      add(['mich', 'mir', 'dich', 'dir']);
+    }
     if (topic === 'all') B.deck.families.filter((f) => f.length <= 3).forEach(add);
     sets = sets.filter((s) => s.length >= 2);
     return sets;
@@ -527,7 +536,7 @@
     speech: true,
     blurb: 'Listen carefully, then tap the word you **heard**. They look alike — they don’t sound alike!',
     how: ['Tap 🔊 or press R / Space to hear it again', 'Answer with a tap or keys 1–4', '12 rounds'],
-    topics: ['present', 'praet', 'cases', 'possessive', 'reflexive', 'verblist'],
+    topics: ['basics', 'present', 'praet', 'cases', 'possessive', 'reflexive', 'verblist'],
     art: '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><circle cx="60" cy="60" r="56" fill="#ffe9f6"/><path d="M22 48h16l22-18v60L38 72H22z" fill="#ff4fa3"/><path d="M72 44q10 16 0 32M82 34q18 26 0 52M92 26q26 34 0 68" fill="none" stroke="#ff86d0" stroke-width="6" stroke-linecap="round"/></svg>',
     ready: (topic) => hoerSets(topic).length >= 3,
     gen: hoerGen,

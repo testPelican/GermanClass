@@ -178,4 +178,6 @@ Brezel.deck.addProperNouns([
   'Knut', 'Luise', 'Sabine', 'Felix', 'Leon', 'Kathrin', 'Alexandra', 'Weber', 'Schneider', 'Huber', 'Mia', 'Julian', 'Sebastian', 'Peter',
   // Kapitel 1, A25 and C11 (p. 21, 29)
   'BETA', 'Susanne', 'Matthias', 'Sonja', 'Müller',
+  // Basics
+  'Lisa', 'Tom',
 ]);

@@ -101,6 +101,7 @@
    */
   const bosses = {
     all: { name: 'Der Grammatik-Gigant', color: '#7c5cff', shape: 'wide', eyes: 3, horns: 2, fangs: true, extra: 'crown' },
+    basics: { name: 'Der Bauklotz-Bär', color: '#cf5c36', shape: 'square', eyes: 2, horns: 0, fangs: true, extra: 'ears' },
     rules: { name: 'Der Regel-Riese', color: '#3f8cff', shape: 'tall', eyes: 1, horns: 0, fangs: false, extra: 'hat' },
     verblist: { name: 'Das Verben-Ungeheuer', color: '#e2458e', shape: 'blob', eyes: 3, horns: 3, fangs: true, extra: 'spikes' },
     order: { name: 'Der Satzbau-Golem', color: '#8c7a6b', shape: 'square', eyes: 2, horns: 0, fangs: false, extra: 'spikes' },
@@ -217,6 +218,12 @@
         const base = prefix && x.v.inf.startsWith(prefix) ? x.v.inf.slice(prefix.length) : x.v.inf;
         const stem = base.replace(/e?n$/, '');
         if (head !== stem + 't' && head !== stem + 'et') add(x.v.inf, 'er ' + er);
+      }
+    } else if (topic === 'basics') {
+      // ich bin ↔ ich war, du hast ↔ du hattest …
+      for (const inf of ['sein', 'haben']) {
+        const v = lib.verb(inf);
+        if (v && v.prt) lib.PERSONS.forEach((p, i) => add(`${p.split('/')[0]} ${v.forms[i]}`, `${p.split('/')[0]} ${v.prt[i]}`));
       }
     } else if (topic === 'gender') {
       for (const [m, f] of jobs) add(m, f);

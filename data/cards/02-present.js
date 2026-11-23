@@ -57,7 +57,7 @@ Brezel.deck.addCards('present', [
     explain: '*fahren* changes **a → ä** with du and er/sie/es: du **fährst**, sie **fährt**. (*fahrt* is the ihr-form.)',
   },
   {
-    id: 'pr-11', type: 'type', rule: 'sein-haben',
+    id: 'pr-11', type: 'type', also: ['basics'], rule: 'sein-haben',
     prompt: 'Conjugate the verb',
     q: 'Wo ___ Sie geboren?', hint: 'sein',
     answer: 'sind',
@@ -91,8 +91,8 @@ Brezel.deck.addCards('present', [
     answer: 'löst',
     explain: 'er → **-t**: er lös**t**.',
   },
-  { id: 'pr-16', type: 'table', rule: 'sein-haben', asksRule: true, verb: 'sein', explain: '*sein* is completely irregular — learn it by heart: bin, bist, ist, sind, seid, sind.' },
-  { id: 'pr-17', type: 'table', rule: 'sein-haben', asksRule: true, verb: 'haben', explain: 'Note the short forms: du **hast**, er **hat**.' },
+  { id: 'pr-16', type: 'table', also: ['basics'], rule: 'sein-haben', asksRule: true, verb: 'sein', explain: '*sein* is completely irregular — learn it by heart: bin, bist, ist, sind, seid, sind.' },
+  { id: 'pr-17', type: 'table', also: ['basics'], rule: 'sein-haben', asksRule: true, verb: 'haben', explain: 'Note the short forms: du **hast**, er **hat**.' },
   { id: 'pr-18', type: 'table', rule: 'present-endings', verb: 'wohnen', explain: 'A regular verb: -e, -st, -t, -en, -t, -en.' },
   { id: 'pr-19', type: 'table', rule: 'vowel-change', verb: 'lesen', explain: 'Vowel change **e → ie** only with du and er/sie/es: liest, liest.' },
   { id: 'pr-20', type: 'table', rule: 'vowel-change', verb: 'fahren', explain: 'Vowel change **a → ä** only with du and er/sie/es: fährst, fährt.' },
@@ -152,7 +152,7 @@ Brezel.deck.addCards('present', [
   },
   // --- Kapitel 1, C1 / C2: Verben im Präsens (Wiederholung) ---------------------------
   {
-    id: 'pr-33', type: 'type', rule: 'sein-haben',
+    id: 'pr-33', type: 'type', also: ['basics'], rule: 'sein-haben',
     prompt: 'Conjugate the verb (careful — it’s irregular!)',
     q: '___ du einen neuen Schreibtisch?', hint: 'haben',
     answer: 'Hast', reject: ['habst'],
@@ -318,7 +318,7 @@ Brezel.deck.addCards('present', [
     explain: 'meine Eltern = sie (they) → stem *komm-* + **-en** = **kommen**. There is no *-ten* ending in the present.',
   },
   {
-    id: 'pr-61', type: 'spot', rule: 'sein-haben',
+    id: 'pr-61', type: 'spot', also: ['basics'], rule: 'sein-haben',
     q: 'Martina habt keine Kinder.',
     wrong: 'habt', correct: 'hat',
     explain: 'Martina = sie → **hat**. *habt* is the ihr-form (ihr habt).',
@@ -331,14 +331,14 @@ Brezel.deck.addCards('present', [
     explain: 'The vowel only changes with **du** and **er/sie/es**. With ihr it stays: *ihr fahrt, ihr gebt, ihr seht*.',
   },
   {
-    id: 'pr-63', type: 'mc', rule: 'sein-haben', gloss: { Ihr: 'you (all)' },
+    id: 'pr-63', type: 'mc', also: ['basics'], rule: 'sein-haben', gloss: { Ihr: 'you (all)' },
     prompt: 'Choose the correct form of **haben**',
     q: 'Ihr ___ heute keine Zeit.',
     correct: 'habt', wrong: ['hat', 'habst', 'haben'],
     explain: 'ihr → **-t**: ihr hab**t**. (du **hast**, er **hat**.)',
   },
   {
-    id: 'pr-64', type: 'gap', rule: 'sein-haben',
+    id: 'pr-64', type: 'gap', also: ['basics'], rule: 'sein-haben',
     q: 'Wir {sind} müde, aber ihr {seid} glücklich.',
     options: ['seit', 'sein', 'ist'],
     explain: 'wir **sind**, ihr **seid** (with **d**). Don’t mix it up with **seit** (since): *seit drei Jahren*. *glücklich* = happy.',

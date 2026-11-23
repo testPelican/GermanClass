@@ -14,7 +14,7 @@ Brezel.deck.addCards('reflexive', [
     explain: '*sich freuen* = *cieszyć **się***, *sich anziehen* = *ubierać **się***. (*sie* = she / they, *selbst* = myself / yourself … for emphasis.)',
   },
   {
-    id: 'rf-03', type: 'table', rule: 'reflexive-pronouns', asksRule: true,
+    id: 'rf-03', type: 'table', also: ['basics'], rule: 'reflexive-pronouns', asksRule: true,
     prompt: 'Write the **reflexive pronoun**',
     head: ['', 'Reflexivpronomen'],
     rows: [['ich', 'mich'], ['du', 'dich'], ['er/sie/es', 'sich'], ['wir', 'uns'], ['ihr', 'euch'], ['sie/Sie', 'sich']],
@@ -22,7 +22,7 @@ Brezel.deck.addCards('reflexive', [
     explain: 'Only **er/sie/es** and **sie/Sie** use *sich*. The others are the normal object pronouns: *mich, dich, uns, euch*. Polish uses *się* for everyone: *myję się, myjesz się, myjemy się*.',
   },
   {
-    id: 'rf-04', type: 'tf', rule: 'reflexive-pronouns', asksRule: true, theory: true,
+    id: 'rf-04', type: 'tf', also: ['basics'], rule: 'reflexive-pronouns', asksRule: true, theory: true,
     statement: 'Like Polish *się*, German uses **sich** for every person: *ich freue sich, du freust sich*.',
     answer: false,
     explain: 'Polish: *cieszę **się**, cieszysz **się***. German changes the pronoun: *ich freue **mich**, du freust **dich**, er freut **sich***.',
@@ -36,28 +36,28 @@ Brezel.deck.addCards('reflexive', [
     explain: 'Two things change: the verb ending **and** the pronoun: freu**e** mich, freu**st** dich, freu**t** sich …',
   },
   {
-    id: 'rf-06', type: 'type', rule: 'reflexive-pronouns',
+    id: 'rf-06', type: 'type', also: ['basics'], rule: 'reflexive-pronouns',
     prompt: 'Add the reflexive pronoun',
     q: 'Ich dusche ___ jeden Morgen.', hint: 'sich duschen',
     answer: 'mich',
     explain: 'ich → **mich**. Note: Polish *brać prysznic* isn’t reflexive, but German *sich duschen* is, so don’t forget it.',
   },
   {
-    id: 'rf-07', type: 'type', rule: 'reflexive-pronouns',
+    id: 'rf-07', type: 'type', also: ['basics'], rule: 'reflexive-pronouns',
     prompt: 'Add the reflexive pronoun',
     q: 'Beeil ___! Der Zug fährt gleich.', hint: 'sich beeilen',
     answer: 'dich',
     explain: 'A command to *du* → **dich**: *Beeil **dich**!* Polish: *Pośpiesz **się**!* (*sich beeilen* = to hurry: reflexive in German and Polish, but not in English.)',
   },
   {
-    id: 'rf-08', type: 'type', rule: 'reflexive-pronouns',
+    id: 'rf-08', type: 'type', also: ['basics'], rule: 'reflexive-pronouns',
     prompt: 'Add the reflexive pronoun',
     q: 'Wir treffen ___ um acht Uhr vor dem Kino.', hint: 'sich treffen',
     answer: 'uns',
     explain: 'wir → **uns**. *sich treffen* = to meet (each other), Polish *spotykamy **się***.',
   },
   {
-    id: 'rf-09', type: 'type', rule: 'reflexive-pronouns',
+    id: 'rf-09', type: 'type', also: ['basics'], rule: 'reflexive-pronouns',
     prompt: 'Add the reflexive pronoun',
     q: 'Interessiert ihr ___ für Fußball?', hint: 'sich interessieren',
     answer: 'euch',
@@ -71,7 +71,7 @@ Brezel.deck.addCards('reflexive', [
     explain: '*sich befinden* = to be located, Polish *znajdować **się***: *Gdzie **znajduje się** dworzec?* Stem ends in -d → extra e: befind**e**t.',
   },
   {
-    id: 'rf-11', type: 'type', rule: 'reflexive-pronouns',
+    id: 'rf-11', type: 'type', also: ['basics'], rule: 'reflexive-pronouns',
     prompt: 'Add the reflexive pronoun',
     q: 'Erinnern Sie ___ an Ihre Schulzeit?', hint: 'sich erinnern',
     answer: 'sich',
@@ -180,7 +180,7 @@ Brezel.deck.addCards('reflexive', [
     explain: '*Ich ziehe das Kind an, ich kämme meine Tochter, ich stelle Anna vor, ich treffe Max, ich dusche den Hund, du ärgerst mich.* But you can’t *beeilen*, *bedanken*, *erkälten* or *verlieben* someone else.',
   },
   {
-    id: 'rf-26', type: 'spot', rule: 'reflexive-pronouns',
+    id: 'rf-26', type: 'spot', also: ['basics'], rule: 'reflexive-pronouns',
     q: 'Ich habe sich gestern erkältet.',
     wrong: 'sich', correct: 'mich',
     explain: 'ich → **mich**: *Ich habe **mich** erkältet.* *sich* is only for er/sie/es and sie/Sie.',
@@ -241,7 +241,7 @@ Brezel.deck.addCards('reflexive', [
     explain: 'Reflexive → always **haben**, and *Knut* = er → **hat**: *Knut hat sich geduscht.*',
   },
   {
-    id: 'rf-35', type: 'mc', level: 1, rule: 'reflexive-pronouns',
+    id: 'rf-35', type: 'mc', also: ['basics'], level: 1, rule: 'reflexive-pronouns',
     prompt: 'Choose the reflexive pronoun',
     q: 'Du erinnerst ___ gern an deine Schulzeit.',
     correct: 'dich', wrong: ['sich', 'mich', 'dir'],
@@ -274,7 +274,7 @@ Brezel.deck.addCards('reflexive', [
     explain: '*Hast **du dich** getroffen?* — pronoun first. With a name both are fine: *Hat **sich Luise** / Hat **Luise sich** getroffen?*',
   },
   {
-    id: 'rf-40', type: 'sort', level: 2, rule: 'reflexive-pronouns',
+    id: 'rf-40', type: 'sort', also: ['basics'], level: 2, rule: 'reflexive-pronouns',
     prompt: 'Which reflexive pronoun is missing?',
     buckets: [
       { label: 'sich', sub: 'er / sie / es, sie (plural), Sie', items: ['Kathrin und Max unterhalten …', 'Herr Huber interessiert …', 'Alexandra entspannt …', 'Peter und Paul streiten …'] },
@@ -298,7 +298,7 @@ Brezel.deck.addCards('reflexive', [
     explain: '*Leon* = er → **ärgert sich**. *sich ärgern über* = to be annoyed about (Polish *denerwować **się** na*).',
   },
   {
-    id: 'rf-43', type: 'gap', level: 2, rule: 'reflexive-pronouns',
+    id: 'rf-43', type: 'gap', also: ['basics'], level: 2, rule: 'reflexive-pronouns',
     q: 'Kathrin und Max {unterhalten} {sich}.',
     options: ['unterhält', 'uns'],
     explain: 'Two people = *sie* (plural) → **unterhalten sich**. *sich unterhalten* = to chat (Polish *rozmawiać* — no *się*, so it’s easy to forget).',

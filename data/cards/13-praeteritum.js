@@ -1,7 +1,7 @@
 /* Simple past (Präteritum): war / hatte, regular -te, irregular vowel change; the D2 verb list (Begegnungen A2+ p. 32–33). */
 Brezel.deck.addCards('praet', [
   {
-    id: 'pt-01', type: 'table', rule: 'praet-sein-haben', asksRule: true,
+    id: 'pt-01', type: 'table', also: ['basics'], rule: 'praet-sein-haben', asksRule: true,
     prompt: 'Conjugate **sein** in the **Präteritum**',
     head: ['', 'sein (Präteritum)'],
     rows: [['ich', 'war'], ['du', 'warst'], ['er/sie/es', 'war'], ['wir', 'waren'], ['ihr', 'wart'], ['sie/Sie', 'waren']],
@@ -9,7 +9,7 @@ Brezel.deck.addCards('praet', [
     explain: '**ich war = er war**: in the Präteritum ich and er/sie/es have no ending. *ihr **wart*** (no e).',
   },
   {
-    id: 'pt-02', type: 'table', rule: 'praet-sein-haben', asksRule: true,
+    id: 'pt-02', type: 'table', also: ['basics'], rule: 'praet-sein-haben', asksRule: true,
     prompt: 'Conjugate **haben** in the **Präteritum**',
     head: ['', 'haben (Präteritum)'],
     rows: [['ich', 'hatte'], ['du', 'hattest'], ['er/sie/es', 'hatte'], ['wir', 'hatten'], ['ihr', 'hattet'], ['sie/Sie', 'hatten']],
@@ -24,35 +24,35 @@ Brezel.deck.addCards('praet', [
     explain: '*ich ging – er ging*, *ich kaufte – sie kaufte*, *ich hatte – es hatte*. In the present they differ (*ich gehe – er geht*); in the Präteritum the er-form has **no -t**.',
   },
   {
-    id: 'pt-04', type: 'type', rule: 'praet-sein-haben',
+    id: 'pt-04', type: 'type', also: ['basics'], rule: 'praet-sein-haben',
     prompt: 'Use the Präteritum',
     q: 'Letzte Woche ___ ich krank.', hint: 'sein',
     answer: 'war',
     explain: 'With *sein* the Präteritum is normal even when speaking: *Letzte Woche **war** ich krank.* (*bin … gewesen* is correct too, but rarer.)',
   },
   {
-    id: 'pt-05', type: 'type', rule: 'praet-sein-haben',
+    id: 'pt-05', type: 'type', also: ['basics'], rule: 'praet-sein-haben',
     prompt: 'Use the Präteritum',
     q: 'Wo ___ du gestern Abend?', hint: 'sein',
     answer: 'warst',
     explain: 'du → **-st**: du **warst**. (ich war, du warst, er war.)',
   },
   {
-    id: 'pt-06', type: 'type', rule: 'praet-sein-haben', gloss: { Ihr: 'you (all)' },
+    id: 'pt-06', type: 'type', also: ['basics'], rule: 'praet-sein-haben', gloss: { Ihr: 'you (all)' },
     prompt: 'Use the Präteritum',
     q: 'Ihr ___ gestern viel Glück.', hint: 'haben',
     answer: 'hattet',
     explain: 'ihr → **hattet**. (*Glück haben* = to be lucky.)',
   },
   {
-    id: 'pt-07', type: 'type', rule: 'praet-sein-haben',
+    id: 'pt-07', type: 'type', also: ['basics'], rule: 'praet-sein-haben',
     prompt: 'Use the Präteritum',
     q: '___ ihr gestern im Kino?', hint: 'sein',
     answer: 'Wart',
     explain: 'ihr → **wart**, with no e (but *ihr hatt**e**t*). Yes/no question → the verb comes first.',
   },
   {
-    id: 'pt-08', type: 'gap', rule: 'praet-sein-haben',
+    id: 'pt-08', type: 'gap', also: ['basics'], rule: 'praet-sein-haben',
     prompt: 'Use the Präteritum',
     q: 'Ich {hatte} keine Zeit, ich {war} krank.',
     options: ['habe', 'bin', 'hat'],
@@ -190,7 +190,7 @@ Brezel.deck.addCards('praet', [
     explain: 'An irregular Präteritum takes **no -te**: *er aß*.',
   },
   {
-    id: 'pt-27', type: 'tf', rule: 'praet-sein-haben',
+    id: 'pt-27', type: 'tf', also: ['basics'], rule: 'praet-sein-haben',
     q: 'Ich war gestern im Kino.',
     answer: true, labels: ['Correct', 'Wrong'],
     explain: 'Correct: *war* is the Präteritum of *sein* and perfectly normal in speech. (*Ich bin ins Kino gegangen* says you went; *Ich war im Kino* says where you were.)',

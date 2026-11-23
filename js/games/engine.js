@@ -88,6 +88,8 @@
   ].map((v) => [v, true]));
 
   const MODALS = ['müssen', 'können', 'möchten', 'mögen', 'wollen', 'dürfen', 'sollen'];
+  /** Basics: sein and haben (half of the spins), plus two everyday reflexive verbs for mich, dich, sich, uns, euch. */
+  const BASICS = [['sein', false], ['haben', false], ['freuen', true], ['anziehen', true]];
   const INSEPARABLE = /^(be|ver|ent|er|ge|zer|emp|miss|unter|über|hinter|wider)/;
 
   const verb = (inf) => B.deck.verbs[inf] || null;
@@ -125,7 +127,8 @@
   /**
    * Lexicon verbs that fit a topic: [{ v, reflexive }]. need: fields the game needs ('prt', 'pp').
    * verblist → the user's list; reflexive → reflexive verbs; prefix → separable + inseparable;
-   * praet → verbs with a Präteritum; past / pastq / tenses → verbs with a participle; verbs → modals.
+   * praet → verbs with a Präteritum; past / pastq / tenses → verbs with a participle; verbs → modals;
+   * basics → sein, haben and a few everyday reflexive verbs.
    */
   function verbsFor(topic, { need = [] } = {}) {
     const all = Object.values(B.deck.verbs);
@@ -142,6 +145,9 @@
         break;
       case 'verbs':
         out = MODALS.map(verb).filter(Boolean).map((v) => ({ v, reflexive: false }));
+        break;
+      case 'basics':
+        out = BASICS.map(([inf, reflexive]) => ({ v: verb(inf), reflexive })).filter((x) => x.v);
         break;
       case 'praet':
         out = all.filter((v) => v.prt).map((v) => ({ v, reflexive: isReflexive(v) }));
@@ -205,7 +211,7 @@
     value,
     data: {},
     lib: {
-      PERSONS, REFL, VERB_LIST, MODALS,
+      PERSONS, REFL, VERB_LIST, MODALS, BASICS,
       verb, isReflexive, isSeparable, isInseparable, meaning, form, verbsFor, cardsFor, deal, sample, same, uniq,
     },
   };

@@ -4,8 +4,10 @@
  *   Brezel.deck.addVerbs({...}), addFamilies([...]), addProperNouns([...])
  *   Brezel.deck.addCards('topicId', [...])
  *   Brezel.deck.addRules('topicId', [...])   (the rules a card practises: Glossary and Rule book)
- * A card belongs to one topic. A topic with collects: 'theory' (Rules) also holds every card
- * marked theory: true: a question about a rule itself, never a translation.
+ * A card belongs to its topic, and also to the topics listed in also: ['basics'] (the same card,
+ * so mastering it counts in every one of them). A topic with collects: 'theory' (Rules) also holds
+ * every card marked theory: true: a question about a rule itself, never a translation.
+ * A rule may list more topics too (also: ['basics']): the Rule book shows it under each of them.
  * finalize() then validates everything; broken cards are skipped and reported
  * in the console (and by tools/validate.js), so one typo never breaks the app.
  */
@@ -120,6 +122,7 @@
         if (!c.id) errs.push('missing id');
         else if (seen.has(c.id)) errs.push('duplicate id');
         if (!this.topicMap[c.topic]) errs.push(`unknown topic "${c.topic}"`);
+        for (const t of this.alsoOf(c)) if (!this.topicMap[t] || this.topicMap[t].collects || t === c.topic) errs.push(`also: "${t}" is not another topic`);
         const type = B.ex && B.ex.get(c.type);
         if (!type) errs.push(`unknown type "${c.type}"`);
         else if (type.validate) errs.push(...type.validate(c, this));
@@ -150,15 +153,25 @@
       return this;
     },
 
-    /** Is the card in this topic? A collecting topic (Rules) holds every card with its flag. */
+    /** The other topics a card or rule also belongs to (also: 'basics' or ['basics', …]). */
+    alsoOf(x) {
+      return Array.isArray(x.also) ? x.also : x.also ? [x.also] : [];
+    },
+
+    /** Is the card in this topic? Its own, one in also: […], or a collecting topic (Rules) for its flag. */
     inTopic(card, topicId) {
-      if (card.topic === topicId) return true;
+      if (card.topic === topicId || this.alsoOf(card).includes(topicId)) return true;
       const t = this.topicMap[topicId];
       return !!(t && t.collects && card[t.collects]);
     },
 
     byTopic(topicId) {
       return this.cards.filter((c) => this.inTopic(c, topicId));
+    },
+
+    /** The rules of a topic, for the Rule book: its own and those that list it in also. */
+    rulesOfTopic(topicId) {
+      return this.rules.filter((r) => r.topic === topicId || this.alsoOf(r).includes(topicId));
     },
   };
 

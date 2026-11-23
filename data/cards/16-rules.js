@@ -75,7 +75,7 @@ Brezel.deck.addCards('present', [
     explain: '*du f**ä**hrst, er f**ä**hrt* — but *ich fahre, wir fahren, **ihr fahrt**, sie fahren*. The same with e → i (*du gibst, er gibt*) and e → ie (*du siehst, er sieht*).',
   },
   {
-    id: 'ru-11', type: 'tf', rule: 'sein-haben', asksRule: true, theory: true,
+    id: 'ru-11', type: 'tf', also: ['basics'], rule: 'sein-haben', asksRule: true, theory: true,
     statement: '*haben* is irregular only with **du** and **er / sie / es**: *du hast, er hat*.',
     answer: true,
     explain: 'The other forms are regular: *ich habe, wir haben, ihr habt, sie haben*. Only du and er/sie/es lose the **b**. *sein* is irregular everywhere: *bin, bist, ist, sind, seid, sind*.',

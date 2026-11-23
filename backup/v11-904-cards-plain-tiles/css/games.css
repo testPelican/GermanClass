@@ -1,0 +1,587 @@
+/*
+ * The game screen (js/ui/arcade.js): intro, top bar, timer, score, results.
+ * Each game sets its accent colour as --g on .arcade. Game-specific styles live in
+ * css/games-quick.css and css/games-play.css.
+ */
+
+.screen-arcade {
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.arcade {
+  --g: var(--blue);
+  --g-soft: color-mix(in srgb, var(--g) 16%, var(--surface));
+  --g-ink: color-mix(in srgb, var(--g) 70%, var(--text));
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 60% at 50% -10%, color-mix(in srgb, var(--g) 12%, transparent), transparent 70%),
+    var(--bg);
+}
+
+/* --- top bar ----------------------------------------------------------------------- */
+.g-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 12px max(14px, env(safe-area-inset-right)) 6px max(10px, env(safe-area-inset-left));
+  padding-top: max(12px, env(safe-area-inset-top));
+  flex: none;
+}
+
+.g-x {
+  font-size: 24px;
+  color: var(--faint);
+}
+
+.g-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  margin-right: auto;
+  font-weight: 900;
+  font-size: 17px;
+}
+
+.g-name-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.g-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.g-lv-1 {
+  background: color-mix(in srgb, #58cc02 18%, var(--surface));
+  color: color-mix(in srgb, #58cc02 60%, var(--text));
+}
+.g-lv-2 {
+  background: color-mix(in srgb, #ff9600 18%, var(--surface));
+  color: color-mix(in srgb, #ff9600 62%, var(--text));
+}
+.g-lv-3 {
+  background: color-mix(in srgb, #ff4b4b 18%, var(--surface));
+  color: color-mix(in srgb, #ff4b4b 65%, var(--text));
+}
+
+.g-score {
+  min-width: 74px;
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+  background: var(--surface);
+}
+
+.g-score.bump {
+  animation: bump 0.45s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+.g-lives {
+  display: flex;
+  gap: 2px;
+}
+
+.g-heart svg {
+  display: block;
+  width: 22px;
+  height: 22px;
+  fill: var(--red);
+  transition: transform 0.3s ease, opacity 0.3s ease, fill 0.3s ease;
+}
+
+.g-heart.lost svg {
+  fill: var(--border-strong);
+  opacity: 0.6;
+  transform: scale(0.8);
+}
+
+/* timer / rounds */
+.g-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 max(16px, env(safe-area-inset-right)) 4px max(16px, env(safe-area-inset-left));
+  flex: none;
+}
+
+.g-bar.is-empty {
+  visibility: hidden;
+}
+
+.g-timer {
+  flex: 1;
+  height: 12px;
+  border-radius: 999px;
+  background: var(--track);
+  overflow: hidden;
+}
+
+.g-timer span {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  background: var(--g);
+  transition: background-color 0.3s ease;
+}
+
+.g-bar.is-rounds .g-timer span {
+  transition: width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.g-bar.low .g-timer span {
+  background: var(--red);
+  animation: g-blink 0.9s ease-in-out infinite;
+}
+
+.g-time-text {
+  min-width: 52px;
+  text-align: right;
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.g-bar.low .g-time-text {
+  color: var(--bad-ink);
+}
+
+.g-combo {
+  position: absolute;
+  top: calc(96px + env(safe-area-inset-top));
+  left: 50%;
+  z-index: 30;
+  padding: 8px 16px;
+  border: 2px solid var(--orange);
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--lift);
+  font-weight: 900;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -12px);
+}
+
+.g-combo.show {
+  animation: combo 1.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+/* --- stage: the game draws in here ------------------------------------------------------- */
+.g-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 8px max(16px, env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  overflow: hidden;
+  touch-action: manipulation;
+}
+
+.g-stage.g-shake,
+.g-shake {
+  animation: shake 0.42s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+/* floating "+20" / "✗" */
+.g-float {
+  position: absolute;
+  z-index: 40;
+  font-size: 22px;
+  font-weight: 900;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  animation: g-float 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  text-shadow: 0 2px 0 var(--surface), 0 0 10px var(--surface);
+}
+
+.g-float.good {
+  color: var(--good-ink);
+}
+
+.g-float.bad {
+  color: var(--bad-ink);
+}
+
+/* 3 · 2 · 1 · Los! */
+.g-count {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--bg) 70%, transparent);
+  backdrop-filter: blur(2px);
+  pointer-events: none;
+}
+
+.g-count span {
+  font-size: 110px;
+  font-weight: 900;
+  color: var(--g);
+  text-shadow: 0 6px 0 color-mix(in srgb, var(--g) 35%, transparent);
+  animation: g-count 0.55s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+
+.g-count span.go {
+  font-size: 84px;
+  color: var(--green);
+}
+
+/* --- intro + results cards ------------------------------------------------------------------- */
+.g-intro-wrap,
+.g-results-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 45;
+  display: grid;
+  place-items: center;
+  padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+  overflow-y: auto;
+  background:
+    radial-gradient(90% 50% at 50% 0%, color-mix(in srgb, var(--g) 18%, transparent), transparent 75%),
+    var(--bg);
+  animation: fade-in 0.2s ease both;
+}
+
+.g-intro,
+.g-results {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  padding: 26px 22px 22px;
+  border: 2px solid var(--border);
+  border-bottom-width: 5px;
+  border-radius: 26px;
+  background: var(--surface);
+  box-shadow: var(--lift);
+  text-align: center;
+  animation: modal-in 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.g-intro .g-x {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.g-art {
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 10px;
+  border-radius: 28px;
+  background: var(--g-soft);
+}
+
+.g-art.big {
+  width: 132px;
+  height: 132px;
+  border-radius: 36px;
+  animation: g-art-in 0.6s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+}
+
+.g-art svg {
+  width: 82%;
+  height: 82%;
+}
+
+.g-art-emoji {
+  font-size: 54px;
+  line-height: 1;
+}
+
+.g-art-emoji.big {
+  font-size: 72px;
+}
+
+.g-intro-name,
+.g-res-title {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--g-ink);
+  margin: 4px 0 6px;
+}
+
+.g-intro-blurb {
+  font-size: 16px;
+  color: var(--text-2);
+}
+
+.g-intro-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin: 14px 0;
+}
+
+.g-how {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: var(--surface-2);
+  list-style: none;
+  text-align: left;
+  font-size: 15px;
+}
+
+.g-how li::before {
+  content: '▸ ';
+  color: var(--g);
+  font-weight: 900;
+}
+
+.g-go {
+  --btn-bg: var(--g);
+  --btn-border: var(--g);
+  --btn-shadow: color-mix(in srgb, var(--g) 70%, #000);
+  --btn-fg: #fff;
+}
+
+.g-other {
+  margin-top: 12px;
+}
+
+.g-res-sub {
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.g-res-score {
+  font-size: 64px;
+  font-weight: 900;
+  line-height: 1.05;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.g-res-best {
+  margin-bottom: 16px;
+  color: var(--muted);
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.g-record {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--gold) 30%, var(--surface));
+  color: var(--text);
+  animation: pop-in 0.5s 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+
+.g-res-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.g-res-stat {
+  display: grid;
+  gap: 1px;
+  padding: 8px 4px;
+  border-radius: 14px;
+  background: var(--surface-2);
+}
+
+.g-res-stat b {
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+}
+
+.g-res-stat small {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.g-res-miss {
+  margin-bottom: 14px;
+  text-align: left;
+  font-size: 14px;
+}
+
+.g-res-miss summary {
+  cursor: pointer;
+  font-weight: 800;
+  color: var(--link);
+}
+
+.g-res-miss ul {
+  display: grid;
+  gap: 6px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.g-res-miss li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: baseline;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: var(--bad-bg);
+}
+
+.g-res-miss s {
+  color: var(--bad-ink);
+}
+
+.g-again {
+  padding-top: 14px;
+  border-top: 2px dashed var(--border);
+}
+
+.g-again h2 {
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.g-again p {
+  margin-bottom: 12px;
+}
+
+.g-again-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.g-again-row .btn {
+  flex: 1 1 140px;
+  min-height: 46px;
+  font-size: 14px;
+}
+
+.g-again-row .btn-big {
+  flex-basis: 100%;
+}
+
+/* --- shared bits games can use ---------------------------------------------------------------------- */
+/* a big answer button in the game colour */
+.g-btn {
+  --btn-bg: var(--surface);
+  --btn-border: var(--border);
+  --btn-shadow: var(--border);
+  min-height: 58px;
+  font-size: 18px;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+.g-btn.good {
+  --btn-bg: var(--good-bg);
+  --btn-border: var(--good-line);
+  --btn-shadow: var(--good-line);
+  --btn-fg: var(--good-ink);
+}
+
+.g-btn.bad {
+  --btn-bg: var(--bad-bg);
+  --btn-border: var(--bad-line);
+  --btn-shadow: var(--bad-line);
+  --btn-fg: var(--bad-ink);
+}
+
+@media (max-width: 520px) {
+  .g-name {
+    font-size: 15px;
+  }
+  .g-top .g-lv {
+    display: none;
+  }
+  .g-res-score {
+    font-size: 54px;
+  }
+  .g-intro,
+  .g-results {
+    padding: 22px 16px 18px;
+  }
+}
+
+@keyframes g-float {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -30%) scale(0.6);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -70%) scale(1.15);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -190%) scale(1);
+  }
+}
+
+@keyframes g-count {
+  0% {
+    opacity: 0;
+    transform: scale(2.2);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes g-art-in {
+  0% {
+    transform: scale(0.4) rotate(-12deg);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) rotate(0);
+    opacity: 1;
+  }
+}
+
+@keyframes g-blink {
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .g-float {
+    animation: fade-out 0.9s ease both;
+  }
+}

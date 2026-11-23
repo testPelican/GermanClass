@@ -726,6 +726,22 @@ Brezel.gloss.addWords({
   Hochzeit: 'wedding',
   Kunde: 'customer',
   'Vitamin C': 'vitamin C',
+  // Basics (data/cards/18-basics.js)
+  unser: 'our',
+  euer: 'your (all)',
+  ärgerst: 'annoy | sich ärgern',
+  interessiere: 'interest | sich interessieren',
+  interessieren: 'interest | sich interessieren',
+  streiten: 'argue | sich streiten',
+  müsst: 'must / have to | müssen',
+  besuchst: 'visit | besuchen',
+  kommst: 'come | kommen',
+  zehn: 'ten',
+  schönes: 'beautiful / nice | schön',
+  letztes: 'last',
+  früher: 'in the past / earlier',
+  Spiegel: 'mirror',
+  Stadt: 'town / city',
 });
 
 // names: no translation, no dots

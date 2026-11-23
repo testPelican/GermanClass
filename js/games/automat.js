@@ -267,7 +267,7 @@
     color: '#ff4b4b',
     blurb: 'Pull the lever! Person, verb and tense spin — then hit the right **verb form** for the jackpot.',
     how: ['Pull the lever (Space / Enter), answer with 1–4', 'Medium adds the Präteritum · High: type it, Perfekt too', '10 spins — quick answers score more'],
-    topics: ['present', 'praet', 'verbs', 'verblist', 'reflexive', 'tenses'],
+    topics: ['basics', 'present', 'praet', 'verbs', 'verblist', 'reflexive', 'tenses'],
     art: '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" font-family="system-ui,sans-serif" font-weight="900"><rect width="120" height="120" rx="28" fill="#fff1dc"/><rect x="12" y="22" width="80" height="84" rx="14" fill="#ff4b4b"/><rect x="20" y="12" width="64" height="18" rx="9" fill="#ffc800"/><circle cx="30" cy="21" r="3" fill="#fff"/><circle cx="42" cy="21" r="3" fill="#fff"/><circle cx="54" cy="21" r="3" fill="#fff"/><circle cx="66" cy="21" r="3" fill="#fff"/><circle cx="78" cy="21" r="3" fill="#fff"/><rect x="20" y="40" width="64" height="32" rx="7" fill="#fff"/><path d="M41.3 40v32M62.6 40v32" stroke="#ffd1d1" stroke-width="2"/><text x="31" y="61" text-anchor="middle" font-size="12" fill="#3c3c3c">ich</text><text x="52" y="61" text-anchor="middle" font-size="12" fill="#3c3c3c">bin</text><text x="73" y="62" text-anchor="middle" font-size="14" fill="#58cc02">✓</text><rect x="26" y="82" width="52" height="14" rx="7" fill="#c62f2f"/><rect x="99" y="44" width="6" height="40" rx="3" fill="#9aa5ab"/><circle cx="102" cy="40" r="9" fill="#ff9600"/><rect x="94" y="80" width="16" height="12" rx="4" fill="#c62f2f"/></svg>',
     ready: (topic) => automatPool(topic).length >= 4,
     gen: automatGen,

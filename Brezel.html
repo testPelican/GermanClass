@@ -6814,6 +6814,27 @@ body.is-dragging * {
   --burst: ta-drop-in 0.5s 0.24s cubic-bezier(0.3, 1.4, 0.5, 1) both;
 }
 
+/* --- 🧱 basics: the wall rises row by row, the top brick drops in and settles ------------------------------------------------------------ */
+.t-art-basics .ta-r1 {
+  --burst: ta-drop-in 0.45s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+}
+.t-art-basics .ta-r2 {
+  --burst: ta-drop-in 0.45s 0.14s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+}
+.t-art-basics .ta-brick {
+  transform-origin: 50% 100%;
+  --loop: ta-hop-tilt 2.2s ease-in-out infinite;
+  --burst: ta-drop-in 0.55s 0.32s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+}
+.t-art-basics .ta-spark {
+  --loop: ta-twinkle 1.8s ease-in-out infinite;
+  --burst: ta-sparkle 0.7s 0.7s ease-out both;
+}
+.t-art-basics .ta-spark2 {
+  --loop: ta-twinkle 1.8s 0.9s ease-in-out infinite;
+  --burst: ta-sparkle 0.6s 0.8s ease-out both;
+}
+
 /* --- any other topic: the star twinkles ---------------------------------------------------------------------------------------------------- */
 .t-art-other .ta-star {
   --loop: ta-twinkle 1.8s ease-in-out infinite;
@@ -10257,8 +10278,10 @@ body.is-dragging * {
  *   Brezel.deck.addVerbs({...}), addFamilies([...]), addProperNouns([...])
  *   Brezel.deck.addCards('topicId', [...])
  *   Brezel.deck.addRules('topicId', [...])   (the rules a card practises: Glossary and Rule book)
- * A card belongs to one topic. A topic with collects: 'theory' (Rules) also holds every card
- * marked theory: true: a question about a rule itself, never a translation.
+ * A card belongs to its topic, and also to the topics listed in also: ['basics'] (the same card,
+ * so mastering it counts in every one of them). A topic with collects: 'theory' (Rules) also holds
+ * every card marked theory: true: a question about a rule itself, never a translation.
+ * A rule may list more topics too (also: ['basics']): the Rule book shows it under each of them.
  * finalize() then validates everything; broken cards are skipped and reported
  * in the console (and by tools/validate.js), so one typo never breaks the app.
  */
@@ -10373,6 +10396,7 @@ body.is-dragging * {
         if (!c.id) errs.push('missing id');
         else if (seen.has(c.id)) errs.push('duplicate id');
         if (!this.topicMap[c.topic]) errs.push(`unknown topic "${c.topic}"`);
+        for (const t of this.alsoOf(c)) if (!this.topicMap[t] || this.topicMap[t].collects || t === c.topic) errs.push(`also: "${t}" is not another topic`);
         const type = B.ex && B.ex.get(c.type);
         if (!type) errs.push(`unknown type "${c.type}"`);
         else if (type.validate) errs.push(...type.validate(c, this));
@@ -10403,15 +10427,25 @@ body.is-dragging * {
       return this;
     },
 
-    /** Is the card in this topic? A collecting topic (Rules) holds every card with its flag. */
+    /** The other topics a card or rule also belongs to (also: 'basics' or ['basics', …]). */
+    alsoOf(x) {
+      return Array.isArray(x.also) ? x.also : x.also ? [x.also] : [];
+    },
+
+    /** Is the card in this topic? Its own, one in also: […], or a collecting topic (Rules) for its flag. */
     inTopic(card, topicId) {
-      if (card.topic === topicId) return true;
+      if (card.topic === topicId || this.alsoOf(card).includes(topicId)) return true;
       const t = this.topicMap[topicId];
       return !!(t && t.collects && card[t.collects]);
     },
 
     byTopic(topicId) {
       return this.cards.filter((c) => this.inTopic(c, topicId));
+    },
+
+    /** The rules of a topic, for the Rule book: its own and those that list it in also. */
+    rulesOfTopic(topicId) {
+      return this.rules.filter((r) => r.topic === topicId || this.alsoOf(r).includes(topicId));
     },
   };
 
@@ -13865,6 +13899,16 @@ body.is-dragging * {
  */
 Brezel.deck.addTopics([
   {
+    id: 'basics',
+    short: 'Basics',
+    name: 'Basics',
+    de: 'Grundlagen',
+    icon: '🧱',
+    learn: 'Here you will learn the **building blocks** of every sentence: *sein* and *haben* for every person (*ich **bin**, du **hast***), their past *war* and *hatte*, the pronouns *mich, dich, sich, uns, euch*, *mich* or *mir*, and why it is *ich **bin** 30* — not *ich habe 30*.',
+    tip:
+      'Learn each person as one row: **ich** bin · habe · mich · mein · **du** bist · hast · dich · dein · **er / sie / es** ist · hat · sich · sein / ihr · **wir** sind · haben · uns · unser · **ihr** seid · habt · euch · euer · **sie / Sie** sind · haben · sich · ihr / Ihr. Age and adjectives take **sein** (*Polish mam 30 lat* → *ich bin 30*), nouns take **haben** (*ich habe Zeit*). Most verbs take **mich, dich**; *mit, helfen, gefallen* and *schmecken* take **mir, dir**. Many cards here also belong to their own topic, so they count in both.',
+  },
+  {
     id: 'rules',
     short: 'Rules',
     name: 'Rules',
@@ -14219,6 +14263,8 @@ Brezel.deck.addProperNouns([
   'Knut', 'Luise', 'Sabine', 'Felix', 'Leon', 'Kathrin', 'Alexandra', 'Weber', 'Schneider', 'Huber', 'Mia', 'Julian', 'Sebastian', 'Peter',
   // Kapitel 1, A25 and C11 (p. 21, 29)
   'BETA', 'Susanne', 'Matthias', 'Sonja', 'Müller',
+  // Basics
+  'Lisa', 'Tom',
 ]);
 
 </script>
@@ -14951,6 +14997,22 @@ Brezel.gloss.addWords({
   Hochzeit: 'wedding',
   Kunde: 'customer',
   'Vitamin C': 'vitamin C',
+  // Basics (data/cards/18-basics.js)
+  unser: 'our',
+  euer: 'your (all)',
+  ärgerst: 'annoy | sich ärgern',
+  interessiere: 'interest | sich interessieren',
+  interessieren: 'interest | sich interessieren',
+  streiten: 'argue | sich streiten',
+  müsst: 'must / have to | müssen',
+  besuchst: 'visit | besuchen',
+  kommst: 'come | kommen',
+  zehn: 'ten',
+  schönes: 'beautiful / nice | schön',
+  letztes: 'last',
+  früher: 'in the past / earlier',
+  Spiegel: 'mirror',
+  Stadt: 'town / city',
 });
 
 // names: no translation, no dots
@@ -14969,7 +15031,66 @@ Brezel.gloss.addNames(['PlayStation', 'Jazz', 'Blues', 'Rock']);
  * **bold** and *italic* work as in card text, also in table cells. A table row starts with its label.
  * Examples here are deliberately not the sentences from the cards (tools/validate.js checks).
  * Each addRules call holds the rules of one topic; the 📖 Rule book shows them in that order.
+ * also: ['basics'] shows a rule under another topic of the Rule book as well (sein-haben …).
  */
+
+// --- basics (sein, haben, pronouns: the person chart) -------------------------------------
+Brezel.deck.addRules('basics', [
+  {
+    id: 'person-chart',
+    title: 'One person, one set of forms',
+    text: 'Every person has its own form of **sein** and **haben**, its own reflexive pronoun and its own possessive. Learn each person as one row:',
+    table: {
+      head: ['', 'sein', 'haben', 'sich', 'mein'],
+      rows: [
+        ['**ich**', 'bin', 'habe', 'mich', 'mein'],
+        ['**du**', 'bist', 'hast', 'dich', 'dein'],
+        ['**er / es**', 'ist', 'hat', 'sich', 'sein'],
+        ['**sie** (she)', 'ist', 'hat', 'sich', 'ihr'],
+        ['**wir**', 'sind', 'haben', 'uns', 'unser'],
+        ['**ihr**', 'seid', 'habt', 'euch', 'euer'],
+        ['**sie** (they)', 'sind', 'haben', 'sich', 'ihr'],
+        ['**Sie**', 'sind', 'haben', 'sich', 'Ihr'],
+      ],
+    },
+    points: [
+      '**sich** is for everyone you talk *about* (er, sie, es, sie, a name) and for formal **Sie** — always with a small *s*.',
+      '*ihr* is two words: the person **you (all)** (*ihr habt Glück*) and the possessive **her / their** (*Anna und ihr Bruder*).',
+      'In the Präteritum, ich and er are the same: *ich war – er war*, *ich hatte – er hatte*.',
+    ],
+  },
+  {
+    id: 'sein-or-haben',
+    title: 'sein or haben? Age and adjectives take sein',
+    text: 'Polish often says *mieć* where German says **sein**. The rule of thumb: your **age** or an **adjective** → *sein*; a **noun**, something you have → *haben*.',
+    points: [
+      '**sein** + age: *Er ist 40 (Jahre alt).* Polish *ma 40 lat* — but never *er hat 40 Jahre*.',
+      '**sein** + adjective: *müde, krank, glücklich, verheiratet, ledig* → *Paula ist ledig.*',
+      '**haben** + noun: *Zeit, Angst, Kinder, ein Auto* → *Wir haben Angst.*',
+      'Asking for the age: *Wie alt sind Sie?*',
+    ],
+  },
+  {
+    id: 'mich-mir',
+    title: 'mich or mir? Akkusativ or Dativ',
+    text: 'The verb or the preposition decides. Most verbs take the **Akkusativ** (*mich, dich*); a few take the **Dativ** (*mir, dir*).',
+    table: {
+      head: ['Nominativ', 'Akkusativ', 'Dativ'],
+      rows: [
+        ['ich', 'mich', 'mir'],
+        ['du', 'dich', 'dir'],
+        ['wir', 'uns', 'uns'],
+        ['ihr', 'euch', 'euch'],
+        ['Sie', 'Sie', 'Ihnen'],
+      ],
+    },
+    points: [
+      '**Akkusativ** with *besuchen, anrufen, fragen, kennen, einladen* and the reflexive verbs: *Sie fragt mich.*',
+      '**Dativ** after **mit** and **bei**, and with **helfen, gefallen, schmecken**: *Der Kaffee schmeckt mir.* Polish does the same: *pomóc mi, smakuje mi*.',
+      '**uns** and **euch** are the same in both cases; only *ich, du* and *Sie* change.',
+    ],
+  },
+]);
 
 // --- word order --------------------------------------------------------------------------
 Brezel.deck.addRules('order', [
@@ -15059,6 +15180,7 @@ Brezel.deck.addRules('present', [
   },
   {
     id: 'sein-haben',
+    also: ['basics'],
     title: 'sein and haben',
     text: 'The two most important verbs are irregular — learn them by heart.',
     points: [
@@ -15488,6 +15610,7 @@ Brezel.deck.addRules('tenses', [
 Brezel.deck.addRules('praet', [
   {
     id: 'praet-sein-haben',
+    also: ['basics'],
     title: 'Präteritum of sein and haben',
     points: [
       '**sein**: ich war, du warst, er war, wir waren, ihr wart, sie waren',
@@ -15535,6 +15658,7 @@ Brezel.deck.addRules('verblist', [
 Brezel.deck.addRules('reflexive', [
   {
     id: 'reflexive-pronouns',
+    also: ['basics'],
     title: 'Reflexive pronouns',
     text: 'A reflexive verb needs a pronoun that points back to the subject. Polish says *się* for everyone; German changes it with the person:',
     points: [
@@ -15953,7 +16077,7 @@ Brezel.deck.addCards('present', [
     explain: '*fahren* changes **a → ä** with du and er/sie/es: du **fährst**, sie **fährt**. (*fahrt* is the ihr-form.)',
   },
   {
-    id: 'pr-11', type: 'type', rule: 'sein-haben',
+    id: 'pr-11', type: 'type', also: ['basics'], rule: 'sein-haben',
     prompt: 'Conjugate the verb',
     q: 'Wo ___ Sie geboren?', hint: 'sein',
     answer: 'sind',
@@ -15987,8 +16111,8 @@ Brezel.deck.addCards('present', [
     answer: 'löst',
     explain: 'er → **-t**: er lös**t**.',
   },
-  { id: 'pr-16', type: 'table', rule: 'sein-haben', asksRule: true, verb: 'sein', explain: '*sein* is completely irregular — learn it by heart: bin, bist, ist, sind, seid, sind.' },
-  { id: 'pr-17', type: 'table', rule: 'sein-haben', asksRule: true, verb: 'haben', explain: 'Note the short forms: du **hast**, er **hat**.' },
+  { id: 'pr-16', type: 'table', also: ['basics'], rule: 'sein-haben', asksRule: true, verb: 'sein', explain: '*sein* is completely irregular — learn it by heart: bin, bist, ist, sind, seid, sind.' },
+  { id: 'pr-17', type: 'table', also: ['basics'], rule: 'sein-haben', asksRule: true, verb: 'haben', explain: 'Note the short forms: du **hast**, er **hat**.' },
   { id: 'pr-18', type: 'table', rule: 'present-endings', verb: 'wohnen', explain: 'A regular verb: -e, -st, -t, -en, -t, -en.' },
   { id: 'pr-19', type: 'table', rule: 'vowel-change', verb: 'lesen', explain: 'Vowel change **e → ie** only with du and er/sie/es: liest, liest.' },
   { id: 'pr-20', type: 'table', rule: 'vowel-change', verb: 'fahren', explain: 'Vowel change **a → ä** only with du and er/sie/es: fährst, fährt.' },
@@ -16048,7 +16172,7 @@ Brezel.deck.addCards('present', [
   },
   // --- Kapitel 1, C1 / C2: Verben im Präsens (Wiederholung) ---------------------------
   {
-    id: 'pr-33', type: 'type', rule: 'sein-haben',
+    id: 'pr-33', type: 'type', also: ['basics'], rule: 'sein-haben',
     prompt: 'Conjugate the verb (careful — it’s irregular!)',
     q: '___ du einen neuen Schreibtisch?', hint: 'haben',
     answer: 'Hast', reject: ['habst'],
@@ -16214,7 +16338,7 @@ Brezel.deck.addCards('present', [
     explain: 'meine Eltern = sie (they) → stem *komm-* + **-en** = **kommen**. There is no *-ten* ending in the present.',
   },
   {
-    id: 'pr-61', type: 'spot', rule: 'sein-haben',
+    id: 'pr-61', type: 'spot', also: ['basics'], rule: 'sein-haben',
     q: 'Martina habt keine Kinder.',
     wrong: 'habt', correct: 'hat',
     explain: 'Martina = sie → **hat**. *habt* is the ihr-form (ihr habt).',
@@ -16227,14 +16351,14 @@ Brezel.deck.addCards('present', [
     explain: 'The vowel only changes with **du** and **er/sie/es**. With ihr it stays: *ihr fahrt, ihr gebt, ihr seht*.',
   },
   {
-    id: 'pr-63', type: 'mc', rule: 'sein-haben', gloss: { Ihr: 'you (all)' },
+    id: 'pr-63', type: 'mc', also: ['basics'], rule: 'sein-haben', gloss: { Ihr: 'you (all)' },
     prompt: 'Choose the correct form of **haben**',
     q: 'Ihr ___ heute keine Zeit.',
     correct: 'habt', wrong: ['hat', 'habst', 'haben'],
     explain: 'ihr → **-t**: ihr hab**t**. (du **hast**, er **hat**.)',
   },
   {
-    id: 'pr-64', type: 'gap', rule: 'sein-haben',
+    id: 'pr-64', type: 'gap', also: ['basics'], rule: 'sein-haben',
     q: 'Wir {sind} müde, aber ihr {seid} glücklich.',
     options: ['seit', 'sein', 'ist'],
     explain: 'wir **sind**, ihr **seid** (with **d**). Don’t mix it up with **seit** (since): *seit drei Jahren*. *glücklich* = happy.',
@@ -18582,7 +18706,7 @@ Brezel.deck.addCards('tenses', [
 /* Simple past (Präteritum): war / hatte, regular -te, irregular vowel change; the D2 verb list (Begegnungen A2+ p. 32–33). */
 Brezel.deck.addCards('praet', [
   {
-    id: 'pt-01', type: 'table', rule: 'praet-sein-haben', asksRule: true,
+    id: 'pt-01', type: 'table', also: ['basics'], rule: 'praet-sein-haben', asksRule: true,
     prompt: 'Conjugate **sein** in the **Präteritum**',
     head: ['', 'sein (Präteritum)'],
     rows: [['ich', 'war'], ['du', 'warst'], ['er/sie/es', 'war'], ['wir', 'waren'], ['ihr', 'wart'], ['sie/Sie', 'waren']],
@@ -18590,7 +18714,7 @@ Brezel.deck.addCards('praet', [
     explain: '**ich war = er war**: in the Präteritum ich and er/sie/es have no ending. *ihr **wart*** (no e).',
   },
   {
-    id: 'pt-02', type: 'table', rule: 'praet-sein-haben', asksRule: true,
+    id: 'pt-02', type: 'table', also: ['basics'], rule: 'praet-sein-haben', asksRule: true,
     prompt: 'Conjugate **haben** in the **Präteritum**',
     head: ['', 'haben (Präteritum)'],
     rows: [['ich', 'hatte'], ['du', 'hattest'], ['er/sie/es', 'hatte'], ['wir', 'hatten'], ['ihr', 'hattet'], ['sie/Sie', 'hatten']],
@@ -18605,35 +18729,35 @@ Brezel.deck.addCards('praet', [
     explain: '*ich ging – er ging*, *ich kaufte – sie kaufte*, *ich hatte – es hatte*. In the present they differ (*ich gehe – er geht*); in the Präteritum the er-form has **no -t**.',
   },
   {
-    id: 'pt-04', type: 'type', rule: 'praet-sein-haben',
+    id: 'pt-04', type: 'type', also: ['basics'], rule: 'praet-sein-haben',
     prompt: 'Use the Präteritum',
     q: 'Letzte Woche ___ ich krank.', hint: 'sein',
     answer: 'war',
     explain: 'With *sein* the Präteritum is normal even when speaking: *Letzte Woche **war** ich krank.* (*bin … gewesen* is correct too, but rarer.)',
   },
   {
-    id: 'pt-05', type: 'type', rule: 'praet-sein-haben',
+    id: 'pt-05', type: 'type', also: ['basics'], rule: 'praet-sein-haben',
     prompt: 'Use the Präteritum',
     q: 'Wo ___ du gestern Abend?', hint: 'sein',
     answer: 'warst',
     explain: 'du → **-st**: du **warst**. (ich war, du warst, er war.)',
   },
   {
-    id: 'pt-06', type: 'type', rule: 'praet-sein-haben', gloss: { Ihr: 'you (all)' },
+    id: 'pt-06', type: 'type', also: ['basics'], rule: 'praet-sein-haben', gloss: { Ihr: 'you (all)' },
     prompt: 'Use the Präteritum',
     q: 'Ihr ___ gestern viel Glück.', hint: 'haben',
     answer: 'hattet',
     explain: 'ihr → **hattet**. (*Glück haben* = to be lucky.)',
   },
   {
-    id: 'pt-07', type: 'type', rule: 'praet-sein-haben',
+    id: 'pt-07', type: 'type', also: ['basics'], rule: 'praet-sein-haben',
     prompt: 'Use the Präteritum',
     q: '___ ihr gestern im Kino?', hint: 'sein',
     answer: 'Wart',
     explain: 'ihr → **wart**, with no e (but *ihr hatt**e**t*). Yes/no question → the verb comes first.',
   },
   {
-    id: 'pt-08', type: 'gap', rule: 'praet-sein-haben',
+    id: 'pt-08', type: 'gap', also: ['basics'], rule: 'praet-sein-haben',
     prompt: 'Use the Präteritum',
     q: 'Ich {hatte} keine Zeit, ich {war} krank.',
     options: ['habe', 'bin', 'hat'],
@@ -18771,7 +18895,7 @@ Brezel.deck.addCards('praet', [
     explain: 'An irregular Präteritum takes **no -te**: *er aß*.',
   },
   {
-    id: 'pt-27', type: 'tf', rule: 'praet-sein-haben',
+    id: 'pt-27', type: 'tf', also: ['basics'], rule: 'praet-sein-haben',
     q: 'Ich war gestern im Kino.',
     answer: true, labels: ['Correct', 'Wrong'],
     explain: 'Correct: *war* is the Präteritum of *sein* and perfectly normal in speech. (*Ich bin ins Kino gegangen* says you went; *Ich war im Kino* says where you were.)',
@@ -18819,7 +18943,7 @@ Brezel.deck.addCards('reflexive', [
     explain: '*sich freuen* = *cieszyć **się***, *sich anziehen* = *ubierać **się***. (*sie* = she / they, *selbst* = myself / yourself … for emphasis.)',
   },
   {
-    id: 'rf-03', type: 'table', rule: 'reflexive-pronouns', asksRule: true,
+    id: 'rf-03', type: 'table', also: ['basics'], rule: 'reflexive-pronouns', asksRule: true,
     prompt: 'Write the **reflexive pronoun**',
     head: ['', 'Reflexivpronomen'],
     rows: [['ich', 'mich'], ['du', 'dich'], ['er/sie/es', 'sich'], ['wir', 'uns'], ['ihr', 'euch'], ['sie/Sie', 'sich']],
@@ -18827,7 +18951,7 @@ Brezel.deck.addCards('reflexive', [
     explain: 'Only **er/sie/es** and **sie/Sie** use *sich*. The others are the normal object pronouns: *mich, dich, uns, euch*. Polish uses *się* for everyone: *myję się, myjesz się, myjemy się*.',
   },
   {
-    id: 'rf-04', type: 'tf', rule: 'reflexive-pronouns', asksRule: true, theory: true,
+    id: 'rf-04', type: 'tf', also: ['basics'], rule: 'reflexive-pronouns', asksRule: true, theory: true,
     statement: 'Like Polish *się*, German uses **sich** for every person: *ich freue sich, du freust sich*.',
     answer: false,
     explain: 'Polish: *cieszę **się**, cieszysz **się***. German changes the pronoun: *ich freue **mich**, du freust **dich**, er freut **sich***.',
@@ -18841,28 +18965,28 @@ Brezel.deck.addCards('reflexive', [
     explain: 'Two things change: the verb ending **and** the pronoun: freu**e** mich, freu**st** dich, freu**t** sich …',
   },
   {
-    id: 'rf-06', type: 'type', rule: 'reflexive-pronouns',
+    id: 'rf-06', type: 'type', also: ['basics'], rule: 'reflexive-pronouns',
     prompt: 'Add the reflexive pronoun',
     q: 'Ich dusche ___ jeden Morgen.', hint: 'sich duschen',
     answer: 'mich',
     explain: 'ich → **mich**. Note: Polish *brać prysznic* isn’t reflexive, but German *sich duschen* is, so don’t forget it.',
   },
   {
-    id: 'rf-07', type: 'type', rule: 'reflexive-pronouns',
+    id: 'rf-07', type: 'type', also: ['basics'], rule: 'reflexive-pronouns',
     prompt: 'Add the reflexive pronoun',
     q: 'Beeil ___! Der Zug fährt gleich.', hint: 'sich beeilen',
     answer: 'dich',
     explain: 'A command to *du* → **dich**: *Beeil **dich**!* Polish: *Pośpiesz **się**!* (*sich beeilen* = to hurry: reflexive in German and Polish, but not in English.)',
   },
   {
-    id: 'rf-08', type: 'type', rule: 'reflexive-pronouns',
+    id: 'rf-08', type: 'type', also: ['basics'], rule: 'reflexive-pronouns',
     prompt: 'Add the reflexive pronoun',
     q: 'Wir treffen ___ um acht Uhr vor dem Kino.', hint: 'sich treffen',
     answer: 'uns',
     explain: 'wir → **uns**. *sich treffen* = to meet (each other), Polish *spotykamy **się***.',
   },
   {
-    id: 'rf-09', type: 'type', rule: 'reflexive-pronouns',
+    id: 'rf-09', type: 'type', also: ['basics'], rule: 'reflexive-pronouns',
     prompt: 'Add the reflexive pronoun',
     q: 'Interessiert ihr ___ für Fußball?', hint: 'sich interessieren',
     answer: 'euch',
@@ -18876,7 +19000,7 @@ Brezel.deck.addCards('reflexive', [
     explain: '*sich befinden* = to be located, Polish *znajdować **się***: *Gdzie **znajduje się** dworzec?* Stem ends in -d → extra e: befind**e**t.',
   },
   {
-    id: 'rf-11', type: 'type', rule: 'reflexive-pronouns',
+    id: 'rf-11', type: 'type', also: ['basics'], rule: 'reflexive-pronouns',
     prompt: 'Add the reflexive pronoun',
     q: 'Erinnern Sie ___ an Ihre Schulzeit?', hint: 'sich erinnern',
     answer: 'sich',
@@ -18985,7 +19109,7 @@ Brezel.deck.addCards('reflexive', [
     explain: '*Ich ziehe das Kind an, ich kämme meine Tochter, ich stelle Anna vor, ich treffe Max, ich dusche den Hund, du ärgerst mich.* But you can’t *beeilen*, *bedanken*, *erkälten* or *verlieben* someone else.',
   },
   {
-    id: 'rf-26', type: 'spot', rule: 'reflexive-pronouns',
+    id: 'rf-26', type: 'spot', also: ['basics'], rule: 'reflexive-pronouns',
     q: 'Ich habe sich gestern erkältet.',
     wrong: 'sich', correct: 'mich',
     explain: 'ich → **mich**: *Ich habe **mich** erkältet.* *sich* is only for er/sie/es and sie/Sie.',
@@ -19046,7 +19170,7 @@ Brezel.deck.addCards('reflexive', [
     explain: 'Reflexive → always **haben**, and *Knut* = er → **hat**: *Knut hat sich geduscht.*',
   },
   {
-    id: 'rf-35', type: 'mc', level: 1, rule: 'reflexive-pronouns',
+    id: 'rf-35', type: 'mc', also: ['basics'], level: 1, rule: 'reflexive-pronouns',
     prompt: 'Choose the reflexive pronoun',
     q: 'Du erinnerst ___ gern an deine Schulzeit.',
     correct: 'dich', wrong: ['sich', 'mich', 'dir'],
@@ -19079,7 +19203,7 @@ Brezel.deck.addCards('reflexive', [
     explain: '*Hast **du dich** getroffen?* — pronoun first. With a name both are fine: *Hat **sich Luise** / Hat **Luise sich** getroffen?*',
   },
   {
-    id: 'rf-40', type: 'sort', level: 2, rule: 'reflexive-pronouns',
+    id: 'rf-40', type: 'sort', also: ['basics'], level: 2, rule: 'reflexive-pronouns',
     prompt: 'Which reflexive pronoun is missing?',
     buckets: [
       { label: 'sich', sub: 'er / sie / es, sie (plural), Sie', items: ['Kathrin und Max unterhalten …', 'Herr Huber interessiert …', 'Alexandra entspannt …', 'Peter und Paul streiten …'] },
@@ -19103,7 +19227,7 @@ Brezel.deck.addCards('reflexive', [
     explain: '*Leon* = er → **ärgert sich**. *sich ärgern über* = to be annoyed about (Polish *denerwować **się** na*).',
   },
   {
-    id: 'rf-43', type: 'gap', level: 2, rule: 'reflexive-pronouns',
+    id: 'rf-43', type: 'gap', also: ['basics'], level: 2, rule: 'reflexive-pronouns',
     q: 'Kathrin und Max {unterhalten} {sich}.',
     options: ['unterhält', 'uns'],
     explain: 'Two people = *sie* (plural) → **unterhalten sich**. *sich unterhalten* = to chat (Polish *rozmawiać* — no *się*, so it’s easy to forget).',
@@ -19639,7 +19763,7 @@ Brezel.deck.addCards('present', [
     explain: '*du f**ä**hrst, er f**ä**hrt* — but *ich fahre, wir fahren, **ihr fahrt**, sie fahren*. The same with e → i (*du gibst, er gibt*) and e → ie (*du siehst, er sieht*).',
   },
   {
-    id: 'ru-11', type: 'tf', rule: 'sein-haben', asksRule: true, theory: true,
+    id: 'ru-11', type: 'tf', also: ['basics'], rule: 'sein-haben', asksRule: true, theory: true,
     statement: '*haben* is irregular only with **du** and **er / sie / es**: *du hast, er hat*.',
     answer: true,
     explain: 'The other forms are regular: *ich habe, wir haben, ihr habt, sie haben*. Only du and er/sie/es lose the **b**. *sein* is irregular everywhere: *bin, bist, ist, sind, seid, sind*.',
@@ -20318,6 +20442,468 @@ Brezel.deck.addCards('vocab', [
 })();
 
 </script>
+  <script>/* data/cards/18-basics.js */
+/*
+ * Basics: sein and haben for every person (and their past war / hatte), the reflexive pronouns
+ * mich, dich, sich, uns, euch, sein or haben in set phrases (ich bin 30), mich or mir, and the
+ * person chart that ties them together. Polish as a guide where it helps (mam 30 lat, pomóc mi).
+ * More Basics cards live in their own topics and are shared with also: ['basics']
+ * (the sein / haben tables, the Präteritum of sein and haben, the reflexive pronoun drills).
+ */
+Brezel.deck.addCards('basics', [
+  // --- reflexive pronouns for every person ------------------------------------------------
+  {
+    id: 'ba-01', type: 'match', rule: 'reflexive-pronouns', asksRule: true,
+    prompt: 'Match each person with its **reflexive pronoun**',
+    pairs: [['ich', 'mich'], ['du', 'dich'], ['wir', 'uns'], ['ihr', 'euch']],
+    explain: 'ich → **mich**, du → **dich**, wir → **uns**, ihr → **euch**. Everyone else (er, sie, es, sie, Sie) takes **sich**.',
+  },
+  {
+    id: 'ba-02', type: 'sort', rule: 'reflexive-pronouns', asksRule: true,
+    prompt: 'Which subjects take **sich**?',
+    buckets: [
+      { label: 'sich', items: ['er', 'es', 'Sie', 'Kathrin', 'meine Eltern'] },
+      { label: 'mich · dich · uns · euch', items: ['ich', 'du', 'wir', 'ihr'] },
+    ],
+    explain: '**sich** goes with everyone you talk *about* (er, es, Kathrin, meine Eltern) and with formal **Sie**. The others have their own: ich **mich**, du **dich**, wir **uns**, ihr **euch**.',
+  },
+  {
+    id: 'ba-03', type: 'mc', rule: 'reflexive-pronouns',
+    prompt: 'Choose the reflexive pronoun',
+    q: 'Meine Eltern freuen ___ auf den Urlaub.',
+    correct: 'sich', wrong: ['uns', 'euch', 'sie'],
+    explain: '*meine Eltern* = sie (they) → **sich**. Not *sie*: the pronoun points back to the subject.',
+  },
+  {
+    id: 'ba-04', type: 'mc', rule: 'reflexive-pronouns',
+    prompt: 'Choose the reflexive pronoun',
+    q: 'Ihr zieht ___ schnell an.',
+    correct: 'euch', wrong: ['sich', 'uns', 'ihr'],
+    explain: 'ihr → **euch**: *Ihr zieht **euch** an.* Polish says *ubieracie **się***, but German changes the pronoun with the person.',
+  },
+  {
+    id: 'ba-05', type: 'type', rule: 'reflexive-pronouns',
+    prompt: 'Add the reflexive pronoun',
+    q: 'Wir freuen ___ auf das Wochenende.', hint: 'sich freuen',
+    answer: 'uns',
+    explain: 'wir → **uns**: *Wir freuen **uns***. (Polish *cieszymy **się***.)',
+  },
+  {
+    id: 'ba-06', type: 'type', rule: 'reflexive-pronouns',
+    prompt: 'Add the reflexive pronoun',
+    q: 'Warum ärgerst du ___?', hint: 'sich ärgern',
+    answer: 'dich',
+    explain: 'du → **dich**: *Warum ärgerst du **dich**?* = Why are you annoyed?',
+  },
+  {
+    id: 'ba-07', type: 'type', rule: 'reflexive-pronouns',
+    prompt: 'Add the reflexive pronoun',
+    q: 'Ich interessiere ___ für Musik.', hint: 'sich interessieren',
+    answer: 'mich',
+    explain: 'ich → **mich**. *sich interessieren für* = to be interested in (Polish *interesuję **się***).',
+  },
+  {
+    id: 'ba-08', type: 'type', rule: 'reflexive-pronouns',
+    prompt: 'Add the reflexive pronoun',
+    q: 'Kathrin schminkt ___ vor dem Spiegel.', hint: 'sich schminken',
+    answer: 'sich',
+    explain: '*Kathrin* = sie (she) → **sich**.',
+  },
+  {
+    id: 'ba-09', type: 'type', rule: 'reflexive-pronouns',
+    prompt: 'Add the reflexive pronoun',
+    q: 'Frau Weber, beeilen Sie ___ bitte!', hint: 'sich beeilen',
+    answer: 'sich', reject: ['Sie'],
+    explain: 'Formal **Sie** → **sich**, with a small *s*: *Beeilen Sie **sich**!* Never *Sie Sie*.',
+  },
+  {
+    id: 'ba-10', type: 'type', rule: 'reflexive-pronouns',
+    prompt: 'Add the reflexive pronoun',
+    q: 'Lisa und Tom streiten ___ nie.', hint: 'sich streiten',
+    answer: 'sich',
+    explain: '*Lisa und Tom* = sie (they) → **sich**.',
+  },
+  {
+    id: 'ba-11', type: 'gap', rule: 'reflexive-pronouns',
+    q: 'Ich freue {mich}, und du freust {dich}.',
+    options: ['sich', 'uns'],
+    explain: 'The same verb, two persons: ich freue **mich**, du freust **dich**.',
+  },
+  {
+    id: 'ba-12', type: 'gap', rule: 'reflexive-pronouns',
+    q: 'Wir ziehen {uns} an, und ihr zieht {euch} an.',
+    options: ['sich', 'ihr'],
+    explain: 'wir → **uns**, ihr → **euch**. *ihr* is the person, *euch* is its pronoun.',
+  },
+  {
+    id: 'ba-13', type: 'spot', rule: 'reflexive-pronouns',
+    q: 'Wir interessieren sich für Fußball.', wrong: 'sich', correct: 'uns',
+    explain: 'wir → **uns**: *Wir interessieren **uns** für Fußball.* Polish *się* is for everyone; German *sich* is not.',
+  },
+  {
+    id: 'ba-14', type: 'spot', rule: ['reflexive-pronouns', 'modal'],
+    q: 'Ihr müsst sich beeilen.', wrong: 'sich', correct: 'euch',
+    explain: 'ihr → **euch**: *Ihr müsst **euch** beeilen.* The pronoun stays near the front; the infinitive goes to the end.',
+  },
+  {
+    id: 'ba-15', type: 'tf', rule: 'reflexive-pronouns', asksRule: true, theory: true,
+    statement: 'The reflexive pronoun of **ihr** is **euch**: *ihr freut euch*.',
+    answer: true,
+    explain: 'ihr → **euch**, wir → **uns**: *Ihr freut **euch**, wir freuen **uns***. Only er / sie / es, sie (they) and Sie take *sich*.',
+  },
+  {
+    id: 'ba-16', type: 'order', rule: ['reflexive-pronouns', 'reflexive-position'],
+    en: 'Today I am getting dressed quickly.',
+    answer: 'Heute ziehe ich mich schnell an.',
+    extra: ['sich'],
+    explain: '*Heute* comes first, so the verb comes next and then *ich*. The pronoun **mich** follows right after, and *an* goes to the end.',
+  },
+
+  // --- sein in every person ----------------------------------------------------------------
+  {
+    id: 'ba-17', type: 'match', rule: 'sein-haben', asksRule: true,
+    prompt: 'Match each person with its form of **sein**',
+    pairs: [['ich', 'bin'], ['du', 'bist'], ['er', 'ist'], ['ihr', 'seid']],
+    explain: 'ich **bin**, du **bist**, er **ist**, wir **sind**, ihr **seid**, sie **sind**.',
+  },
+  {
+    id: 'ba-18', type: 'mc', rule: 'sein-haben',
+    prompt: 'Choose the correct form of **sein**',
+    q: '___ ihr heute Abend zu Hause?',
+    correct: 'Seid', wrong: ['Seit', 'Sind', 'Ist'],
+    explain: 'ihr → **seid** (with **d**). *seit* (with **t**) means *since*.',
+  },
+  {
+    id: 'ba-19', type: 'type', rule: 'sein-haben',
+    prompt: 'Conjugate the verb',
+    q: 'Mein Bruder ___ Lehrer.', hint: 'sein',
+    answer: 'ist',
+    explain: '*mein Bruder* = er → **ist**.',
+  },
+  {
+    id: 'ba-20', type: 'type', rule: 'sein-haben',
+    prompt: 'Conjugate the verb',
+    q: 'Wir ___ aus Polen.', hint: 'sein',
+    answer: 'sind',
+    explain: 'wir → **sind**: *Wir **sind** aus Polen.* (Polish *jesteśmy z Polski*.)',
+  },
+  {
+    id: 'ba-21', type: 'type', rule: ['sein-haben', 'yes-no'],
+    prompt: 'Conjugate the verb',
+    q: '___ du müde?', hint: 'sein',
+    answer: 'Bist', reject: ['Hast'],
+    explain: 'du → **bist**. A yes/no question starts with the verb: ***Bist** du müde?*',
+  },
+  {
+    id: 'ba-22', type: 'spot', rule: 'sein-haben',
+    q: 'Ihr seit heute sehr glücklich.', wrong: 'seit', correct: 'seid',
+    explain: '**seid** (you are, with **d**) ≠ **seit** (since, with **t**): *Ihr **seid** heute sehr glücklich.*',
+  },
+  {
+    id: 'ba-23', type: 'tf', rule: 'sein-haben',
+    q: 'Meine Kinder ist in der Schule.',
+    answer: false, fix: 'Meine Kinder sind in der Schule.',
+    labels: ['Correct', 'Wrong'],
+    explain: '*meine Kinder* = sie (they) → **sind**: *Meine Kinder **sind** in der Schule.*',
+  },
+
+  // --- haben in every person ----------------------------------------------------------------
+  {
+    id: 'ba-24', type: 'match', rule: 'sein-haben', asksRule: true,
+    prompt: 'Match each person with its form of **haben**',
+    pairs: [['ich', 'habe'], ['du', 'hast'], ['er', 'hat'], ['ihr', 'habt']],
+    explain: 'ich **habe**, du **hast**, er **hat**, wir **haben**, ihr **habt**, sie **haben**. No *b* in *hast* and *hat*.',
+  },
+  {
+    id: 'ba-25', type: 'mc', rule: 'sein-haben',
+    prompt: 'Choose the correct form of **haben**',
+    q: 'Herr Huber ___ einen Termin um zehn Uhr.',
+    correct: 'hat', wrong: ['hast', 'habt', 'haben'],
+    explain: '*Herr Huber* = er → **hat**. (*habt* is the form for ihr.)',
+  },
+  {
+    id: 'ba-26', type: 'type', rule: ['sein-haben', 'yes-no'],
+    prompt: 'Conjugate the verb',
+    q: '___ ihr am Wochenende Zeit?', hint: 'haben',
+    answer: 'Habt',
+    explain: 'ihr → **habt**: ***Habt** ihr am Wochenende Zeit?*',
+  },
+  {
+    id: 'ba-27', type: 'type', rule: 'sein-haben',
+    prompt: 'Conjugate the verb',
+    q: 'Du ___ ein schönes Auto.', hint: 'haben',
+    answer: 'hast', reject: ['habst'],
+    explain: 'du → **hast**, without the *b*: du **hast**, er **hat**.',
+  },
+  {
+    id: 'ba-28', type: 'gap', rule: 'sein-haben',
+    q: 'Ich {habe} einen Hund, und mein Bruder {hat} ein Auto.',
+    options: ['hast', 'habt'],
+    explain: 'ich → **habe**; *mein Bruder* = er → **hat**.',
+  },
+  {
+    id: 'ba-29', type: 'sort', rule: 'sein-haben',
+    prompt: 'Which form of **haben**?',
+    buckets: [
+      { label: 'hat', items: ['er', 'es', 'Kathrin', 'mein Bruder'] },
+      { label: 'habt', items: ['ihr'] },
+      { label: 'haben', items: ['wir', 'Sie', 'meine Eltern', 'Lisa und Tom'] },
+    ],
+    explain: '**hat** for one person or thing you talk about (er, es, Kathrin, mein Bruder) · **habt** for *ihr* · **haben** for wir, Sie and more than one person (*meine Eltern, Lisa und Tom*).',
+  },
+
+  // --- sein or haben? ------------------------------------------------------------------------
+  {
+    id: 'ba-30', type: 'mc', rule: 'sein-or-haben',
+    prompt: 'Polish says *mam 25 lat*. What does German say?',
+    correct: 'Ich bin 25 Jahre alt.',
+    wrong: ['Ich habe 25 Jahre alt.', 'Ich habe 25 Jahre.', 'Ich bin 25 Jahre haben.'],
+    explain: 'Age takes **sein**: *Ich **bin** 25 (Jahre alt).* Polish counts the years you *have*; German says how old you *are*.',
+  },
+  {
+    id: 'ba-31', type: 'type', rule: 'sein-or-haben',
+    prompt: 'sein or haben? Write the right form',
+    q: 'Wie alt ___ du?', hint: 'sein or haben?',
+    answer: 'bist', reject: ['hast'],
+    explain: 'Age takes **sein**: *Wie alt **bist** du?*',
+  },
+  {
+    id: 'ba-32', type: 'type', rule: 'sein-or-haben',
+    prompt: 'sein or haben? Write the right form',
+    q: 'Meine Mutter ___ 60 Jahre alt.', hint: 'sein or haben?',
+    answer: 'ist', reject: ['hat'],
+    explain: 'Age → **sein**: *Sie **ist** 60.* Not *hat*: that is Polish *ma 60 lat*.',
+  },
+  {
+    id: 'ba-33', type: 'gap', rule: 'sein-or-haben',
+    q: 'Ich {bin} müde, aber ich {habe} keine Zeit.',
+    options: ['sind', 'haben'],
+    explain: 'An adjective (*müde*) → **sein**; a noun (*Zeit*) → **haben**.',
+  },
+  {
+    id: 'ba-34', type: 'sort', rule: 'sein-or-haben',
+    prompt: '**sein** or **haben**?',
+    buckets: [
+      { label: 'sein', sub: 'ich bin …', items: ['müde', '30 Jahre alt', 'verheiratet', 'krank'] },
+      { label: 'haben', sub: 'ich habe …', items: ['Zeit', 'Angst', 'zwei Kinder', 'einen Termin'] },
+    ],
+    explain: 'Adjectives and age take **sein**: *ich bin müde, krank, verheiratet, 30 Jahre alt*. Nouns take **haben**: *ich habe Zeit, Angst, zwei Kinder, einen Termin*.',
+  },
+  {
+    id: 'ba-35', type: 'spot', rule: 'sein-or-haben',
+    q: 'Mein Bruder hat 35 Jahre alt.', wrong: 'hat', correct: 'ist',
+    explain: 'Age → **sein**: *Mein Bruder **ist** 35 Jahre alt.* Polish says *ma 35 lat*; German doesn’t.',
+  },
+  {
+    id: 'ba-36', type: 'tf', rule: 'sein-or-haben',
+    q: 'Wir sind keine Zeit.',
+    answer: false, fix: 'Wir haben keine Zeit.',
+    labels: ['Correct', 'Wrong'],
+    explain: '*Zeit* is a noun, something you have → **haben**: *Wir **haben** keine Zeit.*',
+  },
+  {
+    id: 'ba-37', type: 'order', rule: 'sein-or-haben',
+    en: 'She is married and has two children.',
+    answer: 'Sie ist verheiratet und hat zwei Kinder.',
+    extra: ['sind', 'haben'],
+    explain: '*verheiratet* is an adjective → **ist**; *zwei Kinder* is a noun → **hat**.',
+  },
+  {
+    id: 'ba-38', type: 'tf', rule: 'sein-or-haben', asksRule: true, theory: true,
+    statement: 'Age takes **sein** in German: *ich bin 30*, not *ich habe 30 Jahre*.',
+    answer: true,
+    explain: 'Polish *mam 30 lat* uses *mieć*; German uses **sein**: *Ich **bin** 30 (Jahre alt).*',
+  },
+
+  // --- war and hatte ----------------------------------------------------------------------
+  {
+    id: 'ba-39', type: 'match', rule: 'praet-sein-haben', asksRule: true,
+    prompt: 'Match the **present** with its **Präteritum**',
+    pairs: [['ich bin', 'ich war'], ['du bist', 'du warst'], ['wir haben', 'wir hatten'], ['ihr habt', 'ihr hattet']],
+    explain: '*sein*: bin → **war**, bist → **warst**. *haben*: haben → **hatten**, habt → **hattet**.',
+  },
+  {
+    id: 'ba-40', type: 'mc', rule: ['praet-sein-haben', 'sein-or-haben'],
+    prompt: 'Choose the right past form',
+    q: 'Gestern ___ ich keine Zeit.',
+    correct: 'hatte', wrong: ['habe', 'hat', 'war'],
+    explain: '*Gestern* → the past. *Zeit* takes haben → **hatte**: *Gestern **hatte** ich keine Zeit.*',
+  },
+  {
+    id: 'ba-41', type: 'type', rule: 'praet-sein-haben',
+    prompt: 'Use the Präteritum',
+    q: 'Letztes Jahr ___ wir in Wien.', hint: 'sein',
+    answer: 'waren',
+    explain: 'wir → **waren**: *Letztes Jahr **waren** wir in Wien.*',
+  },
+  {
+    id: 'ba-42', type: 'type', rule: ['praet-sein-haben', 'yes-no'],
+    prompt: 'Use the Präteritum',
+    q: '___ du gestern krank?', hint: 'sein',
+    answer: 'Warst',
+    explain: 'du → **warst**: ***Warst** du gestern krank?*',
+  },
+  {
+    id: 'ba-43', type: 'type', rule: 'praet-sein-haben',
+    prompt: 'Use the Präteritum',
+    q: 'Meine Eltern ___ früher einen Hund.', hint: 'haben',
+    answer: 'hatten',
+    explain: '*meine Eltern* = sie (they) → **hatten**.',
+  },
+  {
+    id: 'ba-44', type: 'gap', rule: 'praet-sein-haben',
+    q: 'Heute {bin} ich müde, und gestern {war} ich auch müde.',
+    options: ['wart', 'ist'],
+    explain: '*Heute* → the present, **bin**; *gestern* → the Präteritum, **war**.',
+  },
+  {
+    id: 'ba-45', type: 'spot', rule: ['praet-sein-haben', 'sein-or-haben'],
+    q: 'Ihr wart gestern keine Zeit.', wrong: 'wart', correct: 'hattet',
+    explain: '*Zeit* takes **haben**, and ihr in the past → **hattet**: *Ihr **hattet** gestern keine Zeit.*',
+  },
+  {
+    id: 'ba-46', type: 'order', rule: ['praet-sein-haben', 'inversion'],
+    en: 'Yesterday I was ill and had no time.',
+    answer: 'Gestern war ich krank und hatte keine Zeit.',
+    extra: ['bin'],
+    explain: '*Gestern* first, then the verb **war**, then *ich*. Ill → **war** (sein), no time → **hatte** (haben).',
+  },
+
+  // --- the person chart: from ich to another person ------------------------------------------
+  {
+    id: 'ba-47', type: 'table', rule: 'person-chart', asksRule: true,
+    prompt: 'Change every **ich** form into the **du** form',
+    head: ['ich', 'du'],
+    rows: [['bin', 'bist'], ['habe', 'hast'], ['war', 'warst'], ['hatte', 'hattest'], ['mich', 'dich'], ['mein', 'dein']],
+    explain: 'du: **bist**, **hast**, **warst**, **hattest**, **dich**, **dein**. The du forms of the verbs end in *-st* (*hast* without a *b*).',
+  },
+  {
+    id: 'ba-48', type: 'table', rule: 'person-chart', asksRule: true,
+    prompt: 'Change every **ich** form into the **er** form',
+    head: ['ich', 'er'],
+    rows: [['bin', 'ist'], ['habe', 'hat'], ['war', 'war'], ['hatte', 'hatte'], ['mich', 'sich'], ['mein', 'sein']],
+    explain: 'er: **ist**, **hat**, **war**, **hatte**, **sich**, **sein**. In the Präteritum, ich and er are the same: *ich war – er war*.',
+  },
+  {
+    id: 'ba-49', type: 'table', rule: 'person-chart', asksRule: true,
+    prompt: 'Change every **ich** form into the **wir** form',
+    head: ['ich', 'wir'],
+    rows: [['bin', 'sind'], ['habe', 'haben'], ['war', 'waren'], ['hatte', 'hatten'], ['mich', 'uns'], ['mein', 'unser']],
+    explain: 'wir: **sind**, **haben**, **waren**, **hatten**, **uns**, **unser**.',
+  },
+  {
+    id: 'ba-50', type: 'table', rule: 'person-chart', asksRule: true,
+    prompt: 'Change every **ich** form into the **ihr** form',
+    head: ['ich', 'ihr'],
+    rows: [['bin', 'seid'], ['habe', 'habt'], ['war', 'wart'], ['hatte', 'hattet'], ['mich', 'euch'], ['mein', 'euer']],
+    explain: 'ihr: **seid** (with *d*), **habt**, **wart**, **hattet**, **euch**, **euer**.',
+  },
+  {
+    id: 'ba-51', type: 'table', rule: 'person-chart', asksRule: true,
+    prompt: 'Change every **ich** form into the formal **Sie** form',
+    head: ['ich', 'Sie'],
+    rows: [['bin', 'sind'], ['habe', 'haben'], ['war', 'waren'], ['hatte', 'hatten'], ['mich', 'sich'], ['mein', 'Ihr']],
+    explain: 'Sie: **sind**, **haben**, **waren**, **hatten** (like sie, they), the pronoun **sich** with a small *s*, and **Ihr** with a capital *I*.',
+  },
+  {
+    id: 'ba-52', type: 'tf', rule: 'person-chart', asksRule: true, theory: true,
+    statement: '**ihr** has two meanings: the person *you (all)* (*ihr seid*) and the possessive *her / their* (*ihr Hund*).',
+    answer: true,
+    explain: '*Ihr **seid** müde* = you (all) are tired · *Lisa und **ihr** Hund* = Lisa and her dog · *Max und Kathrin und **ihr** Auto* = their car.',
+  },
+  {
+    id: 'ba-53', type: 'mc', rule: 'person-chart', asksRule: true, theory: true,
+    prompt: 'Which forms belong to **wir**?',
+    correct: 'sind · haben · uns · unser',
+    wrong: ['seid · habt · euch · euer', 'sind · haben · sich · unser', 'ist · hat · uns · unser'],
+    explain: 'wir **sind**, wir **haben**, wir freuen **uns**, **unser** Haus. (*seid, habt, euch, euer* belong to ihr.)',
+  },
+
+  // --- mich or mir? -------------------------------------------------------------------------
+  {
+    id: 'ba-54', type: 'mc', rule: 'mich-mir',
+    prompt: 'Choose the right pronoun',
+    q: 'Hilfst du ___ bitte?',
+    correct: 'mir', wrong: ['mich', 'ich', 'mein'],
+    explain: '*helfen* takes the **Dativ**: *Hilfst du **mir**?* Polish does the same: *pomożesz **mi***.',
+  },
+  {
+    id: 'ba-55', type: 'mc', rule: 'mich-mir',
+    prompt: 'Choose the right pronoun',
+    q: 'Besuchst du ___ am Wochenende?',
+    correct: 'mich', wrong: ['mir', 'ich', 'mein'],
+    explain: '*besuchen* takes the **Akkusativ**: *Besuchst du **mich**?* (Polish *odwiedzisz **mnie***.)',
+  },
+  {
+    id: 'ba-56', type: 'type', rule: 'mich-mir',
+    prompt: 'Write the pronoun for **ich**',
+    q: 'Das Essen schmeckt ___ sehr gut.', hint: 'mich or mir?',
+    answer: 'mir', reject: ['mich'],
+    explain: '*schmecken* takes the Dativ: *Das schmeckt **mir*** = I like the taste. (Polish *smakuje **mi***.)',
+  },
+  {
+    id: 'ba-57', type: 'type', rule: 'mich-mir',
+    prompt: 'Write the pronoun for **ich**',
+    q: 'Rufst du ___ morgen an?', hint: 'mich or mir?',
+    answer: 'mich', reject: ['mir'],
+    explain: '*anrufen* takes the Akkusativ: *Rufst du **mich** an?* (Polish *zadzwonisz do mnie?*)',
+  },
+  {
+    id: 'ba-58', type: 'type', rule: ['mich-mir', 'mit-dativ'],
+    prompt: 'Write the pronoun for **ich**',
+    q: 'Kommst du mit ___ ins Kino?', hint: 'mich or mir?',
+    answer: 'mir', reject: ['mich'],
+    explain: '**mit** always takes the Dativ: *mit **mir**, mit **dir**, mit **Ihnen***.',
+  },
+  {
+    id: 'ba-59', type: 'type', rule: ['mich-mir', 'gefallen'],
+    prompt: 'Write the pronoun for **du**',
+    q: 'Wie gefällt ___ der Kurs?', hint: 'dich or dir?',
+    answer: 'dir', reject: ['dich'],
+    explain: '*gefallen* takes the Dativ: *Wie gefällt **dir** der Kurs?* = How do you like the course?',
+  },
+  {
+    id: 'ba-60', type: 'gap', rule: 'mich-mir',
+    q: 'Ich helfe {dir}, und du hilfst {mir}.',
+    options: ['dich', 'mich'],
+    explain: '*helfen* + Dativ: **dir**, **mir**, never *dich, mich*.',
+  },
+  {
+    id: 'ba-61', type: 'gap', rule: 'mich-mir',
+    q: 'Frau Weber, ich rufe {Sie} morgen an und helfe {Ihnen}.',
+    options: ['Ihr', 'sich'],
+    explain: 'Formal: Akkusativ **Sie** (*ich rufe Sie an*), Dativ **Ihnen** (*ich helfe Ihnen*).',
+  },
+  {
+    id: 'ba-62', type: 'sort', rule: 'mich-mir',
+    prompt: '**mich** or **mir**?',
+    buckets: [
+      { label: 'mich', sub: 'Akkusativ', items: ['Er besucht …', 'Sie ruft … an', 'Kennst du …?'] },
+      { label: 'mir', sub: 'Dativ', items: ['Er hilft …', 'Das gefällt …', 'Kommst du mit …?'] },
+    ],
+    explain: '**mich** with *besuchen, anrufen, kennen* (Akkusativ) · **mir** with *helfen, gefallen* and after *mit* (Dativ).',
+  },
+  {
+    id: 'ba-63', type: 'spot', rule: ['mich-mir', 'gefallen'],
+    q: 'Die Stadt gefällt mich sehr.', wrong: 'mich', correct: 'mir',
+    explain: '*gefallen* takes the Dativ: *Die Stadt gefällt **mir** sehr.*',
+  },
+  {
+    id: 'ba-64', type: 'tf', rule: 'mich-mir', asksRule: true, theory: true,
+    statement: '**mit** always takes the Dativ: *mit mir, mit dir, mit Ihnen*, never *mit mich*.',
+    answer: true,
+    explain: 'After **mit** come the Dativ forms: *Kommst du mit **mir**? Ich gehe mit **dir**. Wir sprechen mit **Ihnen**.*',
+  },
+  {
+    id: 'ba-65', type: 'order', rule: 'mich-mir',
+    en: 'Can you help me tomorrow?',
+    answer: 'Kannst du mir morgen helfen?',
+    extra: ['mich'],
+    explain: '*helfen* takes the Dativ → **mir**. A yes/no question starts with the verb, and *helfen* goes to the end.',
+  },
+]);
+
+</script>
 
   <!-- minigames (plugins: js/games/engine.js documents the contract) -->
   <script>/* js/games/engine.js */
@@ -20411,6 +20997,8 @@ Brezel.deck.addCards('vocab', [
   ].map((v) => [v, true]));
 
   const MODALS = ['müssen', 'können', 'möchten', 'mögen', 'wollen', 'dürfen', 'sollen'];
+  /** Basics: sein and haben (half of the spins), plus two everyday reflexive verbs for mich, dich, sich, uns, euch. */
+  const BASICS = [['sein', false], ['haben', false], ['freuen', true], ['anziehen', true]];
   const INSEPARABLE = /^(be|ver|ent|er|ge|zer|emp|miss|unter|über|hinter|wider)/;
 
   const verb = (inf) => B.deck.verbs[inf] || null;
@@ -20448,7 +21036,8 @@ Brezel.deck.addCards('vocab', [
   /**
    * Lexicon verbs that fit a topic: [{ v, reflexive }]. need: fields the game needs ('prt', 'pp').
    * verblist → the user's list; reflexive → reflexive verbs; prefix → separable + inseparable;
-   * praet → verbs with a Präteritum; past / pastq / tenses → verbs with a participle; verbs → modals.
+   * praet → verbs with a Präteritum; past / pastq / tenses → verbs with a participle; verbs → modals;
+   * basics → sein, haben and a few everyday reflexive verbs.
    */
   function verbsFor(topic, { need = [] } = {}) {
     const all = Object.values(B.deck.verbs);
@@ -20465,6 +21054,9 @@ Brezel.deck.addCards('vocab', [
         break;
       case 'verbs':
         out = MODALS.map(verb).filter(Boolean).map((v) => ({ v, reflexive: false }));
+        break;
+      case 'basics':
+        out = BASICS.map(([inf, reflexive]) => ({ v: verb(inf), reflexive })).filter((x) => x.v);
         break;
       case 'praet':
         out = all.filter((v) => v.prt).map((v) => ({ v, reflexive: isReflexive(v) }));
@@ -20528,7 +21120,7 @@ Brezel.deck.addCards('vocab', [
     value,
     data: {},
     lib: {
-      PERSONS, REFL, VERB_LIST, MODALS,
+      PERSONS, REFL, VERB_LIST, MODALS, BASICS,
       verb, isReflexive, isSeparable, isInseparable, meaning, form, verbsFor, cardsFor, deal, sample, same, uniq,
     },
   };
@@ -21526,7 +22118,7 @@ Brezel.games.data.quick = {
     color: '#9b5de5',
     blurb: 'Mirror, mirror: the action goes back to the subject. Pick **mich, dich, sich, uns** or **euch**.',
     how: ['Tap the pronoun or press 1–4', 'Polish says *się* for everyone — German doesn’t!', 'High: Perfekt and questions too'],
-    topics: ['reflexive', 'verblist'],
+    topics: ['basics', 'reflexive', 'verblist'],
     time: 60,
     art: '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" font-family="system-ui,sans-serif" font-weight="900"><circle cx="60" cy="60" r="56" fill="#f3e8ff"/><rect x="55" y="88" width="10" height="16" fill="#9b5de5"/><rect x="38" y="102" width="44" height="8" rx="4" fill="#9b5de5"/><ellipse cx="60" cy="52" rx="32" ry="40" fill="#c58cf5"/><ellipse cx="60" cy="52" rx="25" ry="33" fill="#e9f7ff"/><path d="M44 34q6-10 16-14M42 46q3-8 9-12" stroke="#fff" stroke-width="5" stroke-linecap="round" fill="none"/><text x="60" y="64" text-anchor="middle" font-size="17" fill="#7b3fc4" transform="translate(120 0) scale(-1 1)">sich</text></svg>',
     ready: (topic) => spiegelPool(topic).length >= 3,
@@ -21601,7 +22193,7 @@ Brezel.games.data.quick = {
     color: '#00a6a0',
     blurb: 'Set the dial! Is the verb form **Präsens**, **Präteritum** or **Perfekt**?',
     how: ['1 Präteritum · 2 Perfekt · 3 Präsens', 'Medium: every person · High: reflexive and separable verbs, against the clock'],
-    topics: ['tenses', 'praet', 'past', 'verblist'],
+    topics: ['basics', 'tenses', 'praet', 'past', 'verblist'],
     time: 60,
     art: '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><circle cx="60" cy="60" r="56" fill="#e3f6f5"/><path d="M60 80 16 80A44 44 0 0 1 38 41.9Z" fill="#ce82ff"/><path d="M60 80 38 41.9A44 44 0 0 1 82 41.9Z" fill="#1cb0f6"/><path d="M60 80 82 41.9A44 44 0 0 1 104 80Z" fill="#58cc02"/><path d="M60 80 90 58" stroke="#2b3a40" stroke-width="6" stroke-linecap="round"/><circle cx="60" cy="80" r="8" fill="#2b3a40"/><circle cx="60" cy="80" r="3" fill="#ffc800"/><rect x="20" y="88" width="80" height="16" rx="8" fill="#00a6a0"/><circle cx="34" cy="96" r="3" fill="#fff"/><circle cx="46" cy="96" r="3" fill="#fff"/><circle cx="58" cy="96" r="3" fill="#ffc800"/></svg>',
     ready: (topic) => zeitPool(topic).length >= 4,
@@ -21674,6 +22266,15 @@ Brezel.games.data.quick = {
       for (const { v } of verbs('reflexive', [])) add([0, 1, 2, 3, 4, 5].map((p) => L.form(v, 'present', p, { reflexive: true })));
     }
     if (topic === 'verblist' || topic === 'all') for (const { v } of verbs('verblist', ['pp'])) add([v.forms[2], v.prt && v.prt[2], v.pp, v.inf, v.forms[1]]);
+    if (topic === 'basics') {
+      // sein and haben, now and in the past, and the pronouns: mich / mir is taught here
+      for (const inf of ['sein', 'haben']) {
+        const v = L.verb(inf);
+        if (v) add(v.forms), add(v.prt || []), add([v.forms[0], v.prt && v.prt[0], v.forms[2], v.prt && v.prt[2]]);
+      }
+      fams((f) => f.includes('mich')).forEach(add);
+      add(['mich', 'mir', 'dich', 'dir']);
+    }
     if (topic === 'all') B.deck.families.filter((f) => f.length <= 3).forEach(add);
     sets = sets.filter((s) => s.length >= 2);
     return sets;
@@ -21703,7 +22304,7 @@ Brezel.games.data.quick = {
     speech: true,
     blurb: 'Listen carefully, then tap the word you **heard**. They look alike — they don’t sound alike!',
     how: ['Tap 🔊 or press R / Space to hear it again', 'Answer with a tap or keys 1–4', '12 rounds'],
-    topics: ['present', 'praet', 'cases', 'possessive', 'reflexive', 'verblist'],
+    topics: ['basics', 'present', 'praet', 'cases', 'possessive', 'reflexive', 'verblist'],
     art: '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><circle cx="60" cy="60" r="56" fill="#ffe9f6"/><path d="M22 48h16l22-18v60L38 72H22z" fill="#ff4fa3"/><path d="M72 44q10 16 0 32M82 34q18 26 0 52M92 26q26 34 0 68" fill="none" stroke="#ff86d0" stroke-width="6" stroke-linecap="round"/></svg>',
     ready: (topic) => hoerSets(topic).length >= 3,
     gen: hoerGen,
@@ -22023,7 +22624,7 @@ Brezel.games.data.quick = {
     color: '#ff4b4b',
     blurb: 'Pull the lever! Person, verb and tense spin — then hit the right **verb form** for the jackpot.',
     how: ['Pull the lever (Space / Enter), answer with 1–4', 'Medium adds the Präteritum · High: type it, Perfekt too', '10 spins — quick answers score more'],
-    topics: ['present', 'praet', 'verbs', 'verblist', 'reflexive', 'tenses'],
+    topics: ['basics', 'present', 'praet', 'verbs', 'verblist', 'reflexive', 'tenses'],
     art: '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" font-family="system-ui,sans-serif" font-weight="900"><rect width="120" height="120" rx="28" fill="#fff1dc"/><rect x="12" y="22" width="80" height="84" rx="14" fill="#ff4b4b"/><rect x="20" y="12" width="64" height="18" rx="9" fill="#ffc800"/><circle cx="30" cy="21" r="3" fill="#fff"/><circle cx="42" cy="21" r="3" fill="#fff"/><circle cx="54" cy="21" r="3" fill="#fff"/><circle cx="66" cy="21" r="3" fill="#fff"/><circle cx="78" cy="21" r="3" fill="#fff"/><rect x="20" y="40" width="64" height="32" rx="7" fill="#fff"/><path d="M41.3 40v32M62.6 40v32" stroke="#ffd1d1" stroke-width="2"/><text x="31" y="61" text-anchor="middle" font-size="12" fill="#3c3c3c">ich</text><text x="52" y="61" text-anchor="middle" font-size="12" fill="#3c3c3c">bin</text><text x="73" y="62" text-anchor="middle" font-size="14" fill="#58cc02">✓</text><rect x="26" y="82" width="52" height="14" rx="7" fill="#c62f2f"/><rect x="99" y="44" width="6" height="40" rx="3" fill="#9aa5ab"/><circle cx="102" cy="40" r="9" fill="#ff9600"/><rect x="94" y="80" width="16" height="12" rx="4" fill="#c62f2f"/></svg>',
     ready: (topic) => automatPool(topic).length >= 4,
     gen: automatGen,
@@ -22138,6 +22739,7 @@ Brezel.games.data.quick = {
    */
   const bosses = {
     all: { name: 'Der Grammatik-Gigant', color: '#7c5cff', shape: 'wide', eyes: 3, horns: 2, fangs: true, extra: 'crown' },
+    basics: { name: 'Der Bauklotz-Bär', color: '#cf5c36', shape: 'square', eyes: 2, horns: 0, fangs: true, extra: 'ears' },
     rules: { name: 'Der Regel-Riese', color: '#3f8cff', shape: 'tall', eyes: 1, horns: 0, fangs: false, extra: 'hat' },
     verblist: { name: 'Das Verben-Ungeheuer', color: '#e2458e', shape: 'blob', eyes: 3, horns: 3, fangs: true, extra: 'spikes' },
     order: { name: 'Der Satzbau-Golem', color: '#8c7a6b', shape: 'square', eyes: 2, horns: 0, fangs: false, extra: 'spikes' },
@@ -22254,6 +22856,12 @@ Brezel.games.data.quick = {
         const base = prefix && x.v.inf.startsWith(prefix) ? x.v.inf.slice(prefix.length) : x.v.inf;
         const stem = base.replace(/e?n$/, '');
         if (head !== stem + 't' && head !== stem + 'et') add(x.v.inf, 'er ' + er);
+      }
+    } else if (topic === 'basics') {
+      // ich bin ↔ ich war, du hast ↔ du hattest …
+      for (const inf of ['sein', 'haben']) {
+        const v = lib.verb(inf);
+        if (v && v.prt) lib.PERSONS.forEach((p, i) => add(`${p.split('/')[0]} ${v.forms[i]}`, `${p.split('/')[0]} ${v.prt[i]}`));
       }
     } else if (topic === 'gender') {
       for (const [m, f] of jobs) add(m, f);
@@ -23390,7 +23998,7 @@ Brezel.games.data.quick = {
  * Topic pictures: one small animated SVG per topic (flat, friendly, readable from 18 px up).
  *
  *   B.art.topic(id) → '<svg class="t-art t-art-<id>" viewBox="0 0 64 64" aria-hidden="true">…</svg>'
- *                     ids: all, rules, verblist, order, present, past, cases, prepositions, gender,
+ *                     ids: all, basics, rules, verblist, order, present, past, cases, prepositions, gender,
  *                     possessive, questions, verbs, prefix, tenses, praet, reflexive, pastq, vocab;
  *                     any other id gets a generic card with a star.
  *   B.art.color(id) → the topic's accent colour (works on light and dark surfaces)
@@ -23435,6 +24043,7 @@ Brezel.games.data.quick = {
 
   const COLORS = {
     all: '#a560e8',
+    basics: '#cf5c36',
     rules: '#1cb0f6',
     verblist: '#f5b800',
     order: '#58cc02',
@@ -23455,6 +24064,28 @@ Brezel.games.data.quick = {
   };
 
   const ART = {
+    // 🧱 basics: a little brick wall; the top brick ("ich") drops into place
+    basics: () => `
+      <g class="ta ta-r1">
+        <rect x="6" y="45" width="16.5" height="11" rx="2.2" fill="#cf5c36"/>
+        <rect x="23.75" y="45" width="16.5" height="11" rx="2.2" fill="#e27a52"/>
+        <rect x="41.5" y="45" width="16.5" height="11" rx="2.2" fill="#cf5c36"/>
+        <path d="M9 47.6h8M26.75 47.6h8M44.5 47.6h8" stroke="#fff" stroke-opacity="0.35" stroke-width="1.6" stroke-linecap="round"/>
+      </g>
+      <g class="ta ta-r2">
+        <rect x="6" y="33" width="7.6" height="11" rx="2.2" fill="#e27a52"/>
+        <rect x="14.85" y="33" width="16.5" height="11" rx="2.2" fill="#cf5c36"/>
+        <rect x="32.6" y="33" width="16.5" height="11" rx="2.2" fill="#e27a52"/>
+        <rect x="50.35" y="33" width="7.65" height="11" rx="2.2" fill="#cf5c36"/>
+        <path d="M17.85 35.6h8M35.6 35.6h8" stroke="#fff" stroke-opacity="0.35" stroke-width="1.6" stroke-linecap="round"/>
+      </g>
+      <g class="ta ta-brick">
+        <rect x="23.75" y="21" width="16.5" height="11" rx="2.2" fill="#ffc800"/>
+        <text x="32" y="29.4" text-anchor="middle" font-family="${FONT}" font-size="8" font-weight="900" fill="#8a6100">ich</text>
+      </g>
+      <g class="ta ta-spark"><path d="${sparkle(50, 15, 5)}" fill="#ffc800"/></g>
+      <g class="ta ta-spark2"><path d="${sparkle(13, 22, 3.2)}" fill="#e27a52"/></g>`,
+
     // ✨ all topics: a fan of cards with sparkles
     all: () => `
       <g class="ta ta-c1"><rect x="21" y="13" width="22" height="31" rx="4" fill="#ffc800" transform="rotate(-24 32 50)"/><circle cx="25.5" cy="18" r="2" fill="#fff" transform="rotate(-24 32 50)"/></g>
@@ -24884,7 +25515,7 @@ ${front}${mirror(front)}
     const lens = h('span', { class: 'rb-lens', html: LENS });
 
     const sections = B.deck.topics.filter((t) => !t.collects).map((t) => {
-      const rules = B.deck.rules.filter((r) => r.topic === t.id);
+      const rules = B.deck.rulesOfTopic(t.id);
       if (!rules.length) return null;
       const items = rules.map((r) => {
         const body = B.glossary.rule(r, { title: false });
@@ -24892,7 +25523,7 @@ ${front}${mirror(front)}
         el.addEventListener('toggle', () => {
           if (el.open && !quiet) B.glossary.unfold(body);
         });
-        return { el, text: haystack(r, t) };
+        return { el, id: r.id, text: haystack(r, t) };
       });
       const el = h('section', { class: 'card rb-topic art-host', 'aria-label': t.name },
         h('h2', { class: 'section-title rb-head' },
@@ -24903,23 +25534,25 @@ ${front}${mirror(front)}
       el.style.setProperty('--t', B.art.color(t.id));
       return { id: t.id, el, items };
     }).filter(Boolean);
-    const total = sections.reduce((n, s) => n + s.items.length, 0);
+    // a rule can be in two topics (also: ['basics']): count it once
+    const total = new Set(sections.flatMap((s) => s.items.map((i) => i.id))).size;
     let quiet = false; // opening rules by searching or jumping: no unfold animation for each
 
     function filter() {
       const words = norm(search.value).split(' ').filter(Boolean);
-      let shown = 0;
+      const hits = new Set();
       for (const s of sections) {
         let any = false;
         for (const i of s.items) {
           const hit = words.every((w) => i.text.includes(w));
           i.el.hidden = !hit;
           if (words.length) i.el.open = hit;
-          if (hit) shown++;
+          if (hit) hits.add(i.id);
           any = any || hit;
         }
         s.el.hidden = !any;
       }
+      const shown = hits.size;
       count.textContent = words.length
         ? `${shown} of ${total} rules match`
         : `${total} rules in ${sections.length} topics. Tap a rule to open it.`;
